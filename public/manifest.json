@@ -1,20 +1,20 @@
 {
-  "name": "Volt React Dashboard",
-  "short_name": "Volt React Dashboard",
+  "name": "Blockchain User Management",
+  "short_name": "UserMgmt",
   "icons": [
     {
-      "src": "/docs/4.3/assets/img/favicons/android-chrome-192x192.png",
+      "src": "/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/docs/4.3/assets/img/favicons/android-chrome-512x512.png",
+      "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
   ],
-  "start_url": "/?utm_source=a2hs",
-  "theme_color": "#563d7c",
-  "background_color": "#563d7c",
+  "start_url": "/dashboard/overview",
+  "theme_color": "#1A73E8",
+  "background_color": "#FFFFFF",
   "display": "standalone"
 }

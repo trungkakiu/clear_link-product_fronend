@@ -1,0 +1,37 @@
+.otp-result-modal .modal-content {
+  border-radius: 16px;
+  padding: 10px 8px 20px;
+  background: #ffffff;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.18);
+}
+
+.otp-box {
+  margin: 15px auto;
+  width: fit-content;
+  padding: 15px 30px;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 8px;
+
+  border-radius: 14px;
+  background: #f3f4f6;
+  border: 2px solid #d1d5db;
+  color: #111827;
+}
+
+.otp-info {
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.warning-text {
+  font-size: 0.85rem;
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.countdown {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #374151;
+}

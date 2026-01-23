@@ -1,6 +1,6 @@
 {
-  "name": "@themesberg/volt-react-dashboard",
-  "description": "Volt React Dashboard is a free and open source admin dashboard template powered by React.js and Bootstrap 5",
+  "name": "@themesberg/clear-link-dashboard",
+  "description": "ClearLink admin dashboard template powered by React.js and Bootstrap 5",
   "author": "Themesberg",
   "keywords": [
     "bootstrap 5",
@@ -33,9 +33,12 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "@themesberg/react-bootstrap": "^1.4.1",
+    "aos": "^2.3.4",
+    "axios": "^1.13.2",
     "bootstrap": "5.0.0-beta1",
-    "chartist": "^0.11.4",
+    "chartist": "^0.10.1",
     "chartist-plugin-tooltips-updated": "^0.1.4",
+    "lottie-react": "^2.4.1",
     "moment-timezone": "^0.5.31",
     "react": "^16.13.1",
     "react-chartist": "^0.14.4",
@@ -44,15 +47,17 @@
     "react-dom": "^16.13.1",
     "react-github-btn": "^1.2.0",
     "react-live": "^2.2.3",
-    "react-router-dom": "^5.2.0",
+    "react-router-dom": "^5.3.4",
     "react-router-hash-link": "^2.3.1",
     "react-scripts": "3.4.3",
+    "react-toastify": "8.2.0",
     "react-transition-group": "^4.4.1",
-    "sass": "^1.50.0",
-    "simplebar-react": "^2.3.0"
+    "simplebar-react": "^2.3.0",
+    "swiper": "^6.8.4",
+    "zustand": "^3.7.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set PORT=3012 && set NODE_OPTIONS=--openssl-legacy-provider && react-scripts start",
     "build": "react-scripts build",
     "build-local": "PUBLIC_URL=./ react-scripts build",
     "test": "react-scripts test",
@@ -74,5 +79,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "sass": "^1.49.0"
   }
 }
