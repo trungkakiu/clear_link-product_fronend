@@ -151,20 +151,21 @@ const Product_detail = ({ show, product, onClose }) => {
               </div>
             </Col>
 
-            {/* RIGHT: Actions */}
             <Col xs={12} md="auto">
               <div className="d-flex gap-2 flex-wrap justify-content-md-end">
                 <Button size="sm" variant="secondary" onClick={onOpenSetting}>
                   Cài đặt
                 </Button>
 
-                <Button
-                  size="sm"
-                  variant="danger"
-                  onClick={() => onDelete(product.id)}
-                >
-                  Xóa
-                </Button>
+                {product.chain_status !== "down" && (
+                  <Button
+                    size="sm"
+                    variant="danger"
+                    onClick={() => onDelete(product.id)}
+                  >
+                    Xóa
+                  </Button>
+                )}
 
                 <Button size="sm" variant="primary" onClick={onSave}>
                   Lưu

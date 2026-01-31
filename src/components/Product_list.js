@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import api_request from "../apicontroller/api_request";
+import { useHistory } from "react-router-dom";
 import { UserContext } from "../Context/UserContext";
 import "../scss/volt/components/Product_list.scss";
 import RocketLoad from "../Utils/RocketLoad";
@@ -18,11 +19,11 @@ import Product_detail from "./Modal/Product_detail";
 
 const Product_list = () => {
   const API_URL = "http://192.168.110.197:5099/";
-
+  const history = useHistory();
   const { User } = useContext(UserContext);
 
   const [loading, setLoading] = useState(false);
-  const [tab, setTab] = useState("pending");
+  const [tab, setTab] = useState("active");
   const [page, setPage] = useState(1);
 
   const [isOpen, setIsOpen] = useState(false);
@@ -31,6 +32,7 @@ const Product_list = () => {
   const [pending, setPending] = useState([]);
   const [active, setActive] = useState([]);
   const [waitDrop, setWaitDrop] = useState([]);
+  const [pairing, setpairing] = useState([]);
   const [waitEdit, setWaitEdit] = useState([]);
   const [drop, setDrop] = useState([]);
 
@@ -41,7 +43,8 @@ const Product_list = () => {
     active,
     "wait-edit": waitEdit,
     "wait-drop": waitDrop,
-    drop,
+    down: drop,
+    pairing,
   };
 
   const currentData = tabMap[tab] || [];
@@ -67,8 +70,9 @@ const Product_list = () => {
         setPending(res.RD.filter((x) => x.chain_status === "pending"));
         setActive(res.RD.filter((x) => x.chain_status === "active"));
         setWaitDrop(res.RD.filter((x) => x.chain_status === "wait-droped"));
+        setpairing(res.RD.filter((x) => x.chain_status === "pairing"));
         setWaitEdit(res.RD.filter((x) => x.chain_status === "wait-edit"));
-        setDrop(res.RD.filter((x) => x.chain_status === "drop"));
+        setDrop(res.RD.filter((x) => x.chain_status === "down"));
       }
     } finally {
       setLoading(false);
@@ -84,10 +88,12 @@ const Product_list = () => {
   const handleViewDetail = (id) => {
     const product = [
       ...pending,
+      ...pairing,
       ...active,
       ...waitEdit,
       ...waitDrop,
       ...drop,
+      ...pairing,
     ].find((p) => String(p.id) === String(id));
     if (!product) return;
     setData_state(product);
@@ -158,7 +164,12 @@ const Product_list = () => {
           </div>
 
           <div className="d-flex gap-2">
-            <Button className="aws-btn-primary">+ Thêm sản phẩm</Button>
+            <Button
+              onClick={() => history.push("/Products/New_product")}
+              className="aws-btn-primary"
+            >
+              + Thêm sản phẩm
+            </Button>
             <Button className="aws-btn-outline" onClick={getProduct}>
               Làm mới
             </Button>
@@ -202,10 +213,17 @@ const Product_list = () => {
                 </button>
 
                 <button
-                  className={`aws-tab ${tab === "drop" ? "active" : ""}`}
-                  onClick={() => setTab("drop")}
+                  className={`aws-tab ${tab === "down" ? "active" : ""}`}
+                  onClick={() => setTab("down")}
                 >
                   Đã xóa <span className="count">{drop.length}</span>
+                </button>
+
+                <button
+                  className={`aws-tab ${tab === "pairing" ? "active" : ""}`}
+                  onClick={() => setTab("pairing")}
+                >
+                  Đang xử lý <span className="count">{pairing.length}</span>
                 </button>
               </div>
             </Col>
@@ -239,11 +257,12 @@ const Product_list = () => {
                 />
 
                 <span className={`aws-product-status ${p.chain_status}`}>
-                  {p.chain_status === "pending" && "Pending"}
-                  {p.chain_status === "active" && "Active"}
+                  {p.chain_status === "pending" && "Chờ xử lý"}
+                  {p.chain_status === "active" && "Hoạt động"}
                   {p.chain_status === "wait-edit" && "Chờ sửa"}
                   {p.chain_status === "wait-droped" && "Chờ xóa"}
-                  {p.chain_status === "drop" && "Đã xóa"}
+                  {p.chain_status === "down" && "Đã xóa"}
+                  {p.chain_status === "pairing" && "Đang xử lý"}
                 </span>
               </div>
 
