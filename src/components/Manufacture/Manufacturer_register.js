@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { useState } from "react";
-import BgImage from "../assets/img/bgr_active_role.jpg";
+import BgImage from "../../assets/img/bgr_active_role.jpg";
 import {
   Container,
   Row,
@@ -23,8 +23,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
-import api_request from "../apicontroller/api_request";
-import { UserContext } from "../Context/UserContext";
+import api_request from "../../apicontroller/api_request";
+import { UserContext } from "../../Context/UserContext";
 
 const Manufacturer_register = () => {
   const { User, updateUserDataField } = useContext(UserContext);
@@ -73,7 +73,7 @@ const Manufacturer_register = () => {
       const res = await api_request.regis_role(
         "Manufacturer",
         Manufacturer_data,
-        User
+        User,
       );
       if (res) {
         if (res.RC === 200) {

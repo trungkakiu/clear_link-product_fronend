@@ -10,9 +10,9 @@ import {
 
 import { faUpload, faImage } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import "../scss/volt/components/NewProductForm.scss";
-import api_request from "../apicontroller/api_request";
-import { UserContext } from "../Context/UserContext";
+import "../../scss/volt/components/Manufacture/NewProductForm.scss";
+import api_request from "../../apicontroller/api_request";
+import { UserContext } from "../../Context/UserContext";
 import { toast } from "react-toastify";
 
 export default () => {

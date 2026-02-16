@@ -6,7 +6,7 @@ import {
   Col,
   Container,
 } from "@themesberg/react-bootstrap";
-import "../scss/volt/components/Product_detail.scss";
+import "../../scss/volt/components/Manufacture/Product_detail.scss";
 import api_request from "../../apicontroller/api_request";
 import Otp_vetify from "./Otp_vetify";
 

@@ -1,0 +1,150 @@
+.company-mail-config {
+  .card {
+    border-radius: 0.75rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.04);
+  }
+
+  .card-header {
+    background: #ffffff;
+    border-bottom: 1px solid #e9ecef;
+
+    h5 {
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+  }
+
+  /* ===== SECTION TITLES ===== */
+  .section-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #495057;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+  }
+
+  /* ===== FORM ALIGNMENT ===== */
+  .form-group {
+    margin-bottom: 0.85rem;
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #6c757d;
+      margin-bottom: 0.25rem;
+    }
+
+    .form-control,
+    .form-select {
+      height: 38px;
+      border-radius: 0.45rem;
+      font-size: 0.85rem;
+    }
+
+    textarea.form-control {
+      height: auto;
+    }
+  }
+
+  /* Switch align */
+  .form-switch {
+    display: flex;
+    align-items: center;
+    padding-top: 0.5rem;
+
+    .form-check-input {
+      cursor: pointer;
+    }
+
+    label {
+      margin-left: 0.5rem;
+      font-size: 0.85rem;
+    }
+  }
+
+  /* ===== BUTTON BAR ===== */
+  .action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed #dee2e6;
+
+    .btn {
+      min-width: 110px;
+      font-weight: 600;
+    }
+
+    .meta {
+      text-align: right;
+      font-size: 0.75rem;
+      color: #6c757d;
+      line-height: 1.4;
+    }
+  }
+
+  /* ===== TEMPLATE SECTION ===== */
+  .template-section {
+    position: relative;
+
+    &.disabled {
+      opacity: 0.45;
+      pointer-events: none;
+      filter: grayscale(0.4);
+    }
+  }
+
+  .template-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+
+    .overlay-box {
+      background: #ffffff;
+      border-radius: 0.75rem;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+      text-align: center;
+      max-width: 420px;
+
+      h6 {
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+      }
+
+      p {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  /* ===== TABS ===== */
+  .nav-tabs {
+    border-bottom: 1px solid #dee2e6;
+
+    .nav-link {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #6c757d;
+
+      &.active {
+        color: #262b40;
+        border-bottom: 2px solid #0d6efd;
+      }
+    }
+  }
+
+  /* ===== BADGES ===== */
+  .badge {
+    font-size: 0.7rem;
+    padding: 0.35em 0.55em;
+    border-radius: 0.4rem;
+  }
+}

@@ -8,11 +8,11 @@ import {
   Col,
   Badge,
 } from "@themesberg/react-bootstrap";
-import api_request from "../apicontroller/api_request";
-import "../scss/volt/components/category_page.scss";
-import { UserContext } from "../Context/UserContext";
-import Preloader from "./Preloader";
-import RocketLoad from "../Utils/RocketLoad";
+import api_request from "../../apicontroller/api_request";
+import "../../scss/volt/components/Manufacture/category_page.scss";
+import { UserContext } from "../../Context/UserContext";
+import Preloader from "../Preloader";
+import RocketLoad from "../../Utils/RocketLoad";
 
 const CategoryPage = () => {
   const [categories, setCategories] = useState([]);

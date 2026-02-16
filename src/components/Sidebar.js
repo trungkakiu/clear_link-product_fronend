@@ -32,6 +32,7 @@ import {
   faTruckLoading,
   faCartArrowDown,
   faCashRegister,
+  faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   Nav,
@@ -260,7 +261,32 @@ export default (props = {}) => {
                       link={Routes.QCquantity.path}
                     />
                   </CollapsableNavItem>
-
+                  <CollapsableNavItem
+                    eventKey="Users/"
+                    title="Quản lí nhân viên"
+                    icon={faUsers}
+                  >
+                    <NavItem
+                      title="Kỹ thuật viên"
+                      icon={faCaretRight}
+                      link={Routes.Technical_staff.path}
+                    />
+                    <NavItem
+                      title="Sản xuất viên"
+                      icon={faCaretRight}
+                      link={Routes.Production_staff.path}
+                    />
+                    <NavItem
+                      title="Bộ phận"
+                      icon={faCaretRight}
+                      link={Routes.Department.path}
+                    />
+                    <NavItem
+                      title="Thông báo"
+                      icon={faCaretRight}
+                      link={Routes.Staff_notification.path}
+                    />
+                  </CollapsableNavItem>
                   <CollapsableNavItem
                     eventKey="bill/"
                     title="Quản lí phân phối"

@@ -48,10 +48,14 @@ import Tabs from "./components/Tabs";
 import Tooltips from "./components/Tooltips";
 import Toasts from "./components/Toasts";
 import PendingActiveWithMail from "./examples/PendingActiveWithMail";
-import NewProductForm from "../components/NewProductForm";
-import CategoryPage from "../components/CategoryPage";
-import Product_list from "../components/Product_list";
+import NewProductForm from "../components/Manufacture/NewProductForm";
+import CategoryPage from "../components/Manufacture/CategoryPage";
+import Product_list from "../components/Manufacture/Product_list";
 import Otp_wait from "../components/Otp_wait";
+import DepartmentCardList from "../components/Manufacture/DepartmentCardList";
+import productionstaff from "../components/Manufacture/ProductionStaff";
+import TechnicalStaff from "../components/Manufacture/TechnicalStaff";
+import CompanyMailConfigPage from "../components/Manufacture/CompanyMailConfigPage";
 
 export const RouteWithLoader = ({ component: Component, ...rest }) => {
   const [loaded, setLoaded] = useState(false);
@@ -67,7 +71,8 @@ export const RouteWithLoader = ({ component: Component, ...rest }) => {
       render={(props) => (
         <>
           {" "}
-          <Preloader show={loaded ? false : true} /> <Component {...props} />{" "}
+          <Preloader show={loaded ? false : true} />{" "}
+          <Component {...props} />{" "}
         </>
       )}
     />
@@ -87,7 +92,7 @@ const RouteWithSidebar = ({ component: Component, ...rest }) => {
   };
 
   const [showSettings, setShowSettings] = useState(
-    localStorageIsSettingsVisible
+    localStorageIsSettingsVisible,
   );
 
   const toggleSettings = () => {
@@ -138,6 +143,7 @@ export default () => (
       path={Routes.ForgotPassword.path}
       component={ForgotPassword}
     />
+
     <RouteWithLoader
       exact
       path={Routes.ResetPassword.path}
@@ -156,6 +162,21 @@ export default () => (
       component={ServerError}
     />
 
+    <RouteWithSidebar
+      exact
+      path={Routes.Department.path}
+      component={DepartmentCardList}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.Production_staff.path}
+      component={productionstaff}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.Technical_staff.path}
+      component={TechnicalStaff}
+    />
     {/* pages */}
     <RouteWithSidebar
       exact
@@ -177,6 +198,11 @@ export default () => (
       exact
       path={Routes.ProductCategory.path}
       component={CategoryPage}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.Staff_notification.path}
+      component={CompanyMailConfigPage}
     />
     <RouteWithSidebar exact path={Routes.Upgrade.path} component={Upgrade} />
     <RouteWithSidebar

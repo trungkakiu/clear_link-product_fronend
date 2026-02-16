@@ -12,7 +12,7 @@ import DashboardOverview from "./pages/dashboard/DashboardOverview";
 import { Routes } from "./routes";
 import Otp_modal from "./components/Modal/Otp_modal";
 import Otp_show from "./components/Modal/Otp_show";
-import NewProductForm from "./components/NewProductForm";
+import NewProductForm from "./components/Manufacture/NewProductForm";
 import api_request from "./apicontroller/api_request";
 
 const AuthRoleRoute = ({ component: Component, ...rest }) => {

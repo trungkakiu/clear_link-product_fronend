@@ -1,0 +1,70 @@
+.production-staff-table {
+  th {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+  }
+
+  td {
+    vertical-align: middle;
+    padding: 16px 12px;
+  }
+
+  tr {
+    height: 90px; // tăng chiều cao row
+  }
+}
+
+.main_avatar {
+  border-radius: 10px;
+  cursor: pointer;
+  width: 100px;
+  height: 100px;
+
+  img {
+    width: 100%;
+    cursor: pointer;
+    border: 0px;
+    border-radius: 10px;
+    height: 100%;
+    transition: all 0.2s;
+    &:hover {
+      border: 1px dashed rgb(0, 255, 47);
+      transform: scale(1.05);
+    }
+  }
+}
+.no_avatar {
+  border: 1px dashed gray;
+  border-radius: 10px;
+
+  button {
+    width: 100%;
+    cursor: pointer;
+    border: 0px;
+    border-radius: 10px;
+    height: 100%;
+    transition: all 0.2s;
+    &:hover {
+      border: 1px dashed rgb(0, 255, 47);
+      transform: scale(1.05);
+    }
+  }
+}
+.avatar-cell {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}

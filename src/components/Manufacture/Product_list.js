@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
-import api_request from "../apicontroller/api_request";
+import api_request from "../../apicontroller/api_request";
 import { useHistory } from "react-router-dom";
-import { UserContext } from "../Context/UserContext";
-import "../scss/volt/components/Product_list.scss";
-import RocketLoad from "../Utils/RocketLoad";
+import { UserContext } from "../../Context/UserContext";
+import "../../scss/volt/components/Manufacture/Product_list.scss";
+import RocketLoad from "../../Utils/RocketLoad";
 
 import {
   Row,
@@ -15,10 +15,10 @@ import {
   Pagination,
 } from "@themesberg/react-bootstrap";
 
-import Product_detail from "./Modal/Product_detail";
+import Product_detail from "../Modal/Product_detail";
 
 const Product_list = () => {
-  const API_URL = "http://192.168.110.197:5099/";
+  const API_URL = "http://192.168.1.8:5099/";
   const history = useHistory();
   const { User } = useContext(UserContext);
 

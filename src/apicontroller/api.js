@@ -86,9 +86,11 @@ api.interceptors.response.use(
       error?.response?.data?.RM || error.message || "Unexpected error";
 
     if (status === 403) {
-      localStorage.removeItem("user");
-      sessionStorage.removeItem("user");
-      window.location.replace("/");
+      setTimeout(() => {
+        localStorage.removeItem("user");
+        sessionStorage.removeItem("user");
+        window.location.replace("/");
+      }, 2500);
     }
     toast.error(msg);
     return Promise.reject(error);

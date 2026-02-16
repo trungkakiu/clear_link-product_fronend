@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import Distributor_register from "./Distributor_register";
-import Manufacturer_register from "./Manufacturer_register";
+import Manufacturer_register from "./Manufacture/Manufacturer_register";
 import Retailer_register from "./Retailer_register";
 import Transporter_register from "./Transporter_register";
 import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";

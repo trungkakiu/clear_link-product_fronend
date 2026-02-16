@@ -20,6 +20,10 @@ export const Routes = {
   NotFound: { path: "/examples/404" },
 
   //=========Manufacturer sidebar==============//
+  Technical_staff: { path: "/Users/Technical_list" },
+  Department: { path: "/Users/department" },
+  Production_staff: { path: "/Users/Production_list" },
+  Staff_notification: { path: "/Users/notification" },
   Product_list: { path: "/Products/list-product" },
   New_product: { path: "/Products/New_product" },
   Manufacturer_new: { path: "/Products/Manufacturer/new-post" },

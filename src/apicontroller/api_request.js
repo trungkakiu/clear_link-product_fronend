@@ -213,8 +213,166 @@ const dropProduct = async (User, sessionOTP, type, product_id) => {
     return null;
   }
 };
+
+const updateCategoryStatus = async (User, cate_id) => {
+  try {
+    setAuthToken_v2(User);
+    const res = await api_v2.post(`/user/authen/drop-block/${cate_id}`);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+const getDepartments = async (User) => {
+  try {
+    setAuthToken_v2(User);
+    const res = await api_v2.get("/user/get_department_list");
+    console.log(res);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+const createdepartment = async (User, form) => {
+  try {
+    setAuthToken_v2(User);
+    const res = await api_v2.post("/user/create-department", {
+      role_level: form.role_level,
+      partname: form.partname,
+      isExcute: form.isExcute,
+      isRead: form.isRead,
+      part: form.part,
+    });
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+const updateDepartmentPermission = async (User, id, form) => {
+  try {
+    console.log(form);
+    setAuthToken_v2(User);
+    const res = await api_v2.post(`/user/Edit-department/${id}`, {
+      form,
+    });
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+const getProductionStaff = async (User) => {
+  try {
+    setAuthToken_v2(User);
+    const res = await api_v2.get(`/user/get-productionstaff`);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+const getTechnicalStaff = async (User) => {
+  try {
+    setAuthToken_v2(User);
+    const res = await api_v2.get(`/user/get-technicalstaff`);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+const createProductionStaff = async (User, form) => {
+  try {
+    setAuthToken_v2(User);
+    const res = await api_v2.post(`/user/create-productionstaff`, {
+      form,
+    });
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+const createTechnicalStaff = async (User, form) => {
+  try {
+    setAuthToken_v2(User);
+    const res = await api_v2.post(`/user/create-technicalstaff`, {
+      form,
+    });
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+const changePartment = async (User, staffid, partmentid) => {
+  try {
+    setAuthToken_v2(User);
+    const res = await api_v2.put(`/user/change-staffdepartment/${staffid}`, {
+      partmentid,
+    });
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+const pushstaffAvatar = async (User, staffid, file) => {
+  try {
+    setAuthToken_v2(User);
+
+    const formData = new FormData();
+    formData.append("staff_card", file);
+
+    const res = await api_v2.post(`/user/post-main-card/${staffid}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+const newLeaderDepartment = async (User, department_id, staff_id) => {
+  try {
+    setAuthToken_v2(User);
+    const res = await api_v2.put(`/user/leader-post-new/${department_id}`, {
+      staff_id,
+    });
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
 export default {
+  newLeaderDepartment,
+  changePartment,
+  pushstaffAvatar,
+  getTechnicalStaff,
+  createTechnicalStaff,
+  createProductionStaff,
+  getProductionStaff,
   dropProduct,
+  updateDepartmentPermission,
+  getDepartments,
+  createdepartment,
+  updateCategoryStatus,
   getRawProductData,
   login,
   vetify_user_otp,
