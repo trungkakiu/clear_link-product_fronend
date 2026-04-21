@@ -1,0 +1,177 @@
+$aws-navy: #232f3e;
+$aws-orange: #ff9900;
+$aws-light-bg: #f2f3f3;
+$aws-border: #eaeded;
+$aws-success: #1e7e34;
+$aws-white: #ffffff;
+
+.aws-modal-v2 {
+  .card {
+    overflow: hidden; // Khóa không cho nội dung con (Header/Body) tràn ra ngoài
+    border-radius: 8px;
+  }
+
+  .card-header {
+    white-space: normal; // Cho phép chữ xuống dòng nếu quá dài, không cho đâm thủng vách
+    word-break: break-word;
+    border-bottom: 1px solid $aws-border !important;
+    line-height: 1.2;
+    min-height: 45px; // Giữ độ cao cố định cho đẹp
+    display: flex;
+    align-items: center;
+  }
+
+  // Xử lý riêng cho cột phải (thường là cột 4/12)
+  .col-lg-4 {
+    .card-header {
+      padding: 10px 15px !important;
+    }
+  }
+  h6 {
+    width: 100%;
+    word-break: break-word; // Nếu chữ quá dài nó tự ngắt
+    line-height: 1.4;
+  }
+
+  // Xử lý riêng cho cái Badge trạng thái
+  .extra-small {
+    font-size: 9px !important;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    height: fit-content; // Không cho nó cao lênh khênh
+  }
+
+  // Khóa cứng Padding cho Card Body để nội dung không chạm vách
+  .card-body {
+    padding: 1.25rem !important;
+    overflow: hidden; // Tuyệt chiêu chống tràn
+  }
+  // Đảm bảo modal không bao giờ quá to
+  .modal-content {
+    border-radius: 8px;
+    overflow: hidden;
+    border: none;
+  }
+
+  .modal-body {
+    max-height: 80vh; // Khóa chiều cao 80% màn hình
+    overflow-y: auto; // Hiện thanh cuộn nếu nội dung quá dài
+    background-color: $aws-light-bg;
+  }
+
+  .modal-header {
+    background-color: $aws-navy !important;
+    padding: 1rem 1.5rem;
+    .order-id-tag {
+      background: rgba($aws-orange, 0.2);
+      color: $aws-orange;
+      padding: 2px 8px;
+      font-size: 10px;
+      border-radius: 4px;
+      border: 1px solid $aws-orange;
+    }
+  }
+
+  .partner-logo-sm {
+    width: 28px;
+    height: 28px;
+    object-fit: cover;
+    border: 1px solid $aws-border;
+  }
+
+  .handshake-badge {
+    font-size: 9px;
+    padding: 4px 6px;
+    white-space: nowrap; // Không cho chữ xuống dòng
+  }
+
+  .shipping-timeline-v2 {
+    position: relative;
+    padding-left: 35px;
+    &::before {
+      content: "";
+      position: absolute;
+      left: 15px;
+      top: 5px;
+      bottom: 5px;
+      width: 2px;
+      background: $aws-border;
+    }
+    .timeline-node {
+      position: relative;
+      margin-bottom: 15px; // Thu hẹp khoảng cách node
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .node-icon {
+        position: absolute;
+        left: -35px;
+        width: 30px;
+        height: 30px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid $aws-border;
+        z-index: 2;
+        font-size: 12px;
+      }
+      .node-content {
+        background: #fff;
+        border: 1px solid #eef0f2;
+        border-radius: 6px;
+        padding: 10px 12px;
+      }
+      &.success .node-content {
+        border-left: 4px solid $aws-success;
+      }
+      &.warning .node-content {
+        border-left: 4px solid $aws-orange;
+      }
+    }
+  }
+
+  .qr-container-main {
+    padding: 15px;
+    background: white;
+    border: 1px solid $aws-border;
+    border-radius: 8px;
+    display: inline-block;
+  }
+
+  .hash-text-box {
+    font-family: monospace;
+    font-size: 10px;
+    color: #545b64;
+    background: #f8f9fa;
+    padding: 8px;
+    border-radius: 4px;
+    word-break: break-all; // Cực kỳ quan trọng để không vỡ ngang
+    border: 1px dashed #d5dbdb;
+  }
+
+  .aws-table-clean {
+    margin-bottom: 0;
+    thead th {
+      font-size: 10px;
+      background: #f8f9fa;
+      border-top: none;
+      padding: 8px;
+    }
+    tbody td {
+      font-size: 12px;
+      padding: 10px 8px;
+    }
+  }
+
+  .fw-800 {
+    font-weight: 800;
+  }
+  .tiny-label {
+    font-size: 9px;
+    font-weight: 800;
+    color: #879596;
+  }
+}

@@ -1,0 +1,232 @@
+// Public Sans là font AWS khuyên dùng, nếu có hãy import, không thì Apple-system
+@import url("https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;600;800;900&display=swap");
+
+.aws-product-wow-modal {
+  font-family:
+    "Public Sans",
+    -apple-system,
+    sans-serif;
+
+  .modal-content {
+    border: none;
+    border-radius: 20px;
+    box-shadow:
+      0 30px 60px -12px rgba(50, 50, 93, 0.25),
+      0 18px 36px -18px rgba(0, 0, 0, 0.3);
+  }
+
+  // Cột Trái: Gallery
+  .gallery-section {
+    background: #15191d; // Dark AWS Navy
+
+    .btn-close-custom {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      backdrop-filter: blur(8px);
+      &:hover {
+        background: #ff9900;
+        color: white;
+        transform: rotate(90deg);
+        transition: 0.3s;
+      }
+    }
+
+    .main-image-viewport {
+      height: 480px;
+      position: relative;
+      background: #1f2937;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .img-main-parallax {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: transform 0.1s linear; // Cho Parallax mượt
+      }
+      .chain-badge {
+        letter-spacing: 1px;
+        text-uppercase: uppercase;
+        font-size: 8px;
+        font-weight: 800;
+        padding: 6px 10px;
+      }
+      .zoom-trigger-btn {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        padding: 8px 20px;
+        border-radius: 20px;
+        backdrop-filter: blur(5px);
+        font-size: 11px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+        &:hover {
+          background: rgba(255, 255, 255, 0.3);
+          letter-spacing: 1px;
+        }
+      }
+    }
+
+    .thumb-aws {
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 3px solid transparent;
+      opacity: 0.5;
+      transition: 0.3s;
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      &.active {
+        opacity: 1;
+        border-color: #ff9900;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+      }
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  // Cột Phải: Info
+  .info-section {
+    .fw-900 {
+      font-weight: 900;
+    }
+    .text-aws-navy {
+      color: #232f3e;
+    }
+
+    .progress-timeline {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .step-item {
+        text-align: center;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .icon-wrap {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background: white;
+          border: 2px solid #e5e7eb;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #9ca3af;
+          margin-bottom: 5px;
+          z-index: 2;
+        }
+        .label {
+          color: #6b7280;
+          font-size: 9px;
+          max-width: 60px;
+          line-height: 1.2;
+        }
+        .line {
+          position: absolute;
+          top: 16px;
+          left: 50%;
+          width: 220%;
+          height: 2px;
+          background: #e5e7eb;
+          z-index: 1;
+        }
+        &.active {
+          .icon-wrap {
+            background: #e6fffa;
+            border-color: #00a854;
+            color: #00a854;
+          }
+          .label {
+            color: #232f3e;
+          }
+          .line {
+            background: #00a854;
+          }
+        }
+      }
+    }
+
+    .spec-card-aws {
+      background: white;
+      transition: 0.3s;
+      &:hover {
+        border-color: #ff9900 !important;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+      }
+    }
+
+    .action-hub {
+      .btn-aws-orange {
+        background: #ff9900;
+        border: none;
+        font-size: 1.1rem;
+        transition: 0.3s;
+        &:hover {
+          background: #ec7211;
+          letter-spacing: 1px;
+        }
+      }
+      .manufacturer-logo {
+        width: 42px;
+        height: 42px;
+        object-fit: contain;
+        padding: 4px;
+        background: white;
+      }
+    }
+  }
+}
+
+// Zoom Modal
+.fullscreen-zoom-modal {
+  .btn-close-zoom {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    background: transparent;
+    color: white;
+    border: none;
+    font-size: 2rem;
+    z-index: 1000;
+  }
+  .img-fs-zoom {
+    max-width: 100vw;
+    max-height: 100vh;
+    object-fit: contain;
+    animation: zoomIn 0.3s ease;
+  }
+  @keyframes zoomIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}

@@ -1,0 +1,140 @@
+$aws-orange: #ff9900;
+$aws-navy: #232f3e;
+
+.aws-warehouse-wrapper {
+  .text-aws-navy {
+    color: $aws-navy;
+  }
+  .text-aws-orange {
+    color: $aws-orange;
+  }
+
+  // Ẩn thanh cuộn ngang trên Mobile nhưng vẫn cuộn được
+  .scrollbar-hidden {
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  // THẺ TRẠNG THÁI KIỂU GOOGLE/AWS
+  .aws-status-tab {
+    background: #fff;
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    position: relative;
+    border: 1px solid #e1e4e8;
+    transition: all 0.25s ease;
+    min-width: 200px;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      transform: translateY(-2px);
+    }
+
+    &.active {
+      background: #fff;
+      border-color: transparent;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+
+      .tab-icon {
+        background: rgba(0, 0, 0, 0.05);
+      }
+    }
+
+    .tab-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: #f8f9fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .active-indicator {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      border-radius: 0 0 8px 8px;
+    }
+  }
+
+  // CARD SẢN PHẨM
+  .aws-batch-card {
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .batch-thumbnail {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+    }
+  }
+
+  .aws-btn-navy {
+    background-color: $aws-navy;
+    color: white;
+    &:hover {
+      background-color: #1a1e24;
+    }
+  }
+}
+
+.fw-800 {
+  font-weight: 800;
+}
+.shadow-xs {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.aws-batch-card {
+  .btn-warning {
+    background-color: #ff9900; // AWS Orange
+    &:hover {
+      background-color: #ec7211;
+    }
+  }
+
+  .btn-info {
+    background-color: #17a2b8;
+    &:disabled {
+      opacity: 0.8;
+      cursor: progress;
+    }
+  }
+
+  .batch-thumbnail {
+    width: 55px;
+    height: 55px;
+    object-fit: cover;
+  }
+}
+
+// Hiệu ứng FadeIn khi chuyển Tab
+.aws-content-area {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

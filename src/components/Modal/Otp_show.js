@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Modal, Button, ProgressBar } from "@themesberg/react-bootstrap";
 import "../../scss/volt/components/Otp_show.scss";
+import api_request from "../../apicontroller/api_request";
+import { UserContext } from "../../Context/UserContext";
 
 const Otp_show = ({ show, close, otp }) => {
   const [timeLeft, setTimeLeft] = useState(180);
+  const { User } = useContext(UserContext);
 
   useEffect(() => {
     if (!show) return;

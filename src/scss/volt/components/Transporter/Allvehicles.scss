@@ -1,0 +1,122 @@
+$aws-orange: #ff9900;
+$aws-navy: #232f3e;
+$aws-bg: #f2f3f3;
+
+.aws-vehicle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
+
+  .vehicle-card {
+    background: #fff;
+    border: 1px solid #e1e4e8;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+      border-color: $aws-orange;
+
+      .view-detail-overlay {
+        opacity: 1;
+      }
+    }
+
+    .vehicle-header {
+      position: relative;
+      height: 180px;
+      background: #f8f9fa;
+
+      .main-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .status-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        font-size: 10px;
+        text-transform: uppercase;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+    }
+
+    .vehicle-info {
+      padding: 16px;
+
+      .plate-number {
+        font-size: 18px;
+        font-weight: 800;
+        color: $aws-navy;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .vin-text {
+        font-family: "Courier New", Courier, monospace;
+        font-size: 11px;
+        color: #687078;
+        background: #f1f3f3;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+
+      .spec-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 15px;
+        padding-top: 12px;
+        border-top: 1px solid #f2f2f2;
+
+        .spec-item {
+          text-align: center;
+          flex: 1;
+          .label {
+            font-size: 10px;
+            color: #879596;
+            text-transform: uppercase;
+            font-weight: 700;
+          }
+          .value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #16191f;
+          }
+        }
+      }
+    }
+
+    .view-detail-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba($aws-navy, 0.9);
+      color: white;
+      padding: 8px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .aws-vehicle-grid {
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+}

@@ -1,0 +1,113 @@
+$aws-orange: #ff9900;
+$aws-navy: #232f3e;
+
+.aws-oem-wrapper {
+  background-color: #f0f2f5;
+  min-height: 100vh;
+
+  .aws-card-item {
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background: #fff;
+    // Hiệu ứng nổi khối mặc định
+    box-shadow:
+      0 4px 6px rgba(0, 0, 0, 0.05),
+      0 1px 3px rgba(0, 0, 0, 0.1);
+
+    &:hover {
+      // Nổi mạnh hơn khi hover
+      transform: translateY(-8px);
+      box-shadow:
+        0 15px 30px rgba(0, 0, 0, 0.12),
+        0 10px 10px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba($aws-orange, 0.3);
+    }
+
+    .product-thumb img {
+      transition: transform 0.3s ease;
+    }
+    &:hover .product-thumb img {
+      transform: scale(1.05);
+    }
+  }
+
+  .filter-input {
+    border: 1px solid #e1e4e8;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    &:focus {
+      border-color: $aws-orange;
+      box-shadow: 0 0 0 3px rgba($aws-orange, 0.1);
+    }
+  }
+
+  .btn-aws-soft {
+    background: #f3f3f3;
+    color: #545b64;
+    border: none;
+    &:hover {
+      background: #e1e4e8;
+    }
+  }
+}
+
+.aws-branding-box {
+  .fw-800 {
+    font-weight: 800;
+  }
+  .letter-spacing-tight {
+    letter-spacing: -0.5px;
+  }
+  .bg-aws-orange-light {
+    background-color: rgba(255, 153, 0, 0.1);
+  }
+}
+
+.aws-input-group-modern {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  background-color: #f8f9fa;
+
+  &:focus-within {
+    border-color: #ff9900;
+    box-shadow: 0 0 0 4px rgba(255, 153, 0, 0.15);
+    background-color: #fff;
+
+    .input-group-text,
+    .form-control {
+      background-color: #fff !important;
+    }
+  }
+
+  .input-group-text {
+    transition: background-color 0.2s ease;
+  }
+
+  .filter-input-lg {
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+  }
+}
+
+.shadow-lg {
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.08) !important;
+}
+
+.btn-aws-orange {
+  // Hiệu ứng Gradient đặc trưng AWS
+  background: linear-gradient(135deg, #ff9900 0%, #ffb347 100%) !important;
+  color: white !important;
+  border: none !important;
+  letter-spacing: 0.5px;
+
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 15px rgba(255, 153, 0, 0.3) !important;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}

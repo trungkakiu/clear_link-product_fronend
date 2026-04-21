@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { UserContext, UserProvider } from "./Context/UserContext";
 import HomePage from "./pages/HomePage";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { Route, Redirect, Switch, useLocation } from "react-router-dom";
 import { useModalStore } from "./Context/Otp_globalstate";
 import ScrollToTop from "./components/ScrollToTop";
@@ -13,7 +13,15 @@ import { Routes } from "./routes";
 import Otp_modal from "./components/Modal/Otp_modal";
 import Otp_show from "./components/Modal/Otp_show";
 import NewProductForm from "./components/Manufacture/NewProductForm";
+import AOS from "aos";
+import "aos/dist/aos.css";
 import api_request from "./apicontroller/api_request";
+import socket_client from "./socket_client";
+
+import { Toaster } from "react-hot-toast";
+import { SocketContext } from "./Context/SocketProvider";
+import { messaging, requestForToken } from "./firebase";
+import { onMessage } from "firebase/messaging";
 
 const AuthRoleRoute = ({ component: Component, ...rest }) => {
   const { User } = useContext(UserContext);
@@ -104,15 +112,16 @@ const App = () => {
   const { User, setOtp } = useContext(UserContext);
   const { isOpen, setIsOpen } = useModalStore();
   const [isResult, setisResult] = useState(false);
+  const { notifications, addNotification, markAsRead } =
+    useContext(SocketContext);
   const [result_otp, setresult_otp] = useState("");
   const location = useLocation();
 
-  useEffect(() => {
-    refresh_me();
-  }, []);
-
   const active_otp = async () => {
-    if (User.Authen || !User.Otp) {
+    if (
+      (User?.Authen && User?.data?.role) ||
+      (!User?.Otp && User?.data?.role)
+    ) {
       setIsOpen(true);
     }
   };
@@ -134,6 +143,74 @@ const App = () => {
     setresult_otp(data);
     setisResult(true);
   };
+
+  const fetchNotifications = async () => {
+    try {
+      const res = await api_request.getnotificationData(User);
+      if (res) {
+        if (res.RC === 200) {
+          const notifications = res.RD || [];
+          [...notifications].reverse().forEach(
+            (n) => addNotification(n), 
+          );
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Lỗi hệ thống thông báo!");
+    }
+  };
+
+  useEffect(() => {
+    AOS.init({
+      duration: 700,
+      once: true,
+      offset: 50,
+    });
+    refresh_me();
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    let unsubscribe = null;
+
+    if (User.Authen && User?.data?.role_active === "active") {
+      requestForToken().then(async (token) => {
+        if (token && isMounted) {
+          const localDeviceToken = localStorage.getItem("fcm_token");
+
+          if (localDeviceToken !== token || User?.data?.fcm_token !== token) {
+            try {
+              await api_request.update_fcm_token(User, token);
+              localStorage.setItem("fcm_token", token);
+            } catch (err) {
+              console.error("Lỗi cập nhật Token:", err);
+            }
+          }
+        }
+      });
+
+      unsubscribe = messaging.onMessage((payload) => {
+        addNotification({
+          message: payload.notification.body,
+          noitfi_level: "level_1",
+          sender: payload.notification.title,
+        });
+        toast.info(payload.notification.body);
+      });
+    }
+
+    return () => {
+      isMounted = false;
+      if (unsubscribe) unsubscribe();
+    };
+  }, [User.Authen, User?.data?.fcm_token]);
+
+  useEffect(() => {
+    if (User.Authen && User?.data?.role_active === "active") {
+      fetchNotifications();
+    }
+  }, [User.Authen]);
 
   useEffect(() => {
     let stopped = false;
@@ -161,7 +238,8 @@ const App = () => {
 
   return (
     <>
-      <ToastContainer />
+      <ToastContainer limit={3} stacked />
+      <Toaster position="top-right" reverseOrder={false} />
       <Otp_show
         show={isResult}
         close={() => setisResult(false)}

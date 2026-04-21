@@ -1,0 +1,125 @@
+/* AWS Core Styles */
+$aws-orange: #ff9900;
+$aws-bg-light: #f2f3f3;
+$text-main: #232f3e;
+
+.aws-profile-wrapper {
+  background-color: $aws-bg-light;
+  min-height: 100vh;
+
+  .aws-header-banner {
+    height: 120px;
+    background: linear-gradient(90deg, #232f3e 0%, #445566 100%);
+  }
+
+  .profile-avatar-container {
+    margin-top: -60px;
+    position: relative;
+    display: inline-block;
+
+    .profile-logo {
+      width: 140px;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: white;
+    }
+
+    .avatar-edit-badge {
+      position: absolute;
+      bottom: -5px;
+      right: -5px;
+      background: $aws-orange;
+      color: white;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: 3px solid white;
+    }
+  }
+
+  .aws-orange-soft {
+    background-color: rgba(255, 153, 0, 0.15);
+  }
+
+  .aws-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #545b64;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .aws-input {
+    border: 1px solid #aab7b8;
+    border-radius: 2px;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+    &:focus {
+      border-color: $aws-orange;
+      box-shadow: 0 0 0 2px rgba(255, 153, 0, 0.2);
+    }
+    &:disabled {
+      background-color: transparent;
+      border-color: transparent;
+      font-weight: 600;
+      color: $text-main;
+      padding-left: 0;
+    }
+  }
+
+  .contact-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .contact-box {
+      display: flex;
+      align-items: center;
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 4px;
+      border-left: 4px solid $aws-orange;
+
+      .icon {
+        font-size: 1.5rem;
+        color: #879596;
+        margin-right: 1rem;
+      }
+
+      .content {
+        flex: 1;
+        small {
+          color: #879596;
+          display: block;
+          font-weight: 600;
+        }
+        .aws-input-inline {
+          background: transparent;
+          border: none;
+          padding: 0;
+          font-weight: 700;
+          &:focus {
+            box-shadow: none;
+          }
+          &:disabled {
+            color: $text-main;
+          }
+        }
+      }
+    }
+  }
+
+  .aws-map-container {
+    border: 1px solid #eaeded;
+    min-height: 200px;
+  }
+
+  .shadow-inner {
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  }
+}

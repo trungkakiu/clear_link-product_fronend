@@ -1,0 +1,56 @@
+.aws-style-modal {
+  .modal-content {
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+
+  .upload-section {
+    border: 1px dashed #ced4da !important;
+  }
+
+  .preview-box {
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .no-image {
+      font-size: 10px;
+      color: #adb5bd;
+      text-transform: uppercase;
+    }
+
+    &.logo-preview {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+    }
+
+    &.banner-preview {
+      width: 100%;
+      height: 100px;
+    }
+  }
+
+  .x-small {
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-primary {
+    background-color: #ff9900; // AWS Orange
+    border-color: #ff9900;
+    &:hover {
+      background-color: #ec7211;
+      border-color: #ec7211;
+    }
+  }
+}

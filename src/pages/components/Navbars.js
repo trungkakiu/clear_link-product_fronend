@@ -1,11 +1,17 @@
-
-import React, { useEffect, useState } from 'react';
-import { Nav, Row, Col, Card, Image, Navbar, Container } from '@themesberg/react-bootstrap';
+import React, { useContext, useEffect, useState } from "react";
+import {
+  Nav,
+  Row,
+  Col,
+  Card,
+  Image,
+  Navbar,
+  Container,
+} from "@themesberg/react-bootstrap";
 
 import Documentation from "../../components/Documentation";
 import ReactLogoPrimary from "../../assets/img/technologies/react-logo-primary.svg";
 import ReactLogoTransparent from "../../assets/img/technologies/react-logo-transparent.svg";
-
 
 export default () => {
   return (
@@ -15,41 +21,59 @@ export default () => {
           <Col className="d-block mb-4 mb-md-0">
             <h1 className="h2">Navbars</h1>
             <p className="mb-0">
-              Use the responsive navigation bar from Volt to add nav items and multi-level nested dropdowns for a seamless navigation.
-          </p>
+              Use the responsive navigation bar from Volt to add nav items and
+              multi-level nested dropdowns for a seamless navigation.
+            </p>
           </Col>
         </Row>
 
         <Documentation
           title="Navbar"
           description=""
-          scope={{ Nav, Card, Navbar, Container, ReactLogo: ReactLogoTransparent, Image }}
+          scope={{
+            Nav,
+            Card,
+            Navbar,
+            Container,
+            ReactLogo: ReactLogoTransparent,
+            Image,
+          }}
           imports={`import { Nav, Card, Navbar, Container } from '@themesberg/react-bootstrap';
 
-import ReactLogo from "src/assets/img/technologies/react-logo-transparent.svg";`}
-          example={`<Navbar variant="dark" expand="lg" bg="dark" className="navbar-transparent navbar-theme-primary my-2">
-  <Container className="position-relative">
-    <Navbar.Brand href="#home" className="me-lg-3">
-      <Image src={ReactLogo} />
-    </Navbar.Brand>
+          import ReactLogo from "src/assets/img/technologies/react-logo-transparent.svg";`}
+                    example={`<Navbar variant="dark" expand="lg" bg="dark" className="navbar-transparent navbar-theme-primary my-2">
+            <Container className="position-relative">
+              <Navbar.Brand href="#home" className="me-lg-3">
+                <Image src={ReactLogo} />
+              </Navbar.Brand>
 
-    <Navbar.Collapse id="navbar-default-primary" className="w-100">
-      <Nav className="navbar-nav-hover align-items-lg-center">
-        <Nav.Link href="#home">Home</Nav.Link>
-        <Nav.Link href="#about">About</Nav.Link>
-        <Nav.Link href="#contact">Contact</Nav.Link>
-      </Nav>
-    </Navbar.Collapse>
+              <Navbar.Collapse id="navbar-default-primary" className="w-100">
+                <Nav className="navbar-nav-hover align-items-lg-center">
+                  <Nav.Link href="#home">Home</Nav.Link>
+                  <Nav.Link href="#about">About</Nav.Link>
+                  <Nav.Link href="#contact">Contact</Nav.Link>
+                </Nav>
+              </Navbar.Collapse>
 
-    <Navbar.Toggle aria-controls="navbar-default-primary" />
-  </Container>
-</Navbar>`}
+              <Navbar.Toggle aria-controls="navbar-default-primary" />
+            </Container>
+          </Navbar>`}
         />
 
         <Documentation
           title="Navbar colors"
           description=""
-          scope={{ useEffect, useState, Nav, Card, Navbar, Image, Container, ReactLogoPrimary, ReactLogo: ReactLogoTransparent }}
+          scope={{
+            useEffect,
+            useState,
+            Nav,
+            Card,
+            Navbar,
+            Image,
+            Container,
+            ReactLogoPrimary,
+            ReactLogo: ReactLogoTransparent,
+          }}
           imports={`import React, { useEffect, useState } from "react";
 import { Nav, Card, Navbar, Container } from '@themesberg/react-bootstrap';
 import ReactLogo from "src/assets/img/technologies/react-logo-transparent.svg";

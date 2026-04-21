@@ -20,6 +20,7 @@ import {
 import { UserContext } from "../../Context/UserContext";
 import api_request from "../../apicontroller/api_request";
 import { toast } from "react-toastify";
+import { useHistory } from "react-router-dom";
 
 const PendingActiveWithMail = () => {
   const [mailData, setMailData] = useState({
@@ -30,6 +31,12 @@ const PendingActiveWithMail = () => {
   const [isSending, setIsSending] = useState(false);
   const { User, logout } = useContext(UserContext);
   const [cooldown, setCooldown] = useState(0);
+  const history = useHistory();
+  useEffect(() => {
+    if (User?.data?.role_active === "active") {
+      history.push("/");
+    }
+  }, [User]);
 
   useEffect(() => {
     let timer = null;
@@ -63,7 +70,7 @@ const PendingActiveWithMail = () => {
       if (res) {
         if (res.RC === 200) {
           alert(
-            "Gửi mail thành công, chúng tôi sẽ thông báo cho bạn sớm nhất!"
+            "Gửi mail thành công, chúng tôi sẽ thông báo cho bạn sớm nhất!",
           );
         } else {
           alert(res.RM);

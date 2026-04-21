@@ -1,0 +1,88 @@
+$aws-orange: #ff9900;
+$aws-navy: #232f3e;
+$aws-bg: #f2f3f3;
+$text-main: #16191f;
+
+.aws-fleets-container {
+  background-color: $aws-bg;
+  min-height: 100vh;
+
+  .text-aws-navy {
+    color: $aws-navy;
+  }
+  .text-aws-orange {
+    color: $aws-orange;
+  }
+  .fw-800 {
+    font-weight: 800;
+  }
+
+  .aws-btn-orange {
+    background: linear-gradient(180deg, #ffb347 0%, $aws-orange 100%);
+    border: 1px solid #d48806;
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+    &:hover {
+      background: #ec7211;
+      transform: translateY(-1px);
+    }
+  }
+
+  .aws-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: #545b64;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .fleet-preview-card {
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    overflow: hidden;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+      border-left: 4px solid $aws-orange !important;
+    }
+
+    .card-header {
+      padding: 10px 15px;
+      background-color: $aws-navy !important;
+    }
+  }
+
+  .fleet-stats-grid {
+    display: flex;
+    justify-content: space-between;
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 6px;
+    .stat-item {
+      font-size: 13px;
+      color: $text-main;
+    }
+  }
+
+  .operation-area-preview {
+    min-height: 60px;
+  }
+}
+
+// Custom Modal AWS Style
+.aws-modal {
+  .modal-content {
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .modal-header {
+    border-bottom: none;
+  }
+}
+
+.bg-aws-orange {
+  background-color: $aws-orange !important;
+}

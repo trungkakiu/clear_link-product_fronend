@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
 import { Routes } from "../routes";
 
@@ -56,13 +56,46 @@ import DepartmentCardList from "../components/Manufacture/DepartmentCardList";
 import productionstaff from "../components/Manufacture/ProductionStaff";
 import TechnicalStaff from "../components/Manufacture/TechnicalStaff";
 import CompanyMailConfigPage from "../components/Manufacture/CompanyMailConfigPage";
+import CreateBatchForm from "../components/Manufacture/CreateBatchForm";
+import DepartmentVisualizer from "../components/Manufacture/DepartmentVisualizer";
+import CompletedBatches from "../components/Manufacture/CompletedBatches";
+import QCPage from "../components/Manufacture/QCPage";
+import { UserContext } from "../Context/UserContext";
+import InternalMarketplace from "../components/InternalMarketplace";
+import PolicyManagement from "../components/Manufacture/PolicyManagement";
+import CollaborationProposals from "../components/Manufacture/CollaborationProposals";
+import ContractManagement from "../components/Manufacture/ContractManagement";
+import ActorInformation from "../components/ActorInformation";
+import OEMproductions from "../components/Manufacture/OEMproductions";
+import CompanyProfile from "../components/CompanyProfile";
+import Proposal_product from "../components/Distributor/Proposal_product";
+import OrderProcess from "../components/Distributor/OrderProcess";
+import AddVehiclePage from "../components/Transporter/AddVehiclePage";
+import Allvehicles from "../components/Transporter/Allvehicles";
+import AddFleetPage from "../components/Transporter/AddFleetPage";
+import FleetsPage from "../components/Transporter/FleetsPage";
+import NewShipingOrder from "../components/Manufacture/NewShipingOrder";
+import ShipOrderProcess from "../components/Manufacture/ShipOrderProcess";
+import ShippingOrder from "../components/Transporter/ShippingOrder";
+import ShippingPriceSettings from "../components/Transporter/ShippingPriceSettings";
+import QrScannerPage from "../components/Manufacture/QrScannerPage";
+import DriverNavigation from "../components/Transporter/DriverNavigation";
+import WarehouseManager from "../components/WarehouseManager";
+import PackagingManager from "../components/Manufacture/PackagingManager";
 
 export const RouteWithLoader = ({ component: Component, ...rest }) => {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoaded(true), 1000);
-    return () => clearTimeout(timer);
+    let isMounted = true;
+    const timer = setTimeout(() => {
+      if (isMounted) setLoaded(true);
+    }, 1000);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
   }, []);
 
   return (
@@ -79,12 +112,20 @@ export const RouteWithLoader = ({ component: Component, ...rest }) => {
   );
 };
 
-const RouteWithSidebar = ({ component: Component, ...rest }) => {
+const RouteWithSidebar = ({ component: Component, minLevel, ...rest }) => {
   const [loaded, setLoaded] = useState(false);
+  const { User } = useContext(UserContext);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoaded(true), 1000);
-    return () => clearTimeout(timer);
+    let isMounted = true;
+    const timer = setTimeout(() => {
+      if (isMounted) setLoaded(true);
+    }, 1000);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
   }, []);
 
   const localStorageIsSettingsVisible = () => {
@@ -100,24 +141,46 @@ const RouteWithSidebar = ({ component: Component, ...rest }) => {
     localStorage.setItem("settingsVisible", !showSettings);
   };
 
+  const userLevelNum = parseInt(User?.level?.split("_")[1]) || 0;
+  const requiredLevelNum =
+    typeof minLevel === "string"
+      ? parseInt(minLevel.split("_")[1])
+      : minLevel || 0;
+
   return (
     <Route
       {...rest}
-      render={(props) => (
-        <>
-          <Preloader show={loaded ? false : true} />
-          <Sidebar />
+      render={(props) => {
+        if (!User) {
+          return <Redirect to={Routes.Signin.path} />;
+        }
 
-          <main className="content">
-            <Navbar />
-            <Component {...props} />
-            <Footer
-              toggleSettings={toggleSettings}
-              showSettings={showSettings}
-            />
-          </main>
-        </>
-      )}
+        if (requiredLevelNum > 0 && userLevelNum < requiredLevelNum) {
+          return <Redirect to={Routes.NotFound.path} />;
+        }
+
+        return (
+          <>
+            <Preloader show={!loaded} />
+            <Sidebar level={User.level} />
+            <main
+              className="content d-flex flex-column"
+              style={{ minHeight: "100vh" }}
+            >
+              <Navbar />
+
+              <div className="flex-grow-1">
+                <Component {...props} />
+              </div>
+
+              <Footer
+                toggleSettings={toggleSettings}
+                showSettings={showSettings}
+              />
+            </main>
+          </>
+        );
+      }}
     />
   );
 };
@@ -140,6 +203,11 @@ export default () => (
     <RouteWithLoader exact path={Routes.Signup.path} component={Signup} />
     <RouteWithLoader
       exact
+      path={"/navigation/:lng_start,:lat_start/:lng_end,:lat_end/:order"}
+      component={DriverNavigation}
+    />
+    <RouteWithLoader
+      exact
       path={Routes.ForgotPassword.path}
       component={ForgotPassword}
     />
@@ -149,11 +217,19 @@ export default () => (
       path={Routes.ResetPassword.path}
       component={ResetPassword}
     />
+
     <RouteWithLoader exact path={Routes.Lock.path} component={Lock} />
+
     <RouteWithLoader
       exact
       path={Routes.NotFound.path}
       component={NotFoundPage}
+    />
+
+    <RouteWithLoader
+      exact
+      path={Routes.User_profile.path}
+      component={ActorInformation}
     />
 
     <RouteWithLoader
@@ -164,8 +240,105 @@ export default () => (
 
     <RouteWithSidebar
       exact
+      path={Routes.Manufacturer_ORM.path}
+      component={OEMproductions}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.Product_box.path}
+      component={PackagingManager}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.Distributor_inventory.path}
+      component={WarehouseManager}
+    />
+
+    <RouteWithSidebar
+      exact
+      path={Routes.Qr_scanner.path}
+      component={QrScannerPage}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.Transporter_vehicle_list.path}
+      component={Allvehicles}
+    />
+
+    <RouteWithSidebar
+      exact
+      path={Routes.Tranporter_fleet_new.path}
+      component={AddFleetPage}
+    />
+
+    <RouteWithSidebar
+      exact
+      path={Routes.Tranporter_fleet_list.path}
+      component={FleetsPage}
+    />
+
+    <RouteWithSidebar
+      exact
+      path={Routes.order_trackking.path}
+      component={ShipOrderProcess}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.Transporter_request.path}
+      component={ShippingOrder}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.Transporter_price_config.path}
+      component={ShippingPriceSettings}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.new_order.path}
+      component={NewShipingOrder}
+    />
+
+    <RouteWithSidebar
+      exact
+      path={Routes.Transporter_vehicle_add.path}
+      component={AddVehiclePage}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.Infomations.path}
+      component={CompanyProfile}
+    />
+    <RouteWithSidebar
+      exact
       path={Routes.Department.path}
       component={DepartmentCardList}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.Internal_marketplace.path}
+      component={InternalMarketplace}
+    />
+
+    <RouteWithSidebar
+      exact
+      path={Routes.Distributor_orders_new.path}
+      component={Proposal_product}
+    />
+
+    <RouteWithSidebar
+      exact
+      path={Routes.Distributor_orders_in.path}
+      component={OrderProcess}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.Manufacturer_policy.path}
+      component={PolicyManagement}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.Manufacturer_contact_request.path}
+      component={CollaborationProposals}
     />
     <RouteWithSidebar
       exact
@@ -176,6 +349,11 @@ export default () => (
       exact
       path={Routes.Technical_staff.path}
       component={TechnicalStaff}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.Manufacturer_contractfile.path}
+      component={ContractManagement}
     />
     {/* pages */}
     <RouteWithSidebar
@@ -198,6 +376,26 @@ export default () => (
       exact
       path={Routes.ProductCategory.path}
       component={CategoryPage}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.Manufacturer_process.path}
+      component={DepartmentVisualizer}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.Manufacturer_complate.path}
+      component={CompletedBatches}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.Manufacture_qc.path}
+      component={QCPage}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.Manufacturer_new.path}
+      component={CreateBatchForm}
     />
     <RouteWithSidebar
       exact

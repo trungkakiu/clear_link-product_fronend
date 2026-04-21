@@ -1,0 +1,163 @@
+.nav-page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background: #000;
+
+  .nav-header {
+    position: absolute;
+    top: 20px;
+    left: 15px;
+    right: 15px;
+    z-index: 10;
+    display: flex;
+    gap: 15px;
+    background: rgba(11, 17, 32, 0.9);
+    backdrop-filter: blur(10px);
+    padding: 15px;
+    border-radius: 20px;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    .btn-back {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+    }
+    .nav-info {
+      h6 {
+        font-size: 0.7rem;
+        color: #94a3b8;
+        margin: 0;
+        text-transform: uppercase;
+      }
+      p {
+        margin: 0;
+        font-weight: 700;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+  .map-wrapper {
+    width: 100%;
+    height: 100%;
+  }
+
+  .nav-footer {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    background: white;
+    padding: 20px;
+    border-radius: 25px;
+    display: flex;
+    justify-content: space-around;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      span {
+        font-weight: 900;
+        color: #0b1120;
+        font-size: 1rem;
+      }
+      svg {
+        font-size: 1.2rem;
+      }
+    }
+  }
+
+  // Icon xe tải tự chế bằng CSS
+  .driver-marker {
+    width: 30px;
+    height: 30px;
+    background-image: url("https://cdn-icons-png.flaticon.com/512/3448/3448339.png");
+    background-size: cover;
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.5));
+  }
+}
+.nav-footer-v2 {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 30px 30px 0 0;
+  padding: 25px 20px 40px;
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+
+  .nav-stat-group {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 20px;
+
+    .stat-box {
+      text-align: center;
+      small {
+        color: #94a3b8;
+        font-weight: 800;
+        font-size: 0.65rem;
+      }
+      .val {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: #0f172a;
+        span {
+          font-size: 0.8rem;
+          color: #64748b;
+        }
+      }
+    }
+
+    .divider {
+      width: 1px;
+      height: 30px;
+      background: #e2e8f0;
+    }
+  }
+
+  .btn-arrival {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    background: #10b981;
+    color: white;
+    border-radius: 18px;
+    font-weight: 800;
+    font-size: 1rem;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+  }
+}
+
+.driver-marker-navigation {
+  width: 40px;
+  height: 40px;
+  background-image: url("https://cdn-icons-png.flaticon.com/512/854/854866.png"); // Icon mũi tên 3D
+  background-size: cover;
+}
+
+.nav-loading {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #0f172a;
+  color: white;
+  gap: 20px;
+}

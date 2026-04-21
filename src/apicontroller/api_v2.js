@@ -2,20 +2,29 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 let authToken = null;
+let isRedirecting = false;
 
 const API_URL = process.env.REACT_APP_API_URL;
 const API_URL_2 = process.env.REACT_APP_API_URL_2;
-export const setAuthToken_v2 = (User) => {
-  authToken = User.token;
-};
 
-let isRetry = false;
+let currentUser = null;
+export const setAuthToken_v2 = (User) => {
+  if (User && User.token) {
+    authToken = User.token;
+    currentUser = User;
+  } else {
+    currentUser = null;
+    authToken = null;
+  }
+};
 
 const api = axios.create({
   baseURL: API_URL,
   timeout: 15000,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "true",
   },
 });
 
@@ -28,49 +37,49 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => response,
-
   async (error) => {
     const config = error.config;
+    const responseData = error?.response?.data;
+    const status = error?.response?.status;
 
-    if (!config) return Promise.reject(error);
+    const errorMsg = responseData?.RM || error.message || "Lỗi hệ thống";
+    if (status === 401 || status === 403) {
+      if (!isRedirecting) {
+        isRedirecting = true;
+        toast.error(errorMsg);
 
-    const networkError =
-      !error.response ||
-      error.message?.includes("Network Error") ||
-      error.message?.includes("ECONNREFUSED") ||
-      error.message?.includes("timeout") ||
-      error.message?.includes("Failed to fetch") ||
-      error.message?.includes("ERR_CONNECTION") ||
-      error.code === "ERR_NETWORK";
+        localStorage.removeItem("user");
+        authToken = null;
 
-    if (!config._retry && networkError) {
+        setTimeout(() => {
+          window.location.href = "/authen/sign-in";
+        }, 1500);
+      }
+      return Promise.reject(error);
+    }
+
+    const isNetworkError = !error.response || error.code === "ERR_NETWORK";
+    if (isNetworkError && !config._retry && API_URL_2 && !isRedirecting) {
       config._retry = true;
-      console.warn("[FAILOVER] Server chính lỗi → dùng server phụ:", API_URL_2);
+      console.warn("[FAILOVER] Đang thử lại với Server phụ...");
+
       try {
-        const retryResponse = await axios({
+        return await api({
           ...config,
           baseURL: API_URL_2,
         });
-
-        return retryResponse;
-      } catch (err2) {
-        return Promise.reject(err2);
+      } catch (retryError) {
+        const retryMsg =
+          retryError?.response?.data?.RM || "Cả hai server đều không phản hồi";
+        toast.error(retryMsg);
+        return Promise.reject(retryError);
       }
     }
 
-    const status = error?.response?.status;
-    const msg =
-      error?.response?.data?.RM || error.message || "Unexpected error";
-
-    if (status === 403) {
-      setTimeout(() => {
-        localStorage.removeItem("user");
-        sessionStorage.removeItem("user");
-        window.location.replace("/");
-      }, 2500);
+    if (!isRedirecting && !axios.isCancel(error)) {
+      toast.error(errorMsg);
     }
 
-    toast.error(msg);
     return Promise.reject(error);
   },
 );

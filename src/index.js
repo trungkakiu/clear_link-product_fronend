@@ -1,18 +1,3 @@
-// =========================================================
-// * Volt React Dashboard
-// =========================================================
-
-// * Product Page: https://themesberg.com/product/dashboard/volt-react
-// * Copyright 2021 Themesberg (https://www.themesberg.com)
-// * Official Repository: https://github.com/themesberg/volt-react-dashboard
-// * License: MIT License (https://themesberg.com/licensing)
-
-// * Designed and coded by https://themesberg.com
-
-// =========================================================
-
-// * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. Please contact us to request a removal.
-
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, HashRouter } from "react-router-dom";
@@ -27,6 +12,7 @@ import "aos/dist/aos.css";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import App from "./App";
+import { SocketProvider } from "./Context/SocketProvider";
 
 Aos.init({
   duration: 800,
@@ -36,8 +22,10 @@ Aos.init({
 ReactDOM.render(
   <BrowserRouter>
     <UserProvider>
-      <App />
+      <SocketProvider>
+        <App />
+      </SocketProvider>
     </UserProvider>
   </BrowserRouter>,
-  document.getElementById("root")
+  document.getElementById("root"),
 );

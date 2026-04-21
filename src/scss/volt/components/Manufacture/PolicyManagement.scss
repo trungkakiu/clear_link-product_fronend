@@ -1,0 +1,64 @@
+.aws-policy-container {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+
+  .section-title-aws {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #232f3e;
+    border-left: 4px solid #0073bb;
+    padding-left: 12px;
+  }
+
+  .policy-preview-card {
+    border: 1px solid #eaeded;
+    transition: all 0.2s ease;
+    background: #fff;
+
+    &.active-border {
+      border-left: 4px solid #1d8102; // Màu xanh lá AWS cho Active
+    }
+
+    &.inactive-bg {
+      background-color: #f2f3f3;
+      opacity: 0.8;
+    }
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      transform: translateY(-2px);
+    }
+  }
+
+  .policy-type-label {
+    font-size: 0.75rem;
+    color: #0073bb;
+    font-weight: 800;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .policy-excerpt {
+    font-size: 0.85rem;
+    color: #545b64;
+    line-height: 1.5;
+    height: 3.8em;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+
+  .aws-editor-textarea {
+    border: 1px solid #aab7b8;
+    font-size: 0.9rem;
+    &:focus {
+      border-color: #0073bb;
+      box-shadow: 0 0 0 1px #0073bb;
+    }
+  }
+
+  .editor-tips {
+    border: 1px dashed #d5dbdb;
+  }
+}

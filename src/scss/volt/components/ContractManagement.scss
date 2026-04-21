@@ -1,0 +1,220 @@
+$aws-orange: #ff9900;
+$aws-green: #1d8102;
+$aws-dark: #232f3e;
+$aws-bg: #f2f3f3;
+.aws-scan-notice {
+  font-size: 11px;
+  line-height: 1.4;
+
+  .bg-soft-warning {
+    background-color: rgba(255, 193, 7, 0.1);
+  }
+
+  ul {
+    li {
+      margin-bottom: 2px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+.x-small {
+  font-size: 0.75rem;
+}
+.aws-policy-wrapper {
+  background-color: $aws-bg;
+  min-height: 100vh;
+
+  .aws-tech-header {
+    background: #ffffff;
+    border-bottom: 2px solid $aws-orange;
+
+    .aws-icon-orb {
+      width: 50px;
+      height: 50px;
+      background: $aws-dark;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      font-size: 1.5rem;
+    }
+  }
+
+  .aws-card {
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .aws-tech-table {
+    thead th {
+      background-color: #fafafa;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      color: $aws-dark;
+      border: none;
+    }
+    tbody tr:hover {
+      background-color: #fcfcfc;
+    }
+  }
+
+  .aws-tech-label {
+    font-weight: 700;
+    color: $aws-dark;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+  }
+
+  .aws-tech-modal {
+    .modal-content {
+      border-radius: 6px;
+      border: none;
+    }
+    .preview-container {
+      border-radius: 4px;
+      line-height: 1.8;
+    }
+  }
+
+  // BUTTONS
+  .btn-aws-orange {
+    background-color: $aws-orange;
+    border: none;
+    color: white;
+    &:hover {
+      background-color: darken($aws-orange, 10%);
+    }
+  }
+
+  .btn-aws-green {
+    background-color: $aws-green;
+    border: none;
+    color: white;
+    &:hover {
+      background-color: darken($aws-green, 5%);
+    }
+  }
+
+  .text-orange {
+    color: $aws-orange;
+  }
+
+  // STATUS TOGGLE
+  .aws-status-toggle {
+    cursor: pointer;
+    color: #ddd;
+    &.active {
+      color: $aws-green;
+    }
+  }
+}
+
+.ql-toolbar.ql-snow {
+  border-radius: 4px 4px 0 0;
+  background-color: #fafafa;
+}
+.ql-container.ql-snow {
+  border-radius: 0 0 4px 4px;
+}
+$aws-orange: #ff9900;
+$aws-green: #1d8102;
+$aws-dark: #232f3e;
+$aws-bg: #f2f3f3;
+
+.aws-policy-wrapper {
+  background-color: $aws-bg;
+  min-height: 100vh;
+  overflow-x: hidden; // Tránh tràn màn hình ngang
+
+  .aws-tech-header {
+    background: #ffffff;
+    .aws-icon-orb {
+      width: 45px;
+      height: 45px;
+      background: $aws-dark;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+    }
+  }
+
+  // Tối ưu hóa ô tìm kiếm trên mobile
+  .aws-search-group {
+    max-width: 100%;
+    @media (min-width: 576px) {
+      max-width: 250px;
+    }
+  }
+
+  .aws-card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .aws-tech-table {
+    min-width: 400px; // Đảm bảo bảng không bị bóp quá nhỏ, kích hoạt scroll ngang
+    thead th {
+      font-size: 11px;
+      white-space: nowrap;
+    }
+    td {
+      font-size: 13px;
+    }
+  }
+
+  // Editor thích ứng
+  .aws-quill-responsive {
+    .ql-container {
+      height: 200px; // Mặc định Mobile
+      @media (min-width: 768px) {
+        height: 300px;
+      }
+    }
+  }
+
+  .preview-paper {
+    width: 100%;
+    max-width: 800px;
+    min-height: auto;
+    @media (min-width: 768px) {
+      min-height: 500px;
+    }
+  }
+
+  .aws-scan-notice {
+    background-color: rgba(255, 193, 7, 0.08);
+    font-size: 12px;
+  }
+}
+
+// Fullscreen Modal on Mobile
+.modal-fullscreen-sm-down {
+  @media (max-width: 575.98px) {
+    .modal-dialog {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      .modal-content {
+        height: 100%;
+        border-radius: 0;
+      }
+    }
+  }
+}
+
+// Utility cho badge mềm
+.badge.bg-soft-success {
+  background: #e6f4ea;
+  color: #1e7e34;
+}
+.badge.bg-soft-warning {
+  background: #fef7e0;
+  color: #b05a00;
+}

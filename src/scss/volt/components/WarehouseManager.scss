@@ -1,0 +1,555 @@
+$aws-navy: #1a1f36;
+$aws-orange: #ff9900;
+$aws-blue: #0061ff;
+$bg-light: #f4f7f9;
+$glass-white: rgba(255, 255, 255, 0.85);
+
+.warehouse-container {
+  min-height: 100vh;
+  background: radial-gradient(circle at top right, #fdfdfd, #eff2f5);
+  padding: 30px;
+  font-family: "Inter", sans-serif;
+
+  .rack-row-card {
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid rgba(0, 97, 255, 0.1);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+
+    &:hover {
+      border-color: $aws-blue;
+      box-shadow: 0 12px 24px rgba(0, 97, 255, 0.08);
+    }
+
+    &.is-expanded {
+      border-color: $aws-navy;
+      margin-bottom: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+
+      .rack-header-action {
+        background: $aws-navy;
+        color: white;
+        .rack-id-text {
+          color: white;
+        }
+        .collapse-icon {
+          color: $aws-orange;
+        }
+      }
+    }
+
+    .rack-header-action {
+      height: 65px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      background: #fff;
+      transition: all 0.3s ease;
+
+      .rack-id-text {
+        font-weight: 900;
+        color: $aws-navy;
+        font-size: 1.1rem;
+        letter-spacing: -0.5px;
+      }
+      .rack-status-pill {
+        width: 4px;
+        height: 24px;
+        background: $aws-orange;
+        border-radius: 2px;
+      }
+      .collapse-icon {
+        transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        &.rotate-180 {
+          transform: rotate(180deg);
+        }
+      }
+    }
+
+    .rack-body-content {
+      max-height: 0;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      background: #f8fafc;
+    }
+
+    &.is-expanded .rack-body-content {
+      max-height: 2000px; // Đảm bảo chứa được nhiều tầng
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  // Slot Box chuẩn Kỹ sư
+  .slot-box-premium {
+    height: 110px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    position: relative;
+
+    .slot-meta {
+      display: flex;
+      justify-content: space-between;
+      .idx {
+        font-family: "Monaco", monospace;
+        font-size: 0.7rem;
+        color: #94a3b8;
+        font-weight: bold;
+      }
+      .pulse-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #cbd5e1;
+      }
+    }
+
+    &.active {
+      border-bottom: 4px solid $aws-orange;
+      .pulse-dot {
+        background: #10b981;
+        animation: blink-status 2s infinite;
+      }
+      .cargo-info {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        .icon {
+          color: $aws-blue;
+          font-size: 1.6rem;
+          margin-bottom: 5px;
+        }
+        .sku {
+          font-size: 0.65rem;
+          font-weight: 800;
+          color: $aws-navy;
+          background: #f1f5f9;
+          padding: 2px 6px;
+          border-radius: 4px;
+        }
+      }
+    }
+
+    &.add-trigger {
+      border: 2px dashed #cbd5e1;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #cbd5e1;
+      cursor: pointer;
+      &:hover {
+        border-color: $aws-blue;
+        color: $aws-blue;
+        background: rgba(0, 97, 255, 0.02);
+      }
+    }
+
+    &:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      z-index: 10;
+    }
+  }
+
+  @keyframes blink-status {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.3;
+    }
+  }
+
+  .slot-grid {
+    gap: 8px !important; // Khoảng cách giữa các ô thoáng hơn
+
+    .slot-unit-large {
+      width: 100%;
+      min-height: 65px; // Chiều cao đủ để hiện text/icon sản phẩm
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+      .slot-code-label {
+        font-size: 0.65rem;
+        color: #94a3b8;
+        font-weight: 600;
+      }
+
+      &:hover {
+        border-color: $aws-orange;
+        background: #fff;
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba($aws-orange, 0.15);
+        z-index: 5;
+      }
+
+      &.filled {
+        background: #ffffff;
+        border: 2px solid $aws-navy;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+
+        // Hiệu ứng có hàng bên trong
+        &::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 4px;
+          height: 100%;
+          background: $aws-orange;
+          border-radius: 8px 0 0 8px;
+        }
+
+        .product-mini-info {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 4px;
+
+          .product-status-dot {
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 5px #10b981;
+          }
+        }
+      }
+
+      &.border-dashed {
+        border: 2px dashed #cbd5e1;
+        cursor: pointer;
+        &:hover {
+          border-color: $aws-blue;
+          background: rgba($aws-blue, 0.02);
+        }
+      }
+    }
+  }
+
+  .warehouse-header-wrapper {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
+    margin-bottom: 2rem;
+    position: sticky;
+    top: 10px;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    transition: all 0.3s ease;
+
+    &:hover {
+      box-shadow: 0 12px 40px rgba(31, 38, 135, 0.12);
+      background: rgba(255, 255, 255, 0.85);
+    }
+
+    .header-title-section {
+      .main-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #1a1f36 0%, #0061ff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -0.5px;
+      }
+
+      .sub-status {
+        font-size: 0.75rem;
+        color: #64748b;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 4px;
+
+        &::before {
+          content: "";
+          width: 6px;
+          height: 6px;
+          background: #10b981; // Màu xanh Online
+          border-radius: 50%;
+          box-shadow: 0 0 8px #10b981;
+        }
+      }
+    }
+
+    .tool-actions {
+      .custom-input-group {
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: border-color 0.2s;
+        background: #fff;
+
+        &:focus-within {
+          border-color: #0061ff;
+          box-shadow: 0 0 0 3px rgba(0, 97, 255, 0.1);
+        }
+
+        .input-group-text {
+          background: transparent;
+          border: none;
+          color: #94a3b8;
+        }
+
+        input {
+          border: none;
+          box-shadow: none;
+          font-weight: 500;
+          &::placeholder {
+            color: #cbd5e1;
+          }
+        }
+      }
+
+      .custom-select {
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        font-weight: 600;
+        color: #475569;
+        cursor: pointer;
+        &:focus {
+          border-color: #0061ff;
+          box-shadow: none;
+        }
+      }
+    }
+  }
+  .warehouse-section {
+    background: $glass-white;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(225, 229, 233, 0.5);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+    margin-bottom: 40px;
+  }
+
+  .empty-warehouse-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    background: radial-gradient(
+      circle at center,
+      rgba($aws-blue, 0.05) 0%,
+      transparent 70%
+    );
+    border-radius: 30px;
+    border: 2px dashed rgba($aws-blue, 0.2);
+    position: relative;
+    overflow: hidden;
+
+    // Hiệu ứng "vẽ phượng": Các khối decor mờ ảo
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: linear-gradient(
+        135deg,
+        rgba($aws-blue, 0.1),
+        rgba($aws-orange, 0.05)
+      );
+      filter: blur(80px);
+      z-index: 0;
+    }
+    &::before {
+      top: -100px;
+      right: -100px;
+    }
+    &::after {
+      bottom: -100px;
+      left: -100px;
+    }
+
+    .illustration-wrapper {
+      position: relative;
+      z-index: 1;
+      margin-bottom: 30px;
+      animation: float 4s ease-in-out infinite;
+
+      svg {
+        filter: drop-shadow(0 0 15px rgba($aws-blue, 0.3));
+      }
+    }
+
+    .content-wrapper {
+      z-index: 1;
+      text-align: center;
+      max-width: 500px;
+
+      h2 {
+        color: $aws-navy;
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin-bottom: 15px;
+      }
+
+      p {
+        color: #64748b;
+        line-height: 1.6;
+        margin-bottom: 30px;
+      }
+    }
+  }
+
+  // Hiệu ứng bay bổng
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  // Nút bấm xịn xò hơn
+  .btn-initialize {
+    background: linear-gradient(135deg, $aws-blue 0%, #004dc7 100%);
+    border: none;
+    padding: 15px 40px;
+    border-radius: 12px;
+    font-weight: 700;
+    color: white;
+    box-shadow: 0 10px 25px rgba(0, 97, 255, 0.3);
+    transition: all 0.3s;
+
+    &:hover {
+      transform: scale(1.05) translateY(-2px);
+      box-shadow: 0 15px 30px rgba(0, 97, 255, 0.4);
+      color: white;
+    }
+  }
+
+  .zone-card {
+    border: 2px dashed #cbd5e1;
+    padding: 10px;
+    border-radius: 16px;
+    background: #ffffff;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+
+    &:hover {
+      border-color: $aws-blue;
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0, 97, 255, 0.1);
+    }
+
+    .zone-header {
+      padding: 18px 25px;
+      background: linear-gradient(to right, #fcfdfe, #f8f9fa);
+      border-bottom: 1px solid #f1f5f9;
+
+      .badge {
+        font-weight: 600;
+        padding: 6px 12px;
+        letter-spacing: 0.5px;
+      }
+    }
+  }
+
+  // Level 3: Rack Card (Vững chãi, bo tròn chuẩn)
+  .rack-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    min-width: 200px;
+
+    .rack-title {
+      font-weight: 800;
+      color: $aws-navy;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+
+      &::before {
+        content: "";
+        width: 3px;
+        height: 14px;
+        background: $aws-orange;
+        border-radius: 10px;
+        margin-right: 8px;
+      }
+    }
+  }
+
+  // Level 4: Slot Unit (Tinh xảo)
+  .slot-grid {
+    .slot-unit {
+      width: 100%;
+      aspect-ratio: 1/1;
+      border-radius: 5px;
+      background: #f1f5f9;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+
+      &:hover {
+        transform: scale(1.1);
+        z-index: 2;
+        box-shadow: 0 0 8px $aws-orange;
+      }
+
+      &.filled {
+        background: linear-gradient(135deg, $aws-navy 0%, #3a4468 100%);
+        box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
+      }
+
+      &.border-dashed {
+        border: 1px dashed $aws-blue;
+        background: transparent;
+        color: $aws-blue;
+      }
+    }
+  }
+}
+
+// Hiệu ứng Fade-in cho mượt
+.zone-body {
+  max-height: 0;
+  opacity: 0;
+  transition: all 0.5s ease-in-out;
+  &.show {
+    max-height: 2000px;
+    opacity: 1;
+    padding: 20px;
+  }
+}

@@ -1,0 +1,119 @@
+$aws-blue: #0061ff;
+$aws-navy: #1a1f36;
+
+.volume-display-hero {
+  background: linear-gradient(135deg, $aws-navy 0%, #2a2f45 100%);
+  color: #ff9900; // Màu vàng AWS cho nổi bật con số
+  padding: 15px;
+  border-radius: 12px;
+  text-align: center;
+  border-left: 5px solid #ff9900;
+}
+
+.form-control-compact,
+.form-select-compact {
+  height: 38px !important;
+  font-size: 0.85rem !important;
+  border-radius: 8px !important;
+  border: 1px solid #e2e8f0 !important;
+
+  &:focus {
+    border-color: $aws-blue !important;
+    box-shadow: 0 0 0 3px rgba($aws-blue, 0.1) !important;
+  }
+}
+
+.tiny-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.dimension-grid {
+  border: 1px solid #f1f5f9;
+}
+
+.volume-display-hero-compact {
+  background: $aws-navy;
+  color: #ff9900;
+  padding: 10px;
+  border-radius: 8px;
+  border-right: 4px solid #ff9900; // Đổi sang bên phải cho cân đối
+}
+
+.preview-container-sm {
+  @extend .preview-container; // Kế thừa từ class cũ của anh
+  height: 120px !important; // Bóp nhỏ lại
+  font-size: 0.7rem;
+
+  .upload-placeholder {
+    svg {
+      font-size: 1.2rem;
+    }
+  }
+}
+
+// Giúp Input Group nhìn liền mạch hơn
+.input-group-text {
+  background-color: #f8fafc;
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border-color: #e2e8f0;
+}
+
+.preview-container {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  background: #f8fafc;
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: $aws-blue;
+    background: rgba($aws-blue, 0.02);
+  }
+
+  &.variant-blue {
+    &:hover {
+      border-color: #10b981;
+      background: rgba(#10b981, 0.02);
+    }
+  }
+
+  .upload-placeholder {
+    text-align: center;
+    color: #94a3b8;
+  }
+
+  .file-input-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; // Giữ nguyên tỷ lệ ảnh
+    background: white;
+  }
+}
+
+.bg-light-soft {
+  background-color: #f1f5f9;
+}

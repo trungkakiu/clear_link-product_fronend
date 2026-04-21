@@ -1,0 +1,179 @@
+/* aws-detail-modal.scss */
+
+.aws-detail-modal {
+  .aws-btn-action {
+    // Ép chữ trắng và thêm đổ bóng nhẹ cho chữ để tăng tương phản
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    svg {
+      color: #ffffff !important;
+      filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.3));
+    }
+
+    // Trạng thái hover phải cực rõ ràng
+    &:hover {
+      background-color: #ec7211 !important; // Cam đậm hơn
+      box-shadow: 0 0 0 3px rgba(236, 114, 17, 0.4); // Focus ring
+      transform: translateY(-1px);
+    }
+  }
+
+  .btn-outline-secondary {
+    border: 2px solid #6c757d !important;
+    color: #4a5568 !important;
+    font-weight: 700 !important;
+
+    &:hover {
+      background-color: #4a5568 !important;
+      color: #ffffff !important;
+    }
+  }
+  .modal-content {
+    border-radius: 4px;
+    border: 1px solid #eaeded;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+
+  .aws-icon-box {
+    width: 40px;
+    height: 40px;
+    background: #f2f8ff;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .section-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #545b64;
+    font-weight: 800;
+  }
+
+  .aws-badge-type {
+    background-color: #0073bb !important; // Blue AWS
+    font-size: 10px;
+    letter-spacing: 0.5px;
+  }
+
+  .aws-badge-status.active {
+    background-color: #f3f9f1 !important;
+    color: #1d8102 !important;
+    border: 1px solid #c7e5b1;
+  }
+
+  .aws-capability-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+
+    .aws-cap-item {
+      .label {
+        font-size: 10px;
+        color: #879596;
+        display: block;
+      }
+      .value {
+        font-size: 13px;
+        font-weight: 700;
+        color: #232f3e;
+        margin: 0;
+      }
+    }
+  }
+
+  .aws-contact-info {
+    .info-item {
+      font-size: 13px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #545b64;
+      svg {
+        width: 14px;
+        color: #879596;
+      }
+    }
+  }
+
+  .aws-message-box {
+    background: #ffffff;
+    border: 1px solid #d5dbdb;
+    border-left: 4px solid #0073bb;
+    border-radius: 0 4px 4px 0;
+
+    .aws-proposal-text {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #232f3e;
+    }
+  }
+
+  .aws-btn-approve {
+    background-color: #ec7211 !important; // Orange AWS
+    border: none;
+    font-weight: 700;
+    font-size: 14px;
+    &:hover {
+      background-color: #eb5f07 !important;
+    }
+  }
+
+  .aws-blockchain-tag {
+    background-color: #f2f3f3;
+    border-radius: 4px;
+    .pulse-indicator {
+      width: 8px;
+      height: 8px;
+      background: #1d8102;
+      border-radius: 50%;
+      box-shadow: 0 0 0 rgba(29, 129, 2, 0.4);
+      animation: pulse-green 2s infinite;
+    }
+  }
+}
+
+.aws-processing-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(35, 47, 62, 0.7); // Màu xanh đen AWS trong suốt
+  z-index: 1060;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px; // Khớp với bo góc Modal
+  backdrop-filter: blur(4px);
+}
+
+// Responsive Border
+@media (min-width: 992px) {
+  .border-end-lg {
+    border-right: 1px solid #eaeded;
+  }
+}
+
+@keyframes pulse-green {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(29, 129, 2, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(29, 129, 2, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(29, 129, 2, 0);
+  }
+}

@@ -12,6 +12,7 @@ import AddDepartmentModal from "../Modal/Manufacture/AddDepartmentModal.js";
 import api_request from "../../apicontroller/api_request.js";
 import { UserContext } from "../../Context/UserContext.jsx";
 import AddDepartMentLeader from "../Modal/Manufacture/AddDepartMentLeader.js";
+import RocketLoad from "../../Utils/RocketLoad.js";
 
 const DepartmentCardList = () => {
   const REACT_APP_API_IMAGE_URL = process.env.REACT_APP_API_IMAGE_URL;
@@ -44,7 +45,9 @@ const DepartmentCardList = () => {
       console.error("loadDepartMent error:", error);
       setdepartments([]);
     } finally {
-      setisload(false);
+      setTimeout(() => {
+        setisload(false);
+      }, 1000);
     }
   }
 
@@ -75,15 +78,6 @@ const DepartmentCardList = () => {
   useEffect(() => {
     loadDepartMent();
   }, []);
-  if (isload) {
-    return (
-      <div>
-        <span>
-          <div>Đang tải</div>
-        </span>
-      </div>
-    );
-  }
 
   const handleTogglePermission = async (id, field, value) => {
     setdepartments((prev) =>
@@ -147,7 +141,7 @@ const DepartmentCardList = () => {
                         department.part,
                       )
                     }
-                    src={`${REACT_APP_API_IMAGE_URL}main-card/${department.leader.avatar}`}
+                    src={`${REACT_APP_API_IMAGE_URL}main-card/${department.leader.actor_info?.avatar || department.leader.avatar}`}
                     alt="banner"
                     style={{
                       cursor: "pointer",
@@ -279,6 +273,23 @@ const DepartmentCardList = () => {
     );
   };
 
+  if (isload) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          width: "100%",
+          justifyContent: "center",
+          alignItems: "center",
+          alignContent: "center",
+          minHeight: "75vh",
+        }}
+      >
+        <RocketLoad />
+      </div>
+    );
+  }
+
   return (
     <>
       <Card className="aws-header mt-3">
@@ -304,9 +315,11 @@ const DepartmentCardList = () => {
       </Card>
 
       <Row>
-        {departments.map((d) => (
+        {departments.map((d, index) => (
           <Col key={d.id} xl={3} lg={4} md={6} className="mb-3 mt-3">
-            <DepartmentCard department={d} />
+            <div data-aos="fade-up" data-aos-delay={index * 100}>
+              <DepartmentCard department={d} />
+            </div>
           </Col>
         ))}
 

@@ -1,0 +1,176 @@
+$aws-orange: #ff9900;
+$aws-navy: #232f3e;
+$aws-bg-light: #f2f3f3;
+$aws-border: #e1e4e8;
+
+.aws-view-modal {
+  .modal-content {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-header {
+    background-color: $aws-navy;
+    border-bottom: 3px solid $aws-orange;
+    padding: 15px 25px;
+
+    .modal-title {
+      font-size: 16px;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .bg-aws-light {
+    background-color: $aws-bg-light;
+  }
+
+  .image-section {
+    background: #fff;
+    padding: 20px;
+
+    @media (min-width: 992px) {
+      position: sticky;
+      top: 0;
+      height: fit-content;
+    }
+
+    .main-img-container {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #ffffff4c;
+      border: 1px solid $aws-border;
+      margin-bottom: 20px;
+
+      .main-img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+
+        &:hover {
+          transform: scale(1.05);
+        }
+      }
+
+      .status-badge-floating {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 2;
+        padding: 6px 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        font-size: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      }
+    }
+
+    /* Grid ảnh phụ phong cách giống thumbnail */
+    .gallery-grid-view {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+      gap: 10px;
+
+      .sub-img-item {
+        height: 60px;
+        border-radius: 6px;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: all 0.2s;
+        object-fit: cover;
+
+        &:hover {
+          border-color: $aws-orange;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+      }
+    }
+  }
+
+  .details-section {
+    padding: 25px;
+
+    .info-card {
+      border: 1px solid $aws-border;
+      border-radius: 8px;
+      background: #fff;
+      margin-bottom: 20px;
+      transition: border-color 0.3s;
+
+      &:hover {
+        border-color: $aws-orange;
+      }
+
+      .card-header {
+        background: #fcfcfc;
+        border-bottom: 1px solid #f2f2f2;
+        padding: 12px 18px;
+        h6 {
+          color: $aws-navy;
+          font-weight: 800;
+          margin: 0;
+          font-size: 13px;
+        }
+      }
+    }
+
+    .spec-list {
+      padding: 0 18px;
+
+      .spec-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #f9f9f9;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        .label {
+          font-size: 11px;
+          color: #879596;
+          text-transform: uppercase;
+          font-weight: 700;
+        }
+
+        .value {
+          font-size: 14px;
+          font-weight: 700;
+          color: $aws-navy;
+        }
+
+        .vin-code {
+          font-family: "Courier New", monospace;
+          background: #f1f3f300;
+          padding: 2px 8px;
+          border-radius: 4px;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+
+  .aws-label-title {
+    font-size: 11px;
+    font-weight: 800;
+    color: #545b64;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    display: block;
+  }
+}
+
+.modal.fade .modal-dialog {
+  transform: scale(0.9);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.modal.show .modal-dialog {
+  transform: scale(1);
+}

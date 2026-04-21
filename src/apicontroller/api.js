@@ -3,9 +3,10 @@ import { toast } from "react-toastify";
 import { useModalStore } from "../Context/Otp_globalstate";
 
 let authToken = null;
-
+let isRedirecting = false;
 const API_URL = process.env.REACT_APP_API_URL;
 const API_URL_2 = process.env.REACT_APP_API_URL_2;
+
 export const setAuthToken = (User) => {
   const store = useModalStore.getState();
   if (!User.Otp && User.Authen) {
@@ -22,10 +23,9 @@ const api = axios.create({
   timeout: 15000,
   headers: {
     "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "true",
   },
 });
-
-let isRetry = false;
 
 api.interceptors.request.use(
   (config) => {
@@ -33,9 +33,10 @@ api.interceptors.request.use(
 
     if (modalStore.hasOtpBlock) {
       return Promise.reject({
+        isOtpError: true,
         response: {
           status: 499,
-          data: { RM: "Cần xác thực PIN!" },
+          data: { RM: "Vui lòng xác thực mã PIN để tiếp tục!" },
         },
       });
     }
@@ -51,48 +52,62 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (response) => response,
-
   async (error) => {
-    const config = error.config;
+    const { config, response } = error;
+
+    const errorMsg =
+      response?.data?.RM || error.message || "Lỗi kết nối server";
 
     if (!config) return Promise.reject(error);
-    const networkError =
-      !error.response ||
-      error.message?.includes("Network Error") ||
-      error.message?.includes("ECONNREFUSED") ||
-      error.message?.includes("timeout") ||
-      error.message?.includes("Failed to fetch") ||
-      error.message?.includes("ERR_CONNECTION") ||
-      error.code === "ERR_NETWORK";
 
-    if (!config._retry && networkError) {
+    const status = response?.status;
+
+    if (status === 401 || status === 403) {
+      if (!isRedirecting) {
+        isRedirecting = true;
+
+        toast.error(errorMsg);
+
+        localStorage.removeItem("user");
+        sessionStorage.removeItem("user");
+        authToken = null;
+
+        console.warn("[AUTH] Phiên làm việc hết hạn:", errorMsg);
+
+        setTimeout(() => {
+          window.location.href = "/authen/sign-in";
+        }, 1500);
+      }
+      return Promise.reject(error);
+    }
+
+    const networkError =
+      !response ||
+      error.message?.includes("Network Error") ||
+      error.code === "ERR_NETWORK" ||
+      ["ECONNREFUSED", "timeout", "ERR_CONNECTION"].some((msg) =>
+        error.message?.includes(msg),
+      );
+
+    if (!config._retry && networkError && !isRedirecting && API_URL_2) {
       config._retry = true;
-      console.warn("[FAILOVER] Server chính lỗi → dùng server phụ:", API_URL_2);
+      console.warn("[FAILOVER] Đang thử kết nối server dự phòng...");
 
       try {
-        const retryResponse = await axios({
-          ...config,
-          baseURL: API_URL_2,
-        });
-
-        return retryResponse;
+        config.baseURL = API_URL_2;
+        return await api(config);
       } catch (err2) {
+        const failMsg =
+          err2?.response?.data?.RM || "Cả hai server đều không phản hồi";
+        toast.error(failMsg);
         return Promise.reject(err2);
       }
     }
 
-    const status = error?.response?.status;
-    const msg =
-      error?.response?.data?.RM || error.message || "Unexpected error";
-
-    if (status === 403) {
-      setTimeout(() => {
-        localStorage.removeItem("user");
-        sessionStorage.removeItem("user");
-        window.location.replace("/");
-      }, 2500);
+    if (!isRedirecting && !axios.isCancel(error)) {
+      toast.error(errorMsg);
     }
-    toast.error(msg);
+
     return Promise.reject(error);
   },
 );

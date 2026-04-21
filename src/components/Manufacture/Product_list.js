@@ -15,14 +15,14 @@ import {
   Pagination,
 } from "@themesberg/react-bootstrap";
 
-import Product_detail from "../Modal/Product_detail";
+import Product_detail from "../Modal/Manufacture/Product_detail";
 
 const Product_list = () => {
-  const API_URL = "http://192.168.1.8:5099/";
+  const API_URL = process.env.REACT_APP_API_IMAGE_URL;
+  const API_URL_2 = process.env.REACT_APP_API_URL_2;
+  const [isLoad, setIsLoad] = useState(true);
   const history = useHistory();
   const { User } = useContext(UserContext);
-
-  const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState("active");
   const [page, setPage] = useState(1);
 
@@ -63,7 +63,7 @@ const Product_list = () => {
   /* ================= API ================= */
 
   const getProduct = async () => {
-    setLoading(true);
+    setIsLoad(true);
     try {
       const res = await api_request.getProduct(User);
       if (res?.RC === 200) {
@@ -75,7 +75,9 @@ const Product_list = () => {
         setDrop(res.RD.filter((x) => x.chain_status === "down"));
       }
     } finally {
-      setLoading(false);
+      setTimeout(() => {
+        setIsLoad(false);
+      }, 1000);
     }
   };
 
@@ -132,10 +134,19 @@ const Product_list = () => {
     );
   };
 
-  if (loading) {
+  if (isLoad) {
     return (
-      <div className="loading-center">
-        <RocketLoad width={160} height={160} />
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          alignContent: "center",
+          minHeight: "75vh",
+        }}
+      >
+        <RocketLoad />
       </div>
     );
   }
@@ -150,10 +161,14 @@ const Product_list = () => {
             setIsOpen(false);
             setData_state(null);
           }}
+          closeRefresh={() => {
+            setIsOpen(false);
+            setData_state(null);
+            getProduct();
+          }}
         />
       )}
 
-      {/* HEADER */}
       <Card className="aws-header mb-3">
         <Card.Body className="d-flex justify-content-between align-items-center">
           <div>
@@ -249,7 +264,7 @@ const Product_list = () => {
 
         {pagedData.map((p) => (
           <Col xs={12} sm={6} lg={3} key={p.id}>
-            <Card className="aws-product-card">
+            <Card data-aos="fade-up" className="aws-product-card">
               <div className="aws-product-thumb">
                 <img
                   src={`${API_URL}main-card/${p.main_cardimage}`}

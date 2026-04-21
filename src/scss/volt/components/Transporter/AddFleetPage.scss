@@ -1,0 +1,184 @@
+$aws-orange: #ff9900;
+$aws-orange-hover: #ec7211;
+$aws-navy: #232f3e;
+$aws-light-bg: #f2f3f300;
+$aws-border: #d5dbdb;
+$text-main: #16191f;
+$white: #ffffff;
+
+.aws-page-container {
+  background-color: $aws-light-bg;
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+  padding-bottom: 50px;
+
+  .text-main {
+    color: $aws-navy;
+  }
+  .fw-800 {
+    font-weight: 800;
+  }
+
+  // Label phong cách AWS
+  .aws-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: #545b64;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  // Input
+  .aws-input {
+    border: 1px solid #879596;
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-size: 14px;
+    transition: all 0.2s ease-in-out;
+    background-color: $white;
+
+    &:focus {
+      border-color: $aws-orange;
+      box-shadow: 0 0 0 3px rgba($aws-orange, 0.15);
+      outline: none;
+    }
+  }
+
+  // Nút bấm Gradient
+  .aws-btn-submit {
+    background: linear-gradient(180deg, #ffb347 0%, $aws-orange 100%);
+    border: 1px solid #d48806;
+    color: $white;
+    font-weight: 700;
+    border-radius: 4px; // AWS thường dùng bo góc nhẹ 4px
+    padding: 8px 20px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+
+    &:hover {
+      background: #ec7211;
+      transform: translateY(-1px);
+      color: $white;
+    }
+    &:disabled {
+      background: #d5dbdb;
+      border-color: #d5dbdb;
+      cursor: not-allowed;
+    }
+  }
+
+  // Tag hiển thị vùng đã chọn
+  .selected-areas-box {
+    background: $white;
+    min-height: 60px;
+    border: 1px dashed $aws-border;
+    border-radius: 8px;
+    padding: 10px;
+
+    .area-tag {
+      background: rgba($aws-orange, 0.1);
+      color: darken($aws-orange, 10%);
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 20px;
+      padding: 5px 12px;
+      display: flex;
+      align-items: center;
+      border: 1px solid rgba($aws-orange, 0.2);
+    }
+  }
+
+  // Checkbox
+  .custom-check {
+    margin-bottom: 8px;
+    label {
+      font-size: 13px;
+      cursor: pointer;
+      color: #444;
+      margin-left: 8px;
+    }
+    input:checked {
+      background-color: $aws-orange;
+      border-color: $aws-orange;
+    }
+  }
+
+  // Sticky Logic
+  .aws-sticky-column {
+    @media (min-width: 992px) {
+      .sticky-content-box {
+        position: sticky;
+        top: 20px;
+        align-self: flex-start;
+      }
+    }
+  }
+
+  // LỖI 2: Đưa bảng và Card vào trong container để ăn style
+  .table-centered td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #edf2f7;
+    vertical-align: middle;
+  }
+
+  // Thẻ chọn xe trong Modal
+  .vehicle-selection-card {
+    border: 2px solid transparent !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    cursor: pointer;
+    border-radius: 10px;
+
+    &.is-selected {
+      border-color: $aws-orange !important;
+      background-color: rgba($aws-orange, 0.03) !important;
+      box-shadow: 0 4px 12px rgba($aws-orange, 0.2) !important;
+
+      .icon-box {
+        background-color: $aws-orange !important;
+        color: $white !important;
+      }
+
+      .text-main {
+        color: $aws-orange !important;
+      }
+    }
+
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+      &:not(.is-selected) {
+        border-color: rgba($aws-orange, 0.4) !important;
+      }
+    }
+
+    .icon-box {
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background-color: #f3f3f3;
+      transition: all 0.2s;
+    }
+  }
+}
+
+// Animation
+.scale-up-animation {
+  animation: scaleUp 0.3s forwards;
+}
+
+@keyframes scaleUp {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

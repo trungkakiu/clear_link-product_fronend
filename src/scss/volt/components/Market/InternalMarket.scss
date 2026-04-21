@@ -1,0 +1,142 @@
+.internal-market-wrapper {
+  // Banner kiểu AWS Builder
+  .market-hero-banner {
+    background: linear-gradient(135deg, #0073bb 0%, #005a91 100%);
+    position: relative;
+    overflow: hidden;
+    &::after {
+      content: "";
+      position: absolute;
+      right: -20px;
+      bottom: -20px;
+      width: 150px;
+      height: 150px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+    }
+  }
+
+  // Pills Tabs
+  .market-pills {
+    .nav-link {
+      background: #fff;
+      color: #545b64;
+      padding: 6px 16px;
+      font-size: 13px;
+      margin-right: 8px;
+      border: 1px solid #eaeded;
+      &.active {
+        background: #0073bb !important;
+        border-color: #0073bb;
+        color: #fff;
+      }
+    }
+  }
+
+  // Mini Category Cards
+  .category-mini-card {
+    cursor: pointer;
+    .icon-circle {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+    .bg-cat-0 {
+      background: #3b82f6;
+    }
+    .bg-cat-1 {
+      background: #10b981;
+    }
+    .bg-cat-2 {
+      background: #f59e0b;
+    }
+    .bg-cat-3 {
+      background: #ef4444;
+    }
+  }
+
+  // Partner Card V2
+  .partner-card-v2 {
+    transition: all 0.2s ease-in-out;
+    border-radius: 12px;
+    .status-stripe {
+      height: 4px;
+      width: 100%;
+    }
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12) !important;
+    }
+  }
+
+  // Rank Number
+  .rank-number {
+    width: 24px;
+    height: 24px;
+    background: #f1f6ff;
+    color: #0073bb;
+    font-weight: bold;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    &.gold {
+      background: #fbbf24;
+      color: #fff;
+    }
+  }
+  .category-mini-card {
+    .icon-circle {
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    &:hover {
+      .icon-circle {
+        transform: scale(1.1);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+  .border-bottom-dashed {
+    border-bottom: 1px dashed #eaeded;
+  }
+
+  // Soft Buttons
+  .btn-soft-primary {
+    background: #e7f0ff;
+    color: #0073bb;
+    border: none;
+  }
+  .btn-soft-success {
+    background: #d1f7e8;
+    color: #10b981;
+    border: none;
+  }
+  .btn-soft-info {
+    background: #e0f2fe;
+    color: #0ea5e9;
+    border: none;
+  }
+
+  // Scrollbar tuỳ chỉnh
+  .custom-scrollbar {
+    &::-webkit-scrollbar {
+      height: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #eaeded;
+      border-radius: 10px;
+    }
+  }
+}

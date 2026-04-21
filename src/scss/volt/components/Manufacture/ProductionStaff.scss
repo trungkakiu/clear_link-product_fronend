@@ -1,70 +1,122 @@
-.production-staff-table {
-  th {
-    font-size: 13px;
-    font-weight: 600;
-    color: #6b7280;
+.aws-staff-container {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+
+  .aws-header {
+    border-top: 4px solid #ff9900;
+    border-radius: 8px;
+  }
+
+  .staff-avatar-wrapper {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto;
+
+    .img-staff {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 2px solid #eaeded;
+      transition: all 0.3s ease;
+      &:hover {
+        transform: scale(1.1);
+        border-color: #ff9900;
+      }
+    }
+  }
+
+  .role-badge {
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    &.level-1 {
+      background: #232f3e;
+      color: white;
+    }
+    &.level-2 {
+      background: #34495e;
+      color: white;
+    }
+  }
+
+  .aws-staff-container {
+    max-width: 100%;
+    overflow: hidden; // Ngăn scroll ngang của toàn trang
+  }
+
+  /* Tối ưu Table */
+  .aws-table-wrapper {
+    overflow-x: auto; // Cho phép scroll ngang bên trong card
+    width: 100%;
+
+    /* Tuỳ chỉnh thanh scroll cho đẹp */
+    &::-webkit-scrollbar {
+      height: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #e1e4e8;
+      border-radius: 10px;
+    }
+  }
+
+  .aws-table {
+    min-width: 1000px; // Đảm bảo bảng không bị co dúm quá mức, ép phải hiện scroll ngang bên trong card
+    table-layout: fixed; // Cực kỳ quan trọng để các cột tuân thủ width anh đặt
+    width: 100%;
+
+    th,
+    td {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap; // Ngăn chữ xuống dòng làm tăng chiều cao hàng
+      padding: 12px 8px !important;
+    }
+  }
+  @media (max-width: 768px) {
+    .aws-table {
+      display: none;
+    } // Ẩn table trên mobile
+    .mobile-staff-cards {
+      display: block;
+    } // Hiện card trên mobile
+  }
+}
+.aws-staff-container {
+  padding-bottom: 50px;
+
+  .aws-header {
+    border-top: 4px solid #ff9900;
+
+    @media (max-width: 768px) {
+      margin-top: 50px;
+
+      .aws-title {
+        font-size: 1.2rem;
+      }
+      .aws-subtitle {
+        margin-bottom: 15px;
+      }
+      .btn-mobile-full {
+        width: 100%;
+        margin-top: 10px;
+      }
+    }
+  }
+
+  .role-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
     text-transform: uppercase;
   }
 
-  td {
-    vertical-align: middle;
-    padding: 16px 12px;
-  }
-
-  tr {
-    height: 90px; // tăng chiều cao row
-  }
-}
-
-.main_avatar {
-  border-radius: 10px;
-  cursor: pointer;
-  width: 100px;
-  height: 100px;
-
-  img {
-    width: 100%;
-    cursor: pointer;
-    border: 0px;
-    border-radius: 10px;
-    height: 100%;
-    transition: all 0.2s;
-    &:hover {
-      border: 1px dashed rgb(0, 255, 47);
-      transform: scale(1.05);
-    }
-  }
-}
-.no_avatar {
-  border: 1px dashed gray;
-  border-radius: 10px;
-
-  button {
-    width: 100%;
-    cursor: pointer;
-    border: 0px;
-    border-radius: 10px;
-    height: 100%;
-    transition: all 0.2s;
-    &:hover {
-      border: 1px dashed rgb(0, 255, 47);
-      transform: scale(1.05);
-    }
-  }
-}
-.avatar-cell {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: #f3f4f6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  .dept-text {
+    font-weight: 600;
+    color: #232f3e;
+    font-size: 0.9rem;
   }
 }

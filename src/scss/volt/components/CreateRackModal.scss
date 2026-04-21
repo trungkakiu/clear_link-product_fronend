@@ -1,0 +1,172 @@
+$aws-navy: #1a1f36;
+$aws-blue: #0061ff;
+$rack-gold: #ff9900;
+
+.rack-creation-modal {
+  .rack-visualizer {
+    background: #111827; // Nền tối sâu hơn
+    border-radius: 16px;
+    padding: 30px;
+    min-height: 450px;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 15px; // Khoảng cách giữa các tầng
+    border: 2px solid #1f2937;
+    position: relative;
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.5);
+
+    // Thanh trụ đứng của kệ
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      top: 20px;
+      bottom: 20px;
+      width: 6px;
+      background: linear-gradient(to bottom, #374151, #111827);
+      border-radius: 3px;
+    }
+    &::before {
+      left: 15px;
+    }
+    &::after {
+      right: 15px;
+    }
+
+    .level-row {
+      background: rgba(255, 255, 255, 0.02);
+      border-top: 3px solid #4b5563; // Thanh xà ngang (Beam)
+      padding-top: 10px;
+      position: relative;
+
+      // Nhãn tầng nằm bên trái thanh xà
+      &::before {
+        content: attr(data-level);
+        position: absolute;
+        left: -25px;
+        top: -10px;
+        font-size: 0.6rem;
+        color: #9ca3af;
+        font-weight: bold;
+      }
+
+      .slots-container {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+      }
+
+      .slot-unit {
+        width: 45px;
+        height: 35px;
+        background: linear-gradient(145deg, #1f2937, #111827);
+        border: 1px solid #374151;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+        // Hiệu ứng hộc kệ 3D
+        &::after {
+          content: "";
+          position: absolute;
+          inset: 4px;
+          border: 1px multisolid rgba(0, 97, 255, 0.1);
+          border-radius: 2px;
+        }
+
+        &:hover {
+          transform: translateY(-5px) scale(1.1);
+          border-color: #0061ff;
+          background: #0061ff;
+          box-shadow: 0 10px 20px rgba(0, 97, 255, 0.3);
+
+          small {
+            color: #fff;
+            opacity: 1;
+          }
+          &::after {
+            border-color: rgba(255, 255, 255, 0.5);
+          }
+        }
+
+        small {
+          color: #60a5fa;
+          font-weight: 800;
+          font-size: 0.7rem;
+          z-index: 2;
+        }
+      }
+    }
+  }
+  .modal-content {
+    border-radius: 20px;
+    border: none;
+    background: #ffffff;
+  }
+
+  .modal-header {
+    background: linear-gradient(135deg, $aws-navy 0%, #2d3359 100%);
+    color: white;
+    padding: 1.25rem 2rem;
+    border-radius: 20px 20px 0 0;
+  }
+
+  // Preview Grid cho dãy kệ
+  .rack-visualizer {
+    background: #0f172a;
+    border-radius: 12px;
+    padding: 20px;
+    height: 100%;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column-reverse; // Kệ xếp từ dưới lên
+    gap: 8px;
+    overflow-y: auto;
+    border: 1px solid #334155;
+
+    .level-row {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      animation: slideInUp 0.4s ease-out both;
+
+      .slot-unit {
+        width: 30px;
+        height: 30px;
+        background: rgba($aws-blue, 0.2);
+        border: 1px solid rgba($aws-blue, 0.5);
+        border-radius: 4px;
+        transition: all 0.2s;
+
+        &:hover {
+          background: $rack-gold;
+          box-shadow: 0 0 10px $rack-gold;
+        }
+      }
+    }
+  }
+
+  .input-field-custom {
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    padding: 10px 15px;
+    &:focus {
+      border-color: $aws-blue;
+      box-shadow: 0 0 0 3px rgba($aws-blue, 0.1);
+    }
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

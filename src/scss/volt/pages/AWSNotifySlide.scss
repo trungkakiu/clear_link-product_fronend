@@ -1,0 +1,40 @@
+.template-paper-card {
+  // ... các thuộc tính cũ
+  touch-action: manipulation; // Tối ưu cho cảm ứng
+  user-select: none;
+
+  &:active {
+    background-color: #f0f4f8;
+    transform: scale(0.98);
+  }
+
+  .select-action-label {
+    margin-left: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+  }
+
+  &.active {
+    border: 2px solid #ff9900 !important;
+    .select-action-label {
+      background: #fff4e5;
+      border-color: #ff9900;
+    }
+  }
+}
+
+// Responsive cho Mobile
+@media (max-width: 991px) {
+  .template-sidebar {
+    border-end: none !important;
+    border-bottom: 1px solid #e1e4e8;
+    padding: 20px !important;
+  }
+
+  .drop-zone {
+    min-height: 250px !important;
+    margin-top: 15px;
+  }
+}

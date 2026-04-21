@@ -60,13 +60,11 @@ export const UserProvider = ({ children }) => {
   };
 
   const setOtp = (value) => {
-    console.log(value);
     setUser((prev) => ({
       ...prev,
       Otp: value,
       _v: (prev?._v || 0) + 1,
     }));
-    console.log(User);
   };
 
   const login = (userData, token) => {
@@ -75,18 +73,30 @@ export const UserProvider = ({ children }) => {
       Otp: userData.Otp,
       Authen: true,
       token,
+      deviceId: userData?.User?.User_agent,
+      Session_id: userData.Session_id,
       data: userData.User,
       __persist: true,
       _v: (prev?._v || 0) + 1,
     }));
   };
 
+  const getDeviceId = () => {
+    let deviceId = localStorage.getItem("device_id");
+    if (!deviceId) {
+      deviceId = `CL-${crypto.randomUUID()}-${window.navigator.userAgent.slice(0, 10)}`;
+      localStorage.setItem("device_id", deviceId);
+    }
+    return deviceId;
+  };
+
   const loginWithoutStore = (userData, token) => {
-    console.log(userData);
     setUser((prev) => ({
       ...prev,
       Otp: userData.Otp,
       Authen: true,
+      deviceId: userData?.User?.User_agent,
+      Session_id: userData.Session_id,
       token,
       data: userData.User,
       __persist: false,
@@ -142,6 +152,7 @@ export const UserProvider = ({ children }) => {
         refresh_me,
         login,
         logout,
+        getDeviceId,
         setOtp,
         loginWithoutStore,
         updateUserDataField,

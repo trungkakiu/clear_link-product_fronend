@@ -1,0 +1,80 @@
+.guide-modal-content {
+  border: none;
+  background: #ffffff !important;
+  border-radius: 16px !important;
+
+  .modal-header {
+    background: #1a1f36; // Navy đậm chất kỹ thuật
+    padding: 1.2rem 2rem;
+  }
+
+  .modal-body {
+    padding: 0 !important; // Xóa padding mặc định để chia grid
+  }
+
+  .tutorial-sidebar {
+    background: #f8fafc;
+    border-right: 1px solid #e2e8f0;
+    padding: 2rem;
+  }
+
+  .dashboard-preview {
+    background: #111827; // Nền tối làm nổi bật ảnh tutorial
+    padding: 20px;
+    border-radius: 12px;
+    position: relative;
+    border: 1px solid #374151;
+
+    img {
+      border-radius: 8px;
+      width: 100%;
+      opacity: 0.9;
+    }
+
+    // Hiệu ứng Grid chìm phía sau ảnh
+    background-image:
+      linear-gradient(rgba(0, 97, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 97, 255, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .feature-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr; // Chia đôi để giảm khoảng trắng dọc
+    gap: 15px;
+    padding: 20px;
+  }
+
+  .infographic-card {
+    padding: 15px;
+    border-radius: 12px;
+    border-left: 4px solid #cbd5e1;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+    h6 {
+      font-size: 0.85rem;
+      font-weight: 800;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+    }
+    p {
+      font-size: 0.75rem;
+      margin-bottom: 0;
+      line-height: 1.4;
+    }
+
+    &.cold {
+      border-left-color: #0ea5e9;
+      background: rgba(14, 165, 233, 0.02);
+    }
+    &.bulk {
+      border-left-color: #8b5cf6;
+      background: rgba(139, 92, 246, 0.02);
+    }
+    &.rack {
+      border-left-color: #10b981;
+      background: rgba(16, 185, 129, 0.02);
+    }
+  }
+}

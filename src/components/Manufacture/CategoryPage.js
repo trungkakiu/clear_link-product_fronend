@@ -79,7 +79,7 @@ const CategoryPage = () => {
     <div className="category-page">
       <Row className="gy-4">
         {/* CATEGORY LIST */}
-        <Col md={8}>
+        <Col md={8} data-aos="fade-right">
           <Card className="shadow-sm">
             <Card.Header>
               <h5 className="mb-0">Danh sách Categories</h5>
@@ -130,7 +130,7 @@ const CategoryPage = () => {
           </Card>
         </Col>
 
-        <Col md={4}>
+        <Col md={4} data-aos="fade-left">
           <Card className="shadow-sm">
             <Card.Header>
               <h5 className="mb-0">Thêm Category mới</h5>

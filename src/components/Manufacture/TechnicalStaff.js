@@ -14,6 +14,7 @@ import { UserContext } from "../../Context/UserContext";
 import AddProductionStaffModal from "../Modal/Manufacture/AddProductionStaffModal";
 import { toast } from "react-toastify";
 import AddTechnicalStaffModal from "../Modal/Manufacture/AddTechnicalStaffModal";
+import RocketLoad from "../../Utils/RocketLoad";
 
 const TechnicalStaff = () => {
   const REACT_APP_API_IMAGE_URL = process.env.REACT_APP_API_IMAGE_URL;
@@ -94,7 +95,9 @@ const TechnicalStaff = () => {
       console.error(error);
       return;
     } finally {
-      setisload(false);
+      setTimeout(() => {
+        setisload(false);
+      }, 1000);
     }
   };
 
@@ -299,6 +302,23 @@ const TechnicalStaff = () => {
     return true;
   });
 
+  if (isload) {
+    return (
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          alignContent: "center",
+          minHeight: "75vh",
+        }}
+      >
+        <RocketLoad />
+      </div>
+    );
+  }
+
   return (
     <>
       <Card className="aws-header mt-3">
@@ -359,7 +379,7 @@ const TechnicalStaff = () => {
           </Row>
         </Card.Body>
       </Card>
-      <Card className="mt-3">
+      <Card data-aos="fade-up" className="mt-3">
         <Card.Body>
           <TechnicalStaffTable staffs={staff_filter_list} />
         </Card.Body>

@@ -1,0 +1,52 @@
+$aws-orange: #ff9900;
+$aws-navy: #232f3e;
+
+.aws-qc-modal {
+  .modal-content {
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .aws-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: #545b64;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .aws-input-premium {
+    border: 1px solid #aab7b8;
+    &:focus {
+      border-color: $aws-orange;
+      box-shadow: 0 0 0 0.2rem rgba(255, 153, 0, 0.25);
+    }
+  }
+
+  .supplement-box {
+    background-color: rgba(255, 153, 0, 0.05);
+    border: 1px dashed $aws-orange;
+    .form-check-input:checked {
+      background-color: $aws-orange;
+      border-color: $aws-orange;
+    }
+  }
+
+  .aws-btn-orange {
+    background-color: $aws-orange;
+    border-color: #d48806;
+    color: white;
+    font-weight: 700;
+    &:hover {
+      background-color: #ec7211;
+    }
+  }
+}
+
+.text-aws-orange {
+  color: $aws-orange !important;
+}
+.bg-aws-navy {
+  background-color: $aws-navy !important;
+}

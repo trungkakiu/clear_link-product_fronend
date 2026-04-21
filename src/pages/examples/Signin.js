@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAngleLeft,
@@ -31,43 +31,55 @@ import { toast, ToastContainer } from "react-toastify";
 
 export default () => {
   const { User, loginWithoutStore, login } = useContext(UserContext);
+  const [apiwait, setapiwait] = useState(false);
   const history = useHistory();
+  const isMounted = useRef(true);
   const [loginData, setloginData] = useState({
     email: "",
     password: "",
     remember: false,
   });
 
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
   async function handelogin() {
     try {
+      setapiwait(true);
       const res = await api_request.login(loginData);
 
-      if (res) {
-        if (res.RC == 200) {
-          toast.success(`Chào mừng trở lại ${res.RD.User.name}`);
-          if (loginData.remember) {
-            await login(res.RD, res.RD.Token);
-            if (res.RD.User.role_active === true) {
-              history.replace("/dashboard/overview");
-            } else {
-              history.replace("/user/active_role");
-            }
-          } else {
-            loginWithoutStore(res.RD, res.RD.Token);
-            if (res.RD.User.role_active === true) {
-              history.replace("/dashboard/overview");
-            } else {
-              history.replace("/user/active_role");
-            }
-          }
+      if (res && res.RC == 200) {
+        toast.success(`Chào mừng trở lại ${res.RD.User.name}`);
+
+        if (loginData.remember) {
+          await login(res.RD, res.RD.Token);
+        } else {
+          loginWithoutStore(res.RD, res.RD.Token);
+        }
+
+        if (res.RD.User.role_active === true) {
+          history.replace("/dashboard/overview");
+        } else {
+          history.replace("/user/active_role");
         }
       } else {
-        toast.error("Đăng nhập thất bại");
-        return;
+        if (isMounted.current) {
+          toast.error(res ? res.RM : "Đăng nhập thất bại");
+          setapiwait(false);
+        }
       }
     } catch (error) {
       console.error(error);
-      return;
+      if (isMounted.current) setapiwait(false);
+    } finally {
+      if (isMounted.current) {
+        setTimeout(() => {
+          if (isMounted.current) setapiwait(false);
+        }, 500);
+      }
     }
   }
 
@@ -176,9 +188,10 @@ export default () => {
                   <Button
                     onClick={() => handelogin()}
                     variant="primary"
+                    disabled={apiwait}
                     className="w-100"
                   >
-                    Sign in
+                    {apiwait ? "Processing..." : "Sign in"}
                   </Button>
                 </Form>
 

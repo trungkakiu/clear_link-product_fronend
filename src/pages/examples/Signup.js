@@ -50,7 +50,6 @@ export default () => {
         !signupData.phonenumber ||
         !signupData.fullname
       ) {
-        console.log(signupData);
         toast.warning("Vui lòng cung cấp đầy đủ thông tin");
         return;
       }

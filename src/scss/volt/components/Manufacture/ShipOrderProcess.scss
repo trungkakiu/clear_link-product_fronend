@@ -1,0 +1,172 @@
+$aws-orange: #ff9900;
+$aws-navy: #232f3e;
+$aws-light: #f2f3f3;
+
+.bg-soft-orange {
+  background-color: rgba(255, 153, 0, 0.1) !important;
+}
+
+.icon-xl {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aws-btn-primary {
+  background-color: #ff9900;
+  border-color: #ff9900;
+  color: #fff;
+  font-weight: 800;
+  &:hover {
+    background-color: #ec8b00;
+    border-color: #ec8b00;
+  }
+}
+
+.bg-aws-light {
+  background-color: $aws-light;
+}
+.text-aws-navy {
+  color: $aws-navy;
+}
+.fw-800 {
+  font-weight: 800;
+}
+
+.aws-resource-card {
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  border-left: 4px solid transparent !important;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1) !important;
+    border-left: 4px solid $aws-orange !important;
+  }
+
+  .icon-box-aws {
+    width: 40px;
+    height: 40px;
+    background: #fdf2e9;
+    color: $aws-orange;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tiny-label {
+    font-size: 9px;
+    color: #aab7b8;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .handshake-status {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    display: inline-flex;
+    align-items: center;
+    &.active {
+      background: #e6f4ea;
+      color: #1e7e34;
+    }
+    &.pending {
+      background: #f8f9fa;
+      color: #adb5bd;
+      border: 1px dashed #dee2e6;
+    }
+  }
+
+  .aws-badge-status {
+    font-size: 10px;
+    padding: 5px 10px;
+    letter-spacing: 0.5px;
+  }
+}
+
+.aws-tabs {
+  .nav-link {
+    color: #545b64;
+    font-weight: 600;
+    border-radius: 0;
+    border-bottom: 2px solid transparent;
+    &.active {
+      background: transparent !important;
+      color: $aws-orange !important;
+      border-bottom: 2px solid $aws-orange;
+    }
+  }
+}
+
+.btn-aws-orange {
+  background: $aws-orange;
+  color: white;
+  border: none;
+  font-weight: 700;
+  &:hover {
+    background: #ec7211;
+    color: white;
+  }
+}
+
+.aws-btn-secondary {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+@media (min-width: 992px) {
+  .border-end-lg {
+    border-right: 1px solid #eaeded;
+  }
+}
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh;
+  width: 100%;
+}
+
+$aws-orange: #ff9900;
+$aws-blue: #2d9cdb;
+
+.aws-resource-card {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid transparent !important;
+
+  &.aws-highline-init {
+    border-color: rgba($aws-blue, 0.3) !important;
+    background-color: rgba($aws-blue, 0.02);
+  }
+
+  &.aws-highline-active {
+    z-index: 10;
+    border-color: $aws-orange !important;
+    box-shadow: 0 0 25px rgba($aws-orange, 0.25) !important;
+    transform: scale(1.02) translateX(5px);
+    animation: aws-pulse-highlight 1.5s infinite alternate;
+  }
+}
+
+@keyframes aws-pulse-highlight {
+  0% {
+    background-color: rgba($aws-orange, 0.02);
+    box-shadow: 0 0 10px rgba($aws-orange, 0.1);
+  }
+  100% {
+    background-color: rgba($aws-orange, 0.08);
+    box-shadow: 0 0 30px rgba($aws-orange, 0.4);
+  }
+}
+
+.border-end-lg {
+  @media (min-width: 992px) {
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+  }
+}

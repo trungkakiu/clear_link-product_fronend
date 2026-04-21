@@ -1,0 +1,212 @@
+// Biến màu sắc chuẩn AWS
+$aws-orange: #ff9900;
+$aws-orange-hover: #ec7211;
+$aws-navy: #232f3e;
+$aws-light-bg: #f1f4f6;
+$text-main: #16191f;
+$shadow-sm:
+  0 4px 6px -1px rgba(0, 0, 0, 0.1),
+  0 2px 4px -1px rgba(0, 0, 0, 0.06);
+$shadow-lg:
+  0 20px 25px -5px rgba(0, 0, 0, 0.1),
+  0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+.aws-marketplace {
+  background-color: $aws-light-bg;
+  min-height: 100vh;
+  padding: 1rem;
+
+  @media (min-width: 992px) {
+    padding: 2.5rem 3rem;
+  }
+
+  .aws-filter-section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border-left: 6px solid $aws-orange;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+
+    @media (max-width: 768px) {
+      padding: 1rem;
+      border-left-width: 4px;
+
+      h3 {
+        font-size: 1.25rem;
+      }
+    }
+
+    .icon-box-orange {
+      width: 48px;
+      height: 48px;
+      background: $aws-orange;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  .product-card {
+    height: 100%;
+    border-radius: 20px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    background: #fff;
+    box-shadow: $shadow-sm;
+
+    @media (member: hover) {
+      &:hover {
+        transform: translateY(-12px);
+        box-shadow: $shadow-lg;
+        border-color: rgba($aws-orange, 0.4) !important;
+      }
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+
+    .card-img-container {
+      margin: 10px;
+      border-radius: 15px;
+      overflow: hidden;
+      position: relative;
+      background: #f8f9fa;
+
+      height: 130px;
+
+      @media (max-width: 1400px) {
+        height: 160px;
+      }
+      @media (max-width: 1200px) {
+        height: 180px;
+      }
+      @media (max-width: 576px) {
+        height: 220px;
+      } // Mobile hiện 1-2 cột nên ảnh cần to hơn
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s ease;
+      }
+    }
+
+    &:hover .card-img-container img {
+      transform: scale(1.1);
+    }
+
+    .card-body {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+
+      .manufacturer-tag {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+
+      h6 {
+        font-weight: 800;
+        color: $aws-navy;
+        line-height: 1.4;
+        margin-bottom: 0.5rem;
+
+        @media (max-width: 576px) {
+          font-size: 1.1rem;
+        }
+      }
+    }
+
+    // Khối hiển thị giá nổi bật
+    .price-tag {
+      background: #fffafa;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px dashed #f5c2c2;
+      margin-top: auto; // Đẩy xuống đáy card
+      margin-bottom: 1rem;
+
+      .price-value {
+        color: #d13212; // Màu đỏ giá Amazon
+        font-weight: 800;
+        font-size: 1.25rem;
+      }
+    }
+
+    // --- HỆ THỐNG NÚT BẤM (BUTTONS) ---
+    .btn-detail {
+      border: 2px solid #eaeded;
+      color: $aws-navy;
+      font-weight: 700;
+      font-size: 0.85rem;
+      border-radius: 10px;
+      padding: 8px;
+      transition: all 0.2s;
+
+      &:hover {
+        background: #f8f9fa;
+        border-color: $aws-navy;
+      }
+    }
+
+    .btn-order-main {
+      background: linear-gradient(135deg, $aws-orange 0%, #ffb347 100%);
+      border: none;
+      color: white;
+      font-weight: 800;
+      font-size: 0.85rem;
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 4px 14px 0 rgba($aws-orange, 0.3);
+
+      &:hover {
+        background: linear-gradient(
+          135deg,
+          $aws-orange-hover 0%,
+          $aws-orange 100%
+        );
+        box-shadow: 0 6px 20px rgba($aws-orange, 0.4);
+      }
+    }
+  }
+
+  // --- INPUT & SELECT CUSTOM ---
+  .filter-input-custom {
+    background-color: #f8f9fa !important;
+    border-radius: 10px !important;
+    border: 1px solid #e1e4e8 !important;
+    padding: 0.6rem 1rem;
+    font-weight: 500;
+    transition: all 0.3s;
+
+    &:focus {
+      border-color: $aws-orange !important;
+      box-shadow: 0 0 0 4px rgba($aws-orange, 0.15) !important;
+      background-color: #fff !important;
+    }
+  }
+
+  // Responsive cho các cột (Grid Gap)
+  .row {
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .aws-marketplace {
+    padding: 0.5rem;
+    .product-card {
+      margin-bottom: 1rem;
+    }
+  }
+}

@@ -24,6 +24,7 @@ import { useHistory } from "react-router-dom";
 import api_request from "../apicontroller/api_request";
 import { toast } from "react-toastify";
 import { UserContext } from "../Context/UserContext";
+import MapLocationPicker from "./MapLocationPicker";
 
 const Retailer_register = () => {
   const history = useHistory();
@@ -34,6 +35,10 @@ const Retailer_register = () => {
     branch_count: "",
     product_lines: "",
     contact_person: "",
+    location: "",
+    address_detail: "",
+    lat: null,
+    lng: null,
     contact_phone: "",
   });
 
@@ -46,6 +51,17 @@ const Retailer_register = () => {
   const handleChange = (key, value) => {
     setRetailerData((prev) => ({ ...prev, [key]: value }));
   };
+
+  const handleLocationSelect = (data) => {
+    if (data) {
+      setRetailerData((prev) => ({
+        ...prev,
+        location: data.address,
+        lat: data.lat,
+        lng: data.lng,
+      }));
+    }
+  };
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
@@ -55,6 +71,10 @@ const Retailer_register = () => {
         !Retailer_data.contact_phone ||
         !Retailer_data.product_lines ||
         !Retailer_data.store_address ||
+        !Retailer_data.address_detail ||
+        !Retailer_data.lat ||
+        !Retailer_data.lng ||
+        !Retailer_data.location ||
         !Retailer_data.store_address ||
         !Retailer_data.store_name
       ) {
@@ -108,7 +128,7 @@ const Retailer_register = () => {
             </span>
           </p>
           <Row className="justify-content-center">
-            <Col xs={12} md={8} lg={6}>
+            <Col xs={12} md={8} lg={8}>
               <div className="bg-white shadow-soft border rounded p-4 p-lg-5">
                 <div className="text-center mb-4">
                   <h3 className="mb-0">Retailer Registration</h3>
@@ -135,24 +155,38 @@ const Retailer_register = () => {
                   </Form.Group>
 
                   {/* Store Address */}
+                  <Row className="mb-4">
+                    <Col md={12}>
+                      <MapLocationPicker
+                        label="Vị trí nhà máy (Bản đồ Mapbox)"
+                        height="250px"
+                        onSelect={handleLocationSelect}
+                      />
+                      {Retailer_data.location && (
+                        <div className="mt-2 p-2 bg-light rounded small border-start border-3 border-aws-orange">
+                          <strong>Địa chỉ xác thực:</strong>{" "}
+                          {Retailer_data.location}
+                        </div>
+                      )}
+                    </Col>
+                  </Row>
                   <Form.Group className="mb-4">
-                    <Form.Label>Store Address</Form.Label>
+                    <Form.Label>Địa chỉ chi tiết</Form.Label>
                     <InputGroup>
                       <InputGroup.Text>
-                        <FontAwesomeIcon icon={faMapMarkedAlt} />
+                        <FontAwesomeIcon icon={faUser} />
                       </InputGroup.Text>
                       <Form.Control
                         type="text"
                         required
-                        placeholder="123 Nguyễn Trãi, Hà Nội"
-                        value={Retailer_data.store_address}
+                        placeholder="Số nhà / đường"
+                        value={Retailer_data.address_detail}
                         onChange={(e) =>
-                          handleChange("store_address", e.target.value)
+                          handleChange("address_detail", e.target.value)
                         }
                       />
                     </InputGroup>
                   </Form.Group>
-
                   <Row>
                     {/* Branch Count */}
                     <Col md={6}>

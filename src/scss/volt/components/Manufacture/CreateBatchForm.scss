@@ -1,0 +1,91 @@
+$aws-orange: #ff9900;
+$aws-navy: #232f3e;
+
+.create-batch-container {
+  #packaging_id {
+    /* Ép Dropdown rộng ra để chứa 3 cột, không bị vỡ */
+    .dropdown-menu {
+      @media (min-width: 992px) {
+        width: 750px !important; // Cho phép hiện 3 card trên 1 hàng
+      }
+    }
+
+    .packaging-grid-item {
+      height: 100%;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+
+      &:hover {
+        border-color: $aws-orange;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+        transform: translateY(-3px);
+      }
+
+      &.selected {
+        border: 2px solid $aws-orange;
+        background-color: rgba($aws-orange, 0.02);
+
+        /* Hiển thị Checkmark khi chọn */
+        &::after {
+          content: "\f058"; // FontAwesome Check Circle
+          font-family: "Font Awesome 5 Free";
+          font-weight: 900;
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          color: $aws-orange;
+          font-size: 1.1rem;
+          z-index: 5;
+        }
+      }
+
+      .item-image-header {
+        height: 100px;
+        background-color: #f9fafb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        padding: 10px;
+
+        img {
+          max-height: 80%;
+          object-fit: contain;
+        }
+
+        .vol-badge {
+          position: absolute;
+          top: 8px;
+          left: 8px;
+          font-size: 0.65rem;
+          font-weight: 900;
+          font-family: "Monaco", monospace;
+        }
+      }
+
+      .item-body {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+
+        .extra-small {
+          font-size: 0.7rem;
+          font-weight: 600;
+          color: #64748b;
+        }
+      }
+
+      .item-spec-footer {
+        font-size: 0.7rem;
+        color: #64748b;
+      }
+    }
+  }
+}

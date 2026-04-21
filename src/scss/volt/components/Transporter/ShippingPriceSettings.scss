@@ -1,0 +1,73 @@
+$aws-orange: #ff9900;
+$aws-navy: #232f3e;
+
+.aws-shipping-config {
+  .fw-800 {
+    font-weight: 800;
+  }
+  .text-aws-orange {
+    color: $aws-orange;
+  }
+  .text-aws-navy {
+    color: $aws-navy;
+  }
+  .bg-aws-navy {
+    background-color: $aws-navy;
+  }
+
+  .aws-icon-box {
+    background: $aws-orange;
+    color: white;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 10px rgba($aws-orange, 0.3);
+  }
+
+  .btn-aws-orange {
+    background-color: $aws-orange;
+    color: white;
+    border: none;
+    transition: transform 0.2s;
+    &:hover {
+      background-color: darken($aws-orange, 5%);
+      color: white;
+      transform: translateY(-2px);
+    }
+  }
+
+  .aws-input-group {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    &:focus-within {
+      border-color: $aws-orange;
+      background: white;
+    }
+    input {
+      background: transparent;
+    }
+  }
+
+  .aws-dark-input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    &:focus-within {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: $aws-orange;
+    }
+  }
+
+  .tiny {
+    font-size: 0.7rem;
+    letter-spacing: 0.5px;
+  }
+  .italic {
+    font-style: italic;
+  }
+}

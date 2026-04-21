@@ -18,6 +18,7 @@ import api_request from "../../apicontroller/api_request";
 
 export default function CompanyMailConfigPage() {
   const [open, setOpen] = useState(false);
+  const [isLoad, setIsLoad] = useState(true);
   const [valid_save, setvalidsave] = useState(false);
   const [mailConfig, setMailConfig] = useState({
     company_id: "",

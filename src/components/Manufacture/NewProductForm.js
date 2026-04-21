@@ -14,6 +14,7 @@ import "../../scss/volt/components/Manufacture/NewProductForm.scss";
 import api_request from "../../apicontroller/api_request";
 import { UserContext } from "../../Context/UserContext";
 import { toast } from "react-toastify";
+import RocketLoad from "../../Utils/RocketLoad";
 
 export default () => {
   const [ispageload, setispageload] = useState(false);
@@ -24,11 +25,12 @@ export default () => {
     responsible_person: "",
     author: "",
     description: "",
-    type: "",
+    type: "general",
     stock_quantity: "",
     status: "available",
     category_id: "",
   });
+
   const onSubmit = async (data) => {
     try {
       setisload(true);
@@ -63,7 +65,9 @@ export default () => {
     } catch (err) {
       console.error(err);
     } finally {
-      setispageload(false);
+      setTimeout(() => {
+        setispageload(false);
+      }, 1000);
     }
   };
 
@@ -108,7 +112,6 @@ export default () => {
       alert("Vui lòng chọn ảnh đại diện!");
       return;
     }
-
     const formData = new FormData();
     Object.keys(product).forEach((key) => formData.append(key, product[key]));
     formData.append("main_cardimage", mainImage);
@@ -116,10 +119,27 @@ export default () => {
     onSubmit(formData);
   };
 
+  if (ispageload) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          width: "100%",
+          justifyContent: "center",
+          alignItems: "center",
+          alignContent: "center",
+          minHeight: "75vh",
+        }}
+      >
+        <RocketLoad />
+      </div>
+    );
+  }
+
   return (
     <Form onSubmit={submitHandler}>
       <Row className="mt-4">
-        <Col md={8}>
+        <Col md={8} data-aos="fade-right">
           <Card className="p-4 shadow-sm border-0">
             <h4 className="mb-3 fw-bold">Thông tin sản phẩm</h4>
 
@@ -164,12 +184,24 @@ export default () => {
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Loại sản phẩm</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="VD: Đồ uống, Thời trang..."
+                  <Form.Select
                     value={product.type}
                     onChange={(e) => handleChange("type", e.target.value)}
-                  />
+                  >
+                    <option value="general">Hàng tổng hợp</option>
+                    <option value="electronics">
+                      Điện tử (Cần bảo mật cao, chống va đập)
+                    </option>
+                    <option value="food_beverage">Thực phẩm & Đồ uống</option>
+                    <option value="chemicals">
+                      Hóa chất (Cần chứng chỉ vận chuyển đặc biệt)
+                    </option>
+                    <option value="garment">May mặc</option>
+                    <option value="medical">
+                      Y tế (Cần kiểm soát nhiệt độ nghiêm ngặt)
+                    </option>
+                    <option value="construction">Vật liệu xây dựng</option>
+                  </Form.Select>
                 </Form.Group>
               </Col>
               <Col md={6}>
@@ -226,7 +258,7 @@ export default () => {
         </Col>
 
         {/* RIGHT COLUMN */}
-        <Col md={4}>
+        <Col md={4} data-aos="fade-left">
           {/* MAIN IMAGE */}
           <Card className="p-4 shadow-sm border-0 mb-4">
             <h5 className="fw-bold mb-2">Ảnh đại diện</h5>

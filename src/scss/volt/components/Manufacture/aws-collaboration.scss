@@ -1,0 +1,287 @@
+/* aws-collaboration.scss */
+
+.aws-collaboration-wrapper {
+  background-color: #f2f3f3;
+  min-height: 100vh;
+
+  // Giới hạn độ rộng để layout không bị "loãng" trên màn hình lớn
+  .aws-container-limit {
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  .aws-toolbar {
+    background: #ffffff;
+    border-bottom: 1px solid #eaeded;
+  }
+
+  /* aws-collaboration.scss */
+
+  .aws-nav-tabs {
+    display: flex;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch; // Vuốt mượt trên iOS
+    scrollbar-width: none; // Ẩn scrollbar trên Firefox
+
+    &::-webkit-scrollbar {
+      display: none; // Ẩn scrollbar trên Chrome/Safari
+    }
+
+    .nav-item {
+      margin-bottom: -1px; // Khớp với border-bottom của container
+    }
+
+    .nav-link {
+      border: 1px solid transparent;
+      border-bottom: none;
+      color: #545b64;
+      background: #fafafa;
+      margin-right: 4px;
+      border-radius: 4px 4px 0 0;
+      font-size: clamp(0.85rem, 2.5vw, 0.9rem); // Font co giãn tự động
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      // Tối ưu khoảng cách cho Mobile
+      @media (max-width: 576px) {
+        padding: 10px 15px !important;
+        min-width: 140px;
+      }
+
+      &:hover {
+        background: #f2f3f3;
+        border-color: #eaeded;
+        color: #232f3e;
+      }
+
+      &.active {
+        background: #ffffff !important;
+        color: #0073bb !important;
+        border-color: #eaeded !important;
+        border-top: 3px solid #0073bb !important;
+        z-index: 2;
+      }
+    }
+  }
+
+  .aws-nav-tabs .badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.65em;
+    @media (max-width: 576px) {
+      font-size: 0.65rem;
+    }
+  }
+
+  .aws-tab-content {
+    min-height: 60vh;
+  }
+}
+
+.aws-toolbar {
+  background: #ffffff;
+  position: sticky; // Giữ thanh toolbar luôn ở trên đầu khi cuộn
+  top: 0;
+  z-index: 5;
+
+  .aws-container-limit {
+    max-width: 1600px;
+    margin: 0 auto;
+    transition: all 0.3s ease;
+  }
+
+  .aws-page-title {
+    font-size: clamp(1.1rem, 4vw, 1.4rem); // Co giãn chữ theo màn hình
+    font-weight: 800;
+    color: #232f3e;
+  }
+
+  // Tối ưu nút bấm trên màn hình cảm ứng
+  .aws-btn-primary,
+  .aws-btn-icon {
+    @media (max-width: 576px) {
+      padding: 12px !important; // Nút to hơn trên Mobile để dễ bấm
+      font-size: 0.9rem;
+    }
+
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+// Xử lý ẩn/hiện phụ đề để tiết kiệm diện tích trên mobile
+@media (max-width: 768px) {
+  .aws-page-subtitle {
+    font-size: 0.8rem;
+    opacity: 0.8;
+  }
+}
+
+.aws-card-compact {
+  border: 1px solid #eaeded !important;
+  border-radius: 4px !important;
+  transition: all 0.2s ease;
+
+  // Khối nổi 3D nhẹ nhàng chuẩn CloudScape
+  box-shadow:
+    0 1px 1px 0 rgba(0, 28, 36, 0.1),
+    0 1px 1px 0 rgba(0, 28, 36, 0.15) !important;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 4px 8px 0 rgba(0, 28, 36, 0.1),
+      0 4px 8px 0 rgba(0, 28, 36, 0.15) !important;
+  }
+
+  .aws-company-title {
+    color: #0073bb;
+    font-weight: 800;
+    font-size: 1rem;
+    height: 1.2rem;
+  }
+
+  .aws-proposal-preview-box {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+    border-left: 3px solid #d5dbdb;
+    margin-bottom: 10px;
+
+    .aws-proposal-text {
+      font-size: 0.8rem;
+      color: #545b64;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  }
+
+  .aws-info-row {
+    color: #232f3e;
+    svg {
+      color: #879596;
+    }
+  }
+
+  .aws-badge-status {
+    font-size: 10px;
+    padding: 3px 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-radius: 4px;
+
+    &.pending {
+      background: #fff4e5 !important;
+      color: #ec7211 !important;
+      border: 1px solid #ffdbb0;
+    }
+
+    &.accepted {
+      background: #ebf9eb !important;
+      color: #1d8102 !important;
+      border: 1px solid #c3e6cb;
+    }
+
+    &.negotiating,
+    &.negotiating_acp {
+      background: #f1faff !important;
+      color: #0073bb !important;
+      border: 1px solid #d1e9ff;
+    }
+
+    &.negotiating_rej {
+      background: #fff0f0 !important;
+      color: #d13212 !important;
+      border: 1px solid #f8d7da;
+    }
+
+    &.signing {
+      background: #fae5ff !important;
+      color: #9c11ec !important;
+      border: 1px solid #d4b0ff;
+    }
+
+    &.official {
+      background: #e5f0ff !important;
+      color: #117bec !important;
+      border: 1px solid #b1b0ff;
+    }
+
+    &.rejected,
+    &.canceled {
+      background: #ffe6e5 !important;
+      color: #ec1111 !important;
+      border: 1px solid #ffb0b0;
+    }
+  }
+
+  .aws-btn-detail {
+    border: 1px solid #545b64;
+    color: #545b64;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-decoration: none;
+    &:hover {
+      background: #f2f3f3;
+    }
+  }
+}
+
+.aws-btn-primary {
+  background-color: #ec7211 !important;
+  border: none !important;
+  font-weight: 700;
+  &:hover {
+    background-color: #eb5f07 !important;
+  }
+}
+
+$aws-primary: #262b40;
+$aws-orange: #ff9900;
+$aws-blue: #007bff;
+
+.aws-card-compact {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 1.5px solid transparent !important;
+  position: relative;
+
+  &.aws-highline-init {
+    background-color: rgba($aws-blue, 0.03);
+    border-color: rgba($aws-blue, 0.1) !important;
+  }
+
+  &.aws-highline-active {
+    z-index: 5;
+    border-color: $aws-orange !important;
+    box-shadow: 0 12px 25px rgba($aws-orange, 0.2) !important;
+    transform: translateY(-8px);
+    animation: aws-collab-pulse 2s infinite;
+  }
+}
+
+@keyframes aws-collab-pulse {
+  0% {
+    box-shadow: 0 12px 25px rgba($aws-orange, 0.1);
+    border-color: rgba($aws-orange, 0.5);
+  }
+  50% {
+    box-shadow: 0 15px 35px rgba($aws-orange, 0.4);
+    border-color: rgba($aws-orange, 1);
+    background-color: rgba($aws-orange, 0.02);
+  }
+  100% {
+    box-shadow: 0 12px 25px rgba($aws-orange, 0.1);
+    border-color: rgba($aws-orange, 0.5);
+  }
+}
+
+@media (max-width: 576px) {
+  .aws-card-compact.aws-highline-active {
+    transform: translateY(-4px) scale(1.02);
+  }
+}

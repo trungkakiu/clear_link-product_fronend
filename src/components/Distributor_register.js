@@ -23,6 +23,7 @@ import { useHistory } from "react-router-dom";
 import api_request from "../apicontroller/api_request";
 import { toast } from "react-toastify";
 import { UserContext } from "../Context/UserContext";
+import MapLocationPicker from "./MapLocationPicker";
 
 const Distributor_register = () => {
   const { User, updateUserDataField } = useContext(UserContext);
@@ -30,10 +31,13 @@ const Distributor_register = () => {
   const [Distributor_data, set_Distributor_data] = useState({
     company_name: "",
     license_number: "",
-    warehouse_location: "",
     delivery_capacity: "",
     contact_person: "",
     contact_number: "",
+    address_detail: "",
+    location: "",
+    lat: null,
+    lng: null,
   });
 
   useEffect(() => {
@@ -49,6 +53,17 @@ const Distributor_register = () => {
     }));
   };
 
+  const handleLocationSelect = (data) => {
+    if (data) {
+      set_Distributor_data((prev) => ({
+        ...prev,
+        location: data.address,
+        lat: data.lat,
+        lng: data.lng,
+      }));
+    }
+  };
+
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
@@ -57,8 +72,11 @@ const Distributor_register = () => {
         !Distributor_data.contact_number ||
         !Distributor_data.contact_person ||
         !Distributor_data.delivery_capacity ||
-        !Distributor_data.license_number ||
-        !Distributor_data.warehouse_location
+        !Distributor_data.address_detail ||
+        !Distributor_data.lat ||
+        !Distributor_data.lng ||
+        !Distributor_data.location ||
+        !Distributor_data.license_number
       ) {
         toast.warning("Vui lòng nhập đầy đủ thông tin!");
         return;
@@ -67,7 +85,7 @@ const Distributor_register = () => {
       const res = await api_request.regis_role(
         "Distributor",
         Distributor_data,
-        User
+        User,
       );
       if (res) {
         if (res.RC === 200) {
@@ -99,10 +117,7 @@ const Distributor_register = () => {
         backgroundRepeat: "no-repeat",
       }}
     >
-      <section
-        data-aos="fade-left"
-        className="d-flex align-items-center my-5 mt-lg-6 mb-lg-5"
-      >
+      <section data-aos="fade-left" className="d-flex align-items-center py-5">
         <Container>
           <p className="text-center">
             <span
@@ -114,7 +129,7 @@ const Distributor_register = () => {
             </span>
           </p>
           <Row className="justify-content-center">
-            <Col xs={12} md={8} lg={6}>
+            <Col xs={12} md={8} lg={8}>
               <div className="bg-white shadow-soft border rounded p-4 p-lg-5">
                 <div className="text-center mb-4">
                   <h3 className="mb-0">Distributor Registration</h3>
@@ -183,29 +198,58 @@ const Distributor_register = () => {
                     </Col>
                   </Row>
 
+                  <Row className="mb-4">
+                    <Col md={12}>
+                      <MapLocationPicker
+                        label="Vị trí kho"
+                        height="250px"
+                        onSelect={handleLocationSelect}
+                      />
+                      {Distributor_data.location && (
+                        <div className="mt-2 p-2 bg-light rounded small border-start border-3 border-aws-orange">
+                          <strong>Địa chỉ xác thực:</strong>{" "}
+                          {Distributor_data.location}
+                        </div>
+                      )}
+                    </Col>
+                  </Row>
+                  <Form.Group className="mb-4">
+                    <Form.Label>Địa chỉ chi tiết</Form.Label>
+                    <InputGroup>
+                      <InputGroup.Text>
+                        <FontAwesomeIcon icon={faUser} />
+                      </InputGroup.Text>
+                      <Form.Control
+                        type="text"
+                        required
+                        placeholder="Số nhà / đường"
+                        value={Distributor_data.address_detail}
+                        onChange={(e) =>
+                          handleChange("address_detail", e.target.value)
+                        }
+                      />
+                    </InputGroup>
+                  </Form.Group>
                   <Row>
-                    {/* 4. Warehouse Location */}
                     <Col md={6}>
                       <Form.Group className="mb-4">
-                        <Form.Label>Warehouse Location</Form.Label>
+                        <Form.Label>Contact Number</Form.Label>
                         <InputGroup>
                           <InputGroup.Text>
-                            <FontAwesomeIcon icon={faMapMarkerAlt} />
+                            <FontAwesomeIcon icon={faPhone} />
                           </InputGroup.Text>
                           <Form.Control
                             type="text"
                             required
-                            placeholder="District 9, Ho Chi Minh"
-                            value={Distributor_data.warehouse_location}
+                            placeholder="0901 XXX XXX"
+                            value={Distributor_data.contact_number}
                             onChange={(e) =>
-                              handleChange("warehouse_location", e.target.value)
+                              handleChange("contact_number", e.target.value)
                             }
                           />
                         </InputGroup>
                       </Form.Group>
                     </Col>
-
-                    {/* 5. Contact Person */}
                     <Col md={6}>
                       <Form.Group className="mb-4">
                         <Form.Label>Contact Person</Form.Label>
@@ -227,27 +271,6 @@ const Distributor_register = () => {
                     </Col>
                   </Row>
 
-                  <Row></Row>
-                  {/* 6. Contact Number */}
-                  <Form.Group className="mb-4">
-                    <Form.Label>Contact Number</Form.Label>
-                    <InputGroup>
-                      <InputGroup.Text>
-                        <FontAwesomeIcon icon={faPhone} />
-                      </InputGroup.Text>
-                      <Form.Control
-                        type="text"
-                        required
-                        placeholder="0901 XXX XXX"
-                        value={Distributor_data.contact_number}
-                        onChange={(e) =>
-                          handleChange("contact_number", e.target.value)
-                        }
-                      />
-                    </InputGroup>
-                  </Form.Group>
-
-                  {/* Submit */}
                   <Button type="submit" variant="primary" className="w-100">
                     Register Distributor
                   </Button>

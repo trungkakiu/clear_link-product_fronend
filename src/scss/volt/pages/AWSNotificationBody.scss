@@ -1,0 +1,120 @@
+/* src/scss/volt/pages/AWSNotificationBody.scss */
+
+.aws-modern-toast {
+  display: flex;
+  position: relative;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  overflow: hidden;
+  /* Đánh khối nổi 3D nhẹ nhàng */
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+  min-width: 340px;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 20px 25px -5px rgba(0, 0, 0, 0.1),
+      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+
+  .aws-toast-side-accent {
+    width: 6px;
+    height: auto;
+  }
+
+  .aws-toast-main-content {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .aws-toast-upper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .aws-toast-icon-wrapper {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .aws-toast-title-area {
+      display: flex;
+      flex-direction: column;
+
+      .aws-toast-label {
+        font-weight: 800;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .aws-toast-time {
+        font-size: 11px;
+        color: #879596;
+      }
+    }
+  }
+
+  .aws-toast-middle {
+    .aws-toast-text {
+      color: #232f3e;
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 0;
+      font-weight: 500;
+    }
+  }
+
+  .aws-toast-lower {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 4px;
+
+    .btn-aws-modern-action {
+      border: none;
+      color: white;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      transition: filter 0.2s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+      &:hover {
+        filter: brightness(1.1);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+}
+
+/* Quan trọng: Reset lại Toastify Container */
+.Toastify__toast {
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.Toastify__toast-body {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.Toastify__close-button {
+  display: none; // Ta sẽ dùng UI tự thiết kế hoặc để trống cho sạch
+}

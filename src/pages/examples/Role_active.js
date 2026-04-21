@@ -117,7 +117,6 @@ export default function Role_active() {
                 <Button
                   className="role-btn"
                   onClick={() => {
-                    console.log("role-key: ", role.key);
                     history.push("/user/role-register", { role: role.key });
                   }}
                 >

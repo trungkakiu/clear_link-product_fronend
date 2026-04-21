@@ -1,0 +1,141 @@
+$aws-navy: #232f3e;
+$aws-orange: #ff9900;
+$aws-bg-light: #f1f4f8;
+
+.aws-oem-wrapper {
+  background-color: $aws-bg-light;
+  min-height: 100vh;
+  font-family: "Public Sans", sans-serif;
+
+  .text-aws-navy {
+    color: $aws-navy;
+  }
+  .fw-800 {
+    font-weight: 800;
+  }
+  .fw-900 {
+    font-weight: 900;
+  }
+
+  // Header Icon
+  .icon-badge-aws {
+    width: 55px;
+    height: 55px;
+    background: white;
+    color: $aws-orange;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-size: 1.5rem;
+  }
+
+  .aws-divider-sm {
+    width: 40px;
+    height: 4px;
+    background: $aws-orange;
+    border-radius: 2px;
+  }
+
+  // Sticky Sidebar Logic
+  .aws-sticky-sidebar {
+    position: sticky;
+    top: 20px; // Cách mép trên màn hình 20px khi cuộn
+    align-self: flex-start;
+    height: fit-content;
+    z-index: 10;
+  }
+
+  // Cards
+  .aws-main-card {
+    border-radius: 16px;
+  }
+
+  .aws-item-card {
+    border: 1px solid #e1e4e8;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+      border-color: $aws-orange;
+    }
+  }
+
+  .product-img-wrapper {
+    width: 80px;
+    height: 80px;
+    background: white;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .aws-badge-status {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    font-weight: 800;
+  }
+
+  // Form Sidebar
+  .aws-card-form {
+    border-radius: 16px;
+    .form-header-aws {
+      background: linear-gradient(135deg, $aws-navy 0%, #37475a 100%);
+    }
+  }
+
+  .aws-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 800;
+    color: #535b63;
+    margin-bottom: 6px;
+  }
+
+  .aws-input-soft {
+    background-color: #f8f9fa;
+    border: 1px solid #d5dbdb;
+    border-radius: 8px;
+    &:focus {
+      border-color: $aws-orange;
+      box-shadow: 0 0 0 3px rgba($aws-orange, 0.1);
+    }
+  }
+
+  .btn-aws-orange {
+    background-color: $aws-orange;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    letter-spacing: 0.5px;
+    &:hover {
+      background-color: #ec7211;
+      transform: translateY(-1px);
+    }
+  }
+
+  .aws-highline-active {
+    border: 2px solid #ff9900 !important;
+    box-shadow: 0 0 20px rgba(255, 153, 0, 0.3) !important;
+    transform: scale(1.02);
+    transition: all 0.5s ease;
+  }
+
+  @keyframes highline-glow {
+    from {
+      background-color: transparent;
+    }
+    to {
+      background-color: rgba(255, 153, 0, 0.05);
+    }
+  }
+
+  .aws-highline-active {
+    animation: highline-glow 1s infinite alternate;
+  }
+}

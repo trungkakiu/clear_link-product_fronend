@@ -1,0 +1,224 @@
+$aws-orange: #ff9900;
+$aws-navy: #232f3e;
+$aws-light-gray: #f2f3f3;
+$aws-border: #d5dbdb;
+
+.aws-shipping-wrapper {
+  background-color: #fafafa;
+  min-height: 100vh;
+
+  .text-aws-navy {
+    color: $aws-navy;
+  }
+  .text-aws-orange {
+    color: $aws-orange;
+  }
+  .fw-800 {
+    font-weight: 800;
+  }
+  .border-aws-orange {
+    border: 1px solid $aws-orange !important;
+  }
+
+  .loader-full {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 75vh;
+  }
+
+  .icon-circle-sm {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &.bg-aws-orange-light {
+      background: rgba($aws-orange, 0.1);
+      color: $aws-orange;
+    }
+    &.bg-primary-light {
+      background: rgba(13, 110, 253, 0.1);
+      color: #0d6efd;
+    }
+  }
+
+  .aws-select-custom {
+    border: 1px solid $aws-border;
+    padding: 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #fff;
+    &:focus {
+      border-color: $aws-orange;
+      box-shadow: 0 0 0 1px $aws-orange;
+    }
+  }
+
+  .partner-preview-card {
+    background: #fff;
+    border: 1px solid $aws-border;
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    &.transporter {
+      border-left: 5px solid $aws-orange;
+    }
+    &.receiver {
+      border-left: 5px solid #0d6efd;
+    }
+
+    .avatar-aws,
+    .avatar-aws-navy {
+      width: 44px;
+      height: 44px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .avatar-aws {
+      background: #fdf2e9;
+      color: $aws-orange;
+    }
+    .avatar-aws-navy {
+      background: #ebf5fb;
+      color: #0d6efd;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #f2f2f2;
+      .label {
+        font-size: 10px;
+        text-transform: uppercase;
+        font-weight: 800;
+        color: #879596;
+      }
+      .value {
+        font-size: 13px;
+        font-weight: 600;
+        color: $aws-navy;
+      }
+    }
+  }
+
+  .aws-batch-select-card {
+    cursor: pointer;
+    border: 1px solid $aws-border !important;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    &:hover {
+      border-color: $aws-orange !important;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    &.selected {
+      border: 2px solid $aws-orange !important;
+      background-color: #fffaf0;
+      &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        border-style: solid;
+        border-width: 0 30px 30px 0;
+        border-color: transparent $aws-orange transparent transparent;
+      }
+    }
+
+    .aws-checkbox {
+      width: 22px;
+      height: 22px;
+      border: 2px solid #d5dbdb;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      &.checked {
+        background: $aws-orange;
+        border-color: $aws-orange;
+        z-index: 1;
+      }
+    }
+  }
+
+  .aws-shipping-footer {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+
+    margin-top: 40px;
+
+    background: $aws-navy;
+    padding: 15px 0;
+    color: white;
+    z-index: 10;
+
+    border-top: 4px solid $aws-orange;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.15);
+    border-radius: 4px 4px 0 0;
+
+    .summary-item {
+      .label {
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.5);
+        text-transform: uppercase;
+        font-weight: 800;
+        display: block;
+        margin-bottom: 2px;
+      }
+      .value {
+        font-size: 14px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+    }
+
+    // Trên Mobile vẫn hiển thị tốt
+    @media (max-width: 992px) {
+      padding: 12px 0;
+      .summary-divider {
+        display: none;
+      }
+      .summary-item .value {
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+.animate-in {
+  animation: awsSlideUp 0.4s ease-out;
+}
+@keyframes awsSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .aws-shipping-footer {
+    padding: 10px 0;
+    .summary-divider {
+      display: none;
+    }
+  }
+}

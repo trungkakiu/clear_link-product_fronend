@@ -1,0 +1,84 @@
+.aws-selector-card {
+  overflow: hidden;
+  border-radius: 12px;
+
+  .bg-aws-navy {
+    background-color: #232f3e;
+  }
+  .text-aws-orange {
+    color: #ff9900;
+  }
+
+  .aws-tabs-custom {
+    background: #f8f9fa;
+    border: none;
+    .nav-link {
+      color: #6c757d;
+      font-weight: 600;
+      border: none;
+      padding: 1rem 2rem;
+      &.active {
+        background: white;
+        color: #ff9900;
+        border-bottom: 3px solid #ff9900;
+      }
+    }
+  }
+}
+
+.aws-region-accordion {
+  .accordion-item {
+    border-radius: 8px !important;
+  }
+  .accordion-button {
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+    &:focus {
+      box-shadow: none;
+    }
+    &:not(.collapsed) {
+      background-color: #f0f4f8;
+      color: #232f3e;
+    }
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #dee2e6;
+    &.active {
+      background: #ff9900;
+      box-shadow: 0 0 5px #ff9900;
+    }
+  }
+}
+
+// CHIA CỘT TỈNH THÀNH - ĐÂY LÀ PHẦN QUAN TRỌNG NHẤT
+.province-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); // Chia làm 2 cột
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 5px;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 10px;
+  }
+}
+
+.custom-aws-check {
+  .form-check-input:checked {
+    background-color: #ff9900;
+    border-color: #ff9900;
+  }
+  label {
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+}

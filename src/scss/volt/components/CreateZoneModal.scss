@@ -1,0 +1,96 @@
+$aws-navy: #1a1f36;
+$aws-blue: #0061ff;
+$aws-light-bg: #f8fafc;
+$cold-cyan: #0ea5e9;
+$bulk-purple: #8b5cf6;
+$rack-green: #10b981;
+
+.zone-creation-modal {
+  .modal-content {
+    border-radius: 16px;
+    border: none;
+    overflow: hidden;
+  }
+
+  .modal-header {
+    background: $aws-navy;
+    color: white;
+    padding: 1.25rem 2rem;
+
+    .modal-title {
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  // Phân chia vai trò bằng màu sắc
+  .method-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+
+    .method-item {
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+
+      &.active {
+        &.RACKING {
+          border-color: $rack-green;
+          background: rgba($rack-green, 0.05);
+        }
+        &.BULK_STORAGE {
+          border-color: $bulk-purple;
+          background: rgba($bulk-purple, 0.05);
+        }
+        &.COLD_STORAGE {
+          border-color: $cold-cyan;
+          background: rgba($cold-cyan, 0.05);
+        }
+      }
+
+      .icon-box {
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+      }
+      span {
+        font-size: 0.7rem;
+        font-weight: 800;
+        display: block;
+      }
+    }
+  }
+
+  // Panel xem trước
+  .preview-panel {
+    background: $aws-light-bg;
+    border-radius: 12px;
+    height: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 1px solid #e2e8f0;
+
+    .preview-box {
+      aspect-ratio: 16/9;
+      background: white;
+      border-radius: 8px;
+      border: 2px dashed #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+
+      &.active-preview {
+        border-style: solid;
+        border-color: $aws-blue;
+      }
+    }
+  }
+}

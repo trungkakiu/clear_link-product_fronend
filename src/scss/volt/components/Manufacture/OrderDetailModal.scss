@@ -1,0 +1,84 @@
+.aws-collaboration-modal {
+  .modal-content {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .text-aws-navy {
+    color: #232f3e;
+  }
+  .fw-800 {
+    font-weight: 800;
+  }
+  .fw-900 {
+    font-weight: 900;
+  }
+
+  .icon-aws-sm {
+    background: #ff9900;
+    color: white;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+  }
+
+  .header-banner {
+    background: #f1faff;
+    border: 1px solid #d1e9ff;
+  }
+
+  .aws-card {
+    background: white;
+    border: 1px solid #e1e4e8;
+    border-radius: 8px;
+    transition: all 0.2s;
+
+    .section-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #535b63;
+      margin-bottom: 5px;
+    }
+  }
+
+  .bg-soft-primary {
+    background-color: #f8faff;
+  }
+  .bg-soft-success {
+    background-color: #e6fffa;
+  }
+  .bg-soft-warning {
+    background-color: #fffbe6;
+  }
+
+  .border-bottom-dashed {
+    border-bottom: 1px dashed #e1e4e8 !important;
+  }
+
+  .btn-aws {
+    background: #ff9900;
+    border: none;
+    font-weight: bold;
+    &:hover {
+      background: #ec7211;
+    }
+  }
+
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    .header-banner {
+      flex-direction: column;
+      text-align: center;
+      gap: 10px;
+    }
+    .text-end {
+      text-align: center !important;
+    }
+  }
+}

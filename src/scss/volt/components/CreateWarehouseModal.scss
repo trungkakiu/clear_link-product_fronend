@@ -1,0 +1,101 @@
+$aws-navy: #1a1f36;
+$aws-blue: #0061ff;
+$aws-orange: #ff9900;
+$dry-gold: #f59e0b;
+$cold-cyan: #0ea5e9;
+
+.warehouse-init-modal {
+  .modal-content {
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+
+  .modal-header {
+    background: linear-gradient(135deg, $aws-navy 0%, #2d3359 100%);
+    color: white;
+    padding: 1.5rem 2.5rem;
+    border-radius: 20px 20px 0 0;
+
+    .modal-title {
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+  }
+
+  // Card chọn loại kho đặc biệt
+  .type-selector-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
+
+    .type-option {
+      border: 2px solid #f1f5f9;
+      border-radius: 12px;
+      padding: 15px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+
+      &.active {
+        border-color: $aws-blue;
+        background: rgba($aws-blue, 0.04);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 97, 255, 0.1);
+      }
+
+      .icon-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+        font-size: 1.2rem;
+      }
+    }
+  }
+
+  // Khu vực Preview mô phỏng
+  .digital-twin-preview {
+    background: #0f172a; // Nền tối kỹ thuật
+    border-radius: 16px;
+    height: 100%;
+    min-height: 350px;
+    position: relative;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+    .blueprint-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+
+    .warehouse-isometric {
+      z-index: 1;
+      filter: drop-shadow(0 0 20px rgba($aws-blue, 0.4));
+      animation: float 4s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
