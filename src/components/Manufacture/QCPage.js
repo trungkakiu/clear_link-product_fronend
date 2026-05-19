@@ -27,25 +27,50 @@ const QCPage = () => {
   const API_URL =
     process.env.REACT_APP_API_IMAGE_URL || "http://localhost:5000/";
 
-  const getQCData = async () => {
+  const [secondsActive, setSecondsActive] = useState(0);
+  const [isIdle, setIsIdle] = useState(false);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSecondsActive((prev) => {
+        if (prev > 1800) {
+          setIsIdle(true);
+          return prev;
+        }
+        return prev + 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const getQCData = async (isFirstLoad = false) => {
     try {
+      if (isIdle) return;
+      if (isFirstLoad) setIsLoad(true);
+
       const res = await api_request.getQCreadyStatus(User);
       if (res.RC === 200) {
         setQcBatches(res.RD || res.data || []);
       }
     } catch (error) {
-      toast.error("Không thể tải dữ liệu QC");
+      console.error("QC Polling error:", error);
+      if (isFirstLoad) toast.error("Không thể tải dữ liệu QC");
     } finally {
-      setTimeout(() => {
-        setIsLoad(false);
-      }, 1000);
+      if (isFirstLoad) setIsLoad(false);
     }
   };
 
   useEffect(() => {
-    getQCData();
-  }, []);
+    getQCData(true);
 
+    const interval = setInterval(() => {
+      getQCData(false);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+  
   const filteredList = qcBatches.filter(
     (batch) =>
       batch.batch_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -141,7 +166,7 @@ const QCPage = () => {
             <Button
               variant="outline-gray-300"
               className="aws-btn-outline btn-sm"
-              onClick={getQCData}
+              onClick={() => getQCData(false)}
             >
               <i className="fas fa-sync-alt me-1"></i> Làm mới
             </Button>
@@ -309,7 +334,7 @@ const QCPage = () => {
         batchData={modaldata}
         closeReload={() => {
           setmodalstate(false);
-          getQCData();
+          getQCData(false);
         }}
       />
     </div>

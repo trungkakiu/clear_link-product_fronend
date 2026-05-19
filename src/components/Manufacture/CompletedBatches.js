@@ -44,6 +44,22 @@ const CompletedBatches = () => {
 
   const [modalstate, setmodalstate] = useState(false);
   const [detailbatch, setdetailbatch] = useState(false);
+  const [secondsActive, setSecondsActive] = useState(0);
+  const [isIdle, setIsIdle] = useState(false);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSecondsActive((prev) => {
+        if (prev > 1800) {
+          setIsIdle(true);
+          return prev;
+        }
+        return prev + 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const complateBatched = async (challen_code) => {
     try {
@@ -52,34 +68,60 @@ const CompletedBatches = () => {
         challen_code,
         selectedbatch,
       );
-      if (res) {
+
+      if (res && res.RC === 200) {
+        setBatchData((prev) => {
+          const movedBatch = prev.qc_passed.find((b) => b.id === selectedbatch);
+
+          if (!movedBatch) return prev;
+
+          return {
+            ...prev,
+
+            qc_passed: prev.qc_passed.filter((b) => b.id !== selectedbatch),
+
+            pending: [movedBatch, ...prev.pending],
+          };
+        });
+
+        setActiveTab("pending");
+
         return {
           RM: res.RM,
           RC: res.RC,
         };
       }
+
+      return { RM: res?.RM || "Thất bại", RC: res?.RC || 400 };
     } catch (error) {
       console.error(error);
-      return {
-        RM: "Lỗi hệ thống!",
-        RC: 500,
-      };
+      return { RM: "Lỗi hệ thống!", RC: 500 };
     }
   };
-  const fetchAllBatches = async () => {
+  const fetchAllBatches = async (isFirstLoad = false) => {
     try {
-      setIsLoad(true);
+      if (isIdle) return;
+      if (isFirstLoad) setIsLoad(true);
+
       const res = await api_request.getCompletedBatches(User);
-      if (res.RC === 200) setBatchData(res.RD);
+      if (res.RC === 200) {
+        setBatchData(res.RD);
+      }
     } catch (error) {
-      console.error(error);
+      console.error("Polling error:", error);
     } finally {
-      setTimeout(() => setIsLoad(false), 600);
+      if (isFirstLoad) setIsLoad(false);
     }
   };
 
   useEffect(() => {
-    fetchAllBatches();
+    fetchAllBatches(true);
+
+    const interval = setInterval(() => {
+      fetchAllBatches(false);
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const statusConfigs = [
@@ -121,14 +163,14 @@ const CompletedBatches = () => {
         show={detailbatch}
         closeReload={() => {
           setdetailbatch(false);
-          fetchAllBatches();
+          fetchAllBatches(false);
         }}
       />
       <Otp_verify_dynamic
         close={() => setmodalstate(false)}
         closeReload={() => {
           setmodalstate(false);
-          fetchAllBatches();
+          fetchAllBatches(false);
         }}
         message={
           "Xác nhận mã PIN để đưa sản phẩm lên hệ thống, lưu ý sản phẩm on-chain không thể thay đổi!"
@@ -200,7 +242,6 @@ const CompletedBatches = () => {
               <Col xs={12} sm={6} lg={4} xxl={3} key={batch.id}>
                 <Card className="aws-batch-card border-0 shadow-sm h-100">
                   <Card.Body className="p-3">
-
                     <div className="d-flex gap-3 align-items-start mb-3">
                       <Image
                         src={`${process.env.REACT_APP_API_IMAGE_URL}main-card/${batch.product?.main_cardimage}`}
@@ -209,8 +250,8 @@ const CompletedBatches = () => {
                       <div className="flex-grow-1 overflow-hidden">
                         <div
                           className="small fw-bold text-aws-orange text-truncate"
-                          style={{ maxWidth: "160px" }} 
-                          title={batch.id} 
+                          style={{ maxWidth: "160px" }}
+                          title={batch.id}
                         >
                           #{batch.id}
                         </div>
@@ -321,7 +362,7 @@ const CompletedBatches = () => {
                             setdetailbatch(true);
                             setselectedbatch(batch);
                           }}
-                          className="aws-btn-sm fw-bold border-0 btn-success py-2 w-100" 
+                          className="aws-btn-sm fw-bold border-0 btn-success py-2 w-100"
                         >
                           <FontAwesomeIcon
                             icon={faCertificate}

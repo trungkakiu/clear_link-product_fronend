@@ -27,6 +27,12 @@ const api = axios.create({
   },
 });
 
+const getStoredLocation = () => {
+  const lat = localStorage.getItem("last_lat");
+  const lon = localStorage.getItem("last_lon");
+  return { lat, lon };
+};
+
 api.interceptors.request.use(
   (config) => {
     const modalStore = useModalStore.getState();
@@ -43,6 +49,16 @@ api.interceptors.request.use(
 
     if (authToken) {
       config.headers.Authorization = `Bearer ${authToken}`;
+    }
+
+    const { lat, lon } = getStoredLocation();
+    if (lat && lon) {
+      config.headers["x-tracechain-lat"] = lat;
+      config.headers["x-tracechain-lon"] = lon;
+    }
+
+    if (config.resourceId) {
+      config.headers["x-resource-id"] = config.resourceId;
     }
 
     return config;

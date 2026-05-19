@@ -189,7 +189,7 @@ const AdvancedInspectionModal = ({ show, onHide, type, data, closeReload }) => {
 
       <Modal.Body className="p-0 bg-white">
         <Row className="g-0">
-          {/* SIDEBAR - Giao diện Kỹ sư AWS */}
+  
           <Col lg={4} className="bg-light border-end p-4">
             <h6 className="text-uppercase small fw-bold text-muted mb-4 border-bottom pb-2">
               Shipment Details

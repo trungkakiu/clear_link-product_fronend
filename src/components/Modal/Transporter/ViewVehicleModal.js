@@ -242,12 +242,12 @@ const ViewVehicleModal = ({
                         <div
                           key={index}
                           onClick={() =>
-                            handleZoom(`${API_URL}main-card/${img.image_name}`)
+                            handleZoom(`${API_URL}Sub-image/${img.image_name}`)
                           }
                           className="gallery-item-wrapper shadow-xs"
                         >
                           <Image
-                            src={`${API_URL}main-card/${img.image_name}`}
+                            src={`${API_URL}Sub-image/${img.image_name}`}
                             className="gallery-img"
                           />
                         </div>

@@ -20,7 +20,6 @@ class SocketClient {
     this.socket = new WebSocket(socketUrl);
 
     this.socket.onopen = () => {
-      console.log("[6099] Connected via Tunnel!");
       const authData = {
         type: "AUTH_CLIENT",
         isClient: true,
@@ -37,10 +36,6 @@ class SocketClient {
         const response = JSON.parse(event.data);
         if (response.type === "NOTI" && this.callbacks["NOTI"]) {
           this.callbacks["NOTI"](response);
-        }
-
-        if (response.type === "AUTH_SUCCESS") {
-          console.log("[6099] Auth Success!");
         }
       } catch (err) {
         console.error("Parse error:", err);

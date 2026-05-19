@@ -36,6 +36,11 @@ const Distributor_sidebar = ({ level, onCollapse }) => {
       children: [
         {
           title: "Tổng kho",
+          link: Routes.Distributor_current_inventory.path,
+          minLevel: 1,
+        },
+        {
+          title: "Quản lý kho",
           link: Routes.Distributor_inventory.path,
           minLevel: 1,
         },
@@ -123,12 +128,12 @@ const Distributor_sidebar = ({ level, onCollapse }) => {
           minLevel: 4,
         },
         {
-          title: "Yêu cầu hợp tác",
+          title: "Hồ sơ hợp tác",
           link: Routes.Manufacturer_contact_request.path,
           minLevel: 4,
         },
         {
-          title: "Hợp đồng",
+          title: "Hợp đồng mẫu",
           link: Routes.Manufacturer_contractfile.path,
           minLevel: 4,
         },

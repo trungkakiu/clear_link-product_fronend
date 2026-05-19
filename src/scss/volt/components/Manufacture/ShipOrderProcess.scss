@@ -1,7 +1,151 @@
 $aws-orange: #ff9900;
 $aws-navy: #232f3e;
 $aws-light: #f2f3f3;
+$aws-orange: #fb6340;
+$aws-blue: #5e72e4;
+$aws-navy: #1a1d23;
+$white: #ffffff;
 
+.aws-empty-state-container {
+  min-height: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba($aws-navy, 0.03) !important;
+
+  .empty-state-content {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .wave-bg {
+    width: 400px;
+    height: 400px;
+    z-index: 1;
+
+    .wave-circle {
+      position: absolute;
+      top: 50%;
+      start: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      border-radius: 50%;
+      border: 1px solid rgba($aws-blue, 0.08);
+      background: rgba($aws-blue, 0.01);
+      animation: wave-ripple 6s infinite ease-out;
+
+      &.ring-1 {
+        width: 100px;
+        height: 100px;
+        animation-delay: 0s;
+      }
+      &.ring-2 {
+        width: 200px;
+        height: 200px;
+        animation-delay: 2s;
+      }
+      &.ring-3 {
+        width: 300px;
+        height: 300px;
+        animation-delay: 4s;
+      }
+    }
+  }
+
+  .illustration-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .icon-3d-box {
+      width: 120px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: $white;
+      border: 6px solid rgba($white, 0.6);
+      box-shadow:
+        0 15px 35px rgba($aws-navy, 0.05),
+        0 5px 15px rgba($aws-navy, 0.03) !important;
+      animation: float-icon 4s infinite ease-in-out;
+
+      .text-aws-orange {
+        color: $aws-orange;
+        filter: drop-shadow(0 2px 4px rgba($aws-orange, 0.2));
+      }
+    }
+  }
+
+  .tech-dot {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    opacity: 0.5;
+
+    &.dot-1 {
+      top: 10%;
+      start: 20%;
+      width: 15px;
+      height: 15px;
+      animation: float-dot 5s infinite ease-in-out;
+    }
+    &.dot-2 {
+      bottom: 20%;
+      end: 15%;
+      width: 8px;
+      height: 8px;
+      animation: float-dot 4s infinite ease-in-out 1s;
+    }
+  }
+
+  // Text Styling
+  .text-content {
+    .h5 {
+      color: $aws-navy;
+      font-weight: 900;
+    }
+    p {
+      color: rgba($aws-navy, 0.6);
+    }
+  }
+}
+
+@keyframes wave-ripple {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes float-icon {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes float-dot {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(5px, -5px);
+  }
+}
 .bg-soft-orange {
   background-color: rgba(255, 153, 0, 0.1) !important;
 }
@@ -33,6 +177,91 @@ $aws-light: #f2f3f3;
 }
 .fw-800 {
   font-weight: 800;
+}
+
+.aws-tabs-container {
+  padding: 6px;
+  border-radius: 16px;
+  display: inline-block;
+
+  .aws-modern-tabs {
+    border: none;
+
+    .nav-item {
+      margin-right: 4px;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+
+    .aws-tab-link {
+      background: transparent;
+      border: none;
+      border-radius: 12px;
+      color: rgba($aws-navy, 0.6);
+      font-weight: 700;
+      font-size: 0.9rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      padding: 10px 20px;
+
+      .tab-inner {
+        display: flex;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+      }
+
+      // Badge đếm số lượng
+      .tab-badge {
+        background: rgba($aws-navy, 0.1);
+        color: $aws-navy;
+        font-size: 0.75rem;
+        border-radius: 6px;
+        padding: 4px 8px;
+        transition: all 0.3s;
+      }
+
+      // Trạng thái Hover
+      &:hover:not(.active) {
+        background: rgba($white, 0.5);
+        color: $aws-navy;
+      }
+
+      // Trạng thái ACTIVE - Điểm nhấn "Vít Ga"
+      &.active {
+        background: $white !important;
+        color: $aws-blue !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+
+        .tab-badge {
+          background: $aws-blue;
+          color: $white;
+        }
+
+        &::after {
+          content: "";
+          position: absolute;
+          bottom: 0;
+          left: 20%;
+          right: 20%;
+          height: 3px;
+          background: $aws-blue;
+          border-radius: 10px 10px 0 0;
+        }
+      }
+    }
+  }
+}
+
+// Ẩn thanh cuộn nhưng vẫn cho cuộn trên mobile
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .aws-resource-card {

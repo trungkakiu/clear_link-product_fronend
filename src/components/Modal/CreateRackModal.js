@@ -30,6 +30,9 @@ const CreateRackModal = ({ show, handleClose, zone, getWareHouse }) => {
     num_levels: 3,
     num_slots_per_level: 5,
     max_weight: 0,
+    max_height: 0,
+    max_width: 0,
+    max_length: 0,
   });
 
   const [processStatus, setProcessStatus] = useState({
@@ -209,6 +212,64 @@ const CreateRackModal = ({ show, handleClose, zone, getWareHouse }) => {
                       setRackData({
                         ...rackData,
                         max_weight: parseInt(e.target.value) || 1,
+                      })
+                    }
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
+              <Col md={4}>
+                <Form.Group className="mb-3">
+                  <Form.Label className="small fw-bold">
+                    Chiều cao (tầng)
+                  </Form.Label>
+                  <Form.Control
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={rackData.max_height}
+                    onChange={(e) =>
+                      setRackData({
+                        ...rackData,
+                        max_height: parseInt(e.target.value) || 1,
+                      })
+                    }
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={4}>
+                <Form.Group className="mb-3">
+                  <Form.Label className="small fw-bold">
+                    Chiều rộng (Tầng)
+                  </Form.Label>
+                  <Form.Control
+                    type="number"
+                    min="1"
+                    max="20"
+                    value={rackData.max_width}
+                    onChange={(e) =>
+                      setRackData({
+                        ...rackData,
+                        max_width: parseInt(e.target.value) || 1,
+                      })
+                    }
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={4}>
+                <Form.Group className="mb-3">
+                  <Form.Label className="small fw-bold">
+                    Chiều dài (Ô)
+                  </Form.Label>
+                  <Form.Control
+                    type="number"
+                    min="1"
+                    value={rackData.max_length}
+                    onChange={(e) =>
+                      setRackData({
+                        ...rackData,
+                        max_length: parseInt(e.target.value) || 1,
                       })
                     }
                   />

@@ -2,6 +2,7 @@ $aws-orange: #ff9900;
 $aws-navy: #232f3e;
 $aws-green: #28a745;
 $aws-red: #d13212;
+$aws-border: #eaeded;
 
 .aws-view-modal {
   .modal-content {
@@ -14,6 +15,17 @@ $aws-red: #d13212;
   }
   .text-aws-orange {
     color: $aws-orange !important;
+  }
+
+  .qr-container-main {
+    padding: 15px;
+    background: white;
+    border: 1px solid $aws-border;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
   .status-banner {

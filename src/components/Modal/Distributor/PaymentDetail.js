@@ -32,12 +32,11 @@ const PaymentDetail = ({ data }) => {
     });
   };
 
-  // Hàm tính toán font-size dựa trên độ dài chuỗi tiền
   const getFontSize = (amount) => {
     const len = Number(amount || 0).toLocaleString().length;
-    if (len > 12) return "1.1rem"; // Trên 1 tỷ
-    if (len > 9) return "1.25rem"; // Hàng trăm triệu
-    return "1.5rem"; // Mặc định
+    if (len > 12) return "1.1rem";
+    if (len > 9) return "1.25rem";
+    return "1.5rem";
   };
 
   const getStatusConfig = (status) => {
@@ -225,7 +224,6 @@ const PaymentDetail = ({ data }) => {
       `}</style>
     </div>
   );
-  
 };
 
 export default PaymentDetail;

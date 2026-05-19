@@ -83,6 +83,8 @@ import DriverNavigation from "../components/Transporter/DriverNavigation";
 import WarehouseManager from "../components/WarehouseManager";
 import PackagingManager from "../components/Manufacture/PackagingManager";
 
+import AIFloatingButton from "../components/TraceChainAIChat";
+import PhysicalStockPage from "../components/Distributor/PhysicalStockPage";
 export const RouteWithLoader = ({ component: Component, ...rest }) => {
   const [loaded, setLoaded] = useState(false);
 
@@ -164,7 +166,7 @@ const RouteWithSidebar = ({ component: Component, minLevel, ...rest }) => {
             <Preloader show={!loaded} />
             <Sidebar level={User.level} />
             <main
-              className="content d-flex flex-column"
+              className="content d-flex flex-column relative" // <-- Có thể thêm relative ở đây
               style={{ minHeight: "100vh" }}
             >
               <Navbar />
@@ -177,6 +179,8 @@ const RouteWithSidebar = ({ component: Component, minLevel, ...rest }) => {
                 toggleSettings={toggleSettings}
                 showSettings={showSettings}
               />
+
+              <AIFloatingButton />
             </main>
           </>
         );
@@ -242,6 +246,11 @@ export default () => (
       exact
       path={Routes.Manufacturer_ORM.path}
       component={OEMproductions}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.Distributor_current_inventory.path}
+      component={PhysicalStockPage}
     />
     <RouteWithSidebar
       exact

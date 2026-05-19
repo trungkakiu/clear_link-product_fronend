@@ -1,574 +1,469 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useContext,
+  useCallback,
+  useRef,
+} from "react";
 import {
   Button,
   InputGroup,
   Form,
   Spinner,
-  Navbar,
-  Container,
-  Nav,
   Badge,
-  Col,
-  Row,
+  OverlayTrigger,
+  Tooltip,
 } from "@themesberg/react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
   faSearch,
   faWarehouse,
+  faLayerGroup,
+  faServer,
+  faSync,
   faBoxOpen,
+  faMapMarkerAlt,
   faChevronDown,
+  faChevronUp,
 } from "@fortawesome/free-solid-svg-icons";
 import "../scss/volt/components/WarehouseManager.scss";
 import { toast } from "react-toastify";
 import api_request from "../apicontroller/api_request";
 import { UserContext } from "../Context/UserContext";
+
+// Khai báo Modal
 import StructureGuideModal from "./Modal/StructureGuideModal";
 import CreateZoneModal from "./Modal/CreateZoneModal";
 import CreateWarehouseModal from "./Modal/CreateWarehouseModal";
 import CreateRackModal from "./Modal/CreateRackModal";
 
 const WarehouseManager = () => {
-  const [dbData, setdbData] = useState([]);
   const { User } = useContext(UserContext);
+  const [warehouses, setWarehouses] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterType, setFilterType] = useState("all");
-  const [expandedZones, setExpandedZones] = useState({});
-  const [isload, setisload] = useState(false);
+
+  // FIX LOGIC MODAL: Để mặc định là các cờ (flags) thay vì tháo lắp component
   const [modalstate, setmodalstate] = useState({
     totural: false,
-    createzone: false,
     createwarehouse: false,
-    createRacks: false,
+    createzone: false,
+    createrack: false,
   });
-  const [modalData, setmodalData] = useState();
 
-  const openModal = (key, data) => {
-    setmodalstate((prev) => ({
-      ...prev,
-      [key]: true,
-    }));
-    if (data) {
-      setmodalData(data);
-    }
-  };
+  // STATE ĐÓNG MỞ KHO VÀ KỆ
+  const [expandedZones, setExpandedZones] = useState({});
+  const [expandedRacks, setExpandedRacks] = useState({}); // <-- State mới cho Racks
 
-  const [expandedRacks, setExpandedRacks] = useState({});
+  const pollInterval = useRef(null);
 
-  const toggleRack = (rackId) => {
-    setExpandedRacks((prev) => ({ ...prev, [rackId]: !prev[rackId] }));
-  };
+  // ==========================================
+  // LẤY DỮ LIỆU & SILENT POLLING
+  // ==========================================
+  const fetchData = useCallback(
+    async (isSilent = false) => {
+      if (!isSilent) setIsLoading(true);
+      else setIsSyncing(true);
 
-  const closeModal = (key) => {
-    setmodalstate((prev) => ({
-      ...prev,
-      [key]: false,
-    }));
-  };
+      try {
+        const res = await api_request.getWareHouseApi(User);
 
-  const getWareHouse = async () => {
-    try {
-      setisload(true);
-      const res = await api_request.getWareHouseApi(User);
-      if (res && res.RC === 200) {
-        setdbData(res.RD);
-      } else {
-        toast.error(res?.RM || "Không thể lấy dữ liệu kho");
+        if (res && res.RC === 200) {
+          setWarehouses(res.RD || []);
+        } else {
+          if (!isSilent) toast.error(res?.RM || "Không thể lấy dữ liệu kho");
+        }
+      } catch (error) {
+        if (!isSilent) toast.error("Lỗi kết nối đến máy chủ!");
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+        setIsSyncing(false);
       }
-    } catch (error) {
-      console.error(error);
-      toast.error("Lỗi hệ thống kết nối Meta Node!");
-    } finally {
-      setisload(false);
-    }
-  };
+    },
+    [User],
+  );
 
   useEffect(() => {
-    if (User) getWareHouse();
-  }, [User]);
+    fetchData();
+    pollInterval.current = setInterval(() => fetchData(true), 10000);
+    return () => clearInterval(pollInterval.current);
+  }, [fetchData]);
 
-  const toggleZone = (id) => {
-    setExpandedZones((prev) => ({ ...prev, [id]: !prev[id] }));
+  const openModal = (modalName) =>
+    setmodalstate((prev) => ({ ...prev, [modalName]: true }));
+  const closeModal = (modalName) =>
+    setmodalstate((prev) => ({ ...prev, [modalName]: false }));
+
+  const toggleZone = (zoneId) =>
+    setExpandedZones((prev) => ({ ...prev, [zoneId]: !prev[zoneId] }));
+  const toggleRack = (rackId) =>
+    setExpandedRacks((prev) => ({ ...prev, [rackId]: !prev[rackId] }));
+
+  const groupSlotsByLevel = (slots) => {
+    if (!slots) return {};
+    const grouped = {};
+
+    slots.forEach((slot) => {
+      const levelMatch = slot.slot_code.match(/-L(\d+)-/i);
+      const levelNum = levelMatch ? parseInt(levelMatch[1], 10) : 1;
+
+      if (!grouped[levelNum]) grouped[levelNum] = [];
+      grouped[levelNum].push(slot);
+    });
+
+    const sortedGrouped = {};
+    Object.keys(grouped)
+      .sort((a, b) => b - a)
+      .forEach((key) => {
+        grouped[key].sort((a, b) => {
+          const sA = parseInt(a.slot_code.match(/-S(\d+)$/)?.[1] || 0);
+          const sB = parseInt(b.slot_code.match(/-S(\d+)$/)?.[1] || 0);
+          return sA - sB;
+        });
+        sortedGrouped[`TẦNG ${key}`] = grouped[key];
+      });
+
+    return sortedGrouped;
+  };
+
+  // ==========================================
+  // COMPONENT RENDERING: HỘP NƯỚC (SLOT UI)
+  // ==========================================
+  const renderSlot = (slot) => {
+    const maxVol = parseFloat(slot.max_volume) || 1;
+    const currentVol = parseFloat(slot.current_volume) || 0;
+    const reservedVol = parseFloat(slot.reserved_volume) || 0;
+    const totalUsedVol = currentVol + reservedVol;
+
+    const fillPercentage = Math.min((totalUsedVol / maxVol) * 100, 100);
+
+    const hasInventory = slot.inventory && slot.inventory.length > 0;
+    const firstItem = hasInventory ? slot.inventory[0] : null;
+    const totalQty = hasInventory
+      ? slot.inventory.reduce((sum, item) => sum + item.quantity, 0)
+      : 0;
+
+    const imageUrl = firstItem?.product_info?.main_cardimage
+      ? `https://api.clearlink.io.vn/main-card/${firstItem.product_info.main_cardimage}`
+      : null;
+
+    const shortCode = slot.slot_code.match(/-S(\d+)$/)?.[1] || "0";
+
+    return (
+      <div key={slot.id} className="slot-water-box">
+        <div
+          className="water-level"
+          style={{
+            height: `${fillPercentage}%`,
+            backgroundColor: fillPercentage > 90 ? "#fecaca" : "#bae6fd",
+            borderTop:
+              fillPercentage > 0 ? "2px solid rgba(14, 165, 233, 0.4)" : "none",
+          }}
+        />
+
+        <div className="slot-content">
+          <div className="d-flex justify-content-between align-items-start mb-1">
+            <Badge bg="dark" className="shadow-sm">
+              S{shortCode}
+            </Badge>
+            <span
+              className={`fw-bold ${fillPercentage > 90 ? "text-danger" : "text-primary"}`}
+              style={{
+                fontSize: "0.65rem",
+                background: "rgba(255,255,255,0.85)",
+                padding: "2px 4px",
+                borderRadius: "4px",
+              }}
+            >
+              {fillPercentage.toFixed(1)}%
+            </span>
+          </div>
+
+          <div className="d-flex flex-column align-items-center justify-content-center flex-grow-1">
+            {hasInventory ? (
+              <>
+                <div
+                  className="bg-white rounded overflow-hidden shadow-sm d-flex align-items-center justify-content-center mb-1"
+                  style={{
+                    width: "58px",
+                    height: "68px",
+                    border: "1px solid #e2e8f0",
+                  }}
+                >
+                  {imageUrl ? (
+                    <img
+                      src={imageUrl}
+                      alt="SP"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  ) : (
+                    <FontAwesomeIcon
+                      icon={faBoxOpen}
+                      className="text-secondary"
+                    />
+                  )}
+                </div>
+                <div
+                  className="text-truncate fw-bold w-100 text-center text-dark"
+                  style={{ fontSize: "0.8rem" }}
+                >
+                  {firstItem.batch_id}
+                </div>
+                <Badge
+                  bg="success"
+                  className="mt-1 shadow-sm"
+                  style={{ fontSize: "0.6rem" }}
+                >
+                  {totalQty} SP
+                </Badge>
+              </>
+            ) : reservedVol > 0 ? (
+              <span
+                className="text-warning fw-bold small text-center"
+                style={{ fontSize: "0.65rem", lineHeight: "1.2" }}
+              >
+                ĐANG CHỜ
+                <br />
+                NHẬP KHO
+              </span>
+            ) : (
+              <span
+                className="text-muted fw-bold opacity-25"
+                style={{ fontSize: "0.75rem" }}
+              >
+                TRỐNG
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
-    <div className="warehouse-container p-3">
-      <StructureGuideModal
-        handleClose={() => closeModal("totural")}
-        show={modalstate.totural}
-      />
-
-      <CreateRackModal
-        getWareHouse={modalstate.createRacks}
-        handleClose={() => closeModal("createRacks")}
-        show={modalstate.createRacks}
-        zone={modalData}
-      />
-
-      <CreateZoneModal
-        handleClose={() => closeModal("createzone")}
-        show={modalstate.createzone}
-        warehouse={modalData}
-        index={modalData}
-      />
-
-      <CreateWarehouseModal
-        handleClose={() => closeModal("createwarehouse")}
-        closeReload={() => {
-          closeModal("createwarehouse");
-          getWareHouse();
-        }}
-        show={modalstate.createwarehouse}
-      />
-      <Navbar
-        variant="light"
-        className="warehouse-header-wrapper shadow-sm mb-4"
-      >
-        <Container fluid className="px-4">
-          <Nav className="me-auto d-flex flex-column">
-            <Navbar.Brand className="d-flex align-items-center mb-0">
-              <FontAwesomeIcon
-                icon={faWarehouse}
-                className="text-primary me-3"
-                size="lg"
-              />
-              <span className="main-title fw-extrabold">
-                Quản lý Kho hàng TraceChain
-              </span>
-            </Navbar.Brand>
-            <div className="sub-status d-flex align-items-center">
-              <span className="status-indicator me-2"></span>
-              Meta Node: System Operational
-            </div>
-          </Nav>
-
-          <div className="d-flex align-items-center gap-3">
-            {isload && (
-              <Nav.Item className="loading-tag-wrapper d-none d-lg-flex align-items-center px-3 py-1 rounded-pill">
-                <Spinner
-                  animation="grow"
-                  size="sm"
-                  className="text-primary me-2"
-                />
-                <small className="text-primary fw-bold">SYNCING</small>
-              </Nav.Item>
-            )}
-
-            <Form className="d-flex gap-2 align-items-center">
-              <InputGroup className="custom-input-group border-0 shadow-sm">
-                <InputGroup.Text className="bg-white border-0">
-                  <FontAwesomeIcon icon={faSearch} className="text-gray-400" />
-                </InputGroup.Text>
-                <Form.Control
-                  type="text"
-                  className="border-0"
-                  placeholder="Tìm mã kệ hoặc vị trí..."
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </InputGroup>
-
-              <Form.Select
-                className="custom-select border-0 shadow-sm fw-bold text-gray-700"
-                style={{ width: "200px" }}
-                onChange={(e) => setFilterType(e.target.value)}
-              >
-                <option value="all">⚡ Tất cả phân loại</option>
-                <option value="RACKING">📦 Kệ tầng</option>
-                <option value="BULK_STORAGE">🏠 Hàng tập trung</option>
-              </Form.Select>
-            </Form>
-          </div>
-        </Container>
-      </Navbar>
-
-      {dbData && dbData.length > 0 ? (
-        dbData.map((warehouse) => (
-          <div key={warehouse.id} className="warehouse-section mb-5">
-            <div className="warehouse-title-bar mb-3 d-flex align-items-center border-bottom pb-2">
-              <h5 className="mb-0 fw-bold text-primary">
-                <FontAwesomeIcon icon={faBoxOpen} className="me-2" />
-                {warehouse.warehouse_name}
-                <small
-                  className="ms-2 text-muted fw-normal"
-                  style={{ fontSize: "0.8rem" }}
-                >
-                  ({warehouse.location})
-                </small>
-              </h5>
-            </div>
-
-            {warehouse.zones && warehouse.zones.length > 0 ? (
-              warehouse.zones
-                .filter(
-                  (z) =>
-                    filterType === "all" || z.storage_method === filterType,
-                )
-                .map((zone) => (
-                  <div key={zone.id} className="zone-card mb-4">
-                    <div
-                      className="zone-header d-flex justify-content-between align-items-center"
-                      onClick={() => toggleZone(zone.id)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <div className="d-flex align-items-center">
-                        <span
-                          className={`badge me-3 ${zone.storage_method === "RACKING" ? "bg-info" : "bg-success"}`}
-                        >
-                          {zone.storage_method}
-                        </span>
-                        <span className="fw-bold text-navy">
-                          {zone.zone_name}
-                        </span>
-                        {zone.is_expirable && (
-                          <span
-                            className="ms-2 text-danger small"
-                            style={{ fontSize: "0.65rem" }}
-                          >
-                            • Có hạn dùng
-                          </span>
-                        )}
-                      </div>
-                      {(() => {
-                        switch (zone?.storage_method) {
-                          case "RACKING":
-                            return (
-                              <div className="d-flex align-items-center gap-2">
-                                <Button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    openModal("createRacks", zone);
-                                  }}
-                                  size="sm"
-                                  variant="outline-primary"
-                                  className="border-0 shadow-none"
-                                >
-                                  <FontAwesomeIcon
-                                    icon={faPlus}
-                                    className="me-1"
-                                  />{" "}
-                                  Thêm Rack
-                                </Button>
-                                <FontAwesomeIcon
-                                  icon={faChevronDown}
-                                  className={`ms-2 text-muted transition-300 ${expandedZones[zone.id] ? "rotate-180" : ""}`}
-                                />
-                              </div>
-                            );
-                          case "BULK_STORAGE":
-                            return (
-                              <div className="d-flex align-items-center gap-2">
-                                <Button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    openModal("createSlot", zone);
-                                  }}
-                                  size="sm"
-                                  variant="outline-success"
-                                  className="border-0 shadow-none"
-                                >
-                                  <FontAwesomeIcon
-                                    icon={faPlus}
-                                    className="me-1"
-                                  />{" "}
-                                  Thêm hàng hóa
-                                </Button>
-                                <FontAwesomeIcon
-                                  icon={faChevronDown}
-                                  className={`ms-2 text-muted transition-300 ${expandedZones[zone.id] ? "rotate-180" : ""}`}
-                                />
-                              </div>
-                            );
-                          default:
-                            return null;
-                        }
-                      })()}{" "}
-                    </div>
-
-                    <div
-                      className={`zone-collapse-content ${expandedZones[zone.id] ? "show" : "hide"}`}
-                    >
-                      <Row className="racks-grid-system g-3 pd-2">
-                        {zone?.storage_method === "BULK_STORAGE" && <></>}
-                        {zone?.storage_method !== "BULK_STORAGE" && (
-                          <>
-                            {zone.Racks && zone.Racks.length > 0 ? (
-                              zone.Racks.map((rack) => (
-                                <Col xs={12} key={rack.id}>
-                                  <div
-                                    className={`rack-row-card ${expandedRacks[rack.id] ? "is-expanded" : ""}`}
-                                  >
-                                    <div
-                                      className="rack-header-action"
-                                      onClick={() => toggleRack(rack.id)}
-                                    >
-                                      <Row className="align-items-center w-100 g-0">
-                                        <Col
-                                          xs={8}
-                                          md={6}
-                                          className="d-flex align-items-center gap-3 ps-3"
-                                        >
-                                          <div className="rack-status-pill"></div>
-                                          <span className="rack-id-text">
-                                            {rack.rack_code}
-                                          </span>
-                                          <Badge
-                                            bg="dark"
-                                            className="rack-stats-badge d-none d-sm-inline-block"
-                                          >
-                                            {rack.num_levels} Tầng •{" "}
-                                            {rack.slots?.length || 0} Ô
-                                          </Badge>
-                                        </Col>
-                                        <Col
-                                          xs={4}
-                                          md={6}
-                                          className="d-flex align-items-center justify-content-end pe-3 gap-4"
-                                        >
-                                          <div className="occupancy-stats d-none d-lg-flex align-items-center gap-2">
-                                            <small className="fw-bold opacity-50">
-                                              LOAD:
-                                            </small>
-                                            <div className="mini-progress">
-                                              <div
-                                                className="fill"
-                                                style={{ width: "65%" }}
-                                              ></div>
-                                            </div>
-                                          </div>
-                                          <FontAwesomeIcon
-                                            icon={faChevronDown}
-                                            className={`collapse-icon ${expandedRacks[rack.id] ? "rotate-180" : ""}`}
-                                          />
-                                        </Col>
-                                      </Row>
-                                    </div>
-
-                                    <div className="rack-body-content">
-                                      <div className="p-4">
-                                        {(() => {
-                                          const levelsMap =
-                                            rack.slots?.reduce((acc, slot) => {
-                                              const match =
-                                                slot.slot_code.match(
-                                                  /-L(\d+)-/,
-                                                );
-                                              const lv = match
-                                                ? parseInt(match[1])
-                                                : 1;
-                                              if (!acc[lv]) acc[lv] = [];
-                                              acc[lv].push(slot);
-                                              return acc;
-                                            }, {}) || {};
-
-                                          Object.keys(levelsMap).forEach(
-                                            (lv) => {
-                                              levelsMap[lv].sort((a, b) => {
-                                                const matchA =
-                                                  a.slot_code.match(/-S(\d+)$/);
-                                                const matchB =
-                                                  b.slot_code.match(/-S(\d+)$/);
-                                                return (
-                                                  (matchA
-                                                    ? parseInt(matchA[1])
-                                                    : 0) -
-                                                  (matchB
-                                                    ? parseInt(matchB[1])
-                                                    : 0)
-                                                );
-                                              });
-                                            },
-                                          );
-
-                                          const sortedLevels = Object.keys(
-                                            levelsMap,
-                                          ).sort((a, b) => b - a);
-
-                                          return sortedLevels.map((lv) => (
-                                            <div
-                                              key={`level-${lv}`}
-                                              className="rack-level-row mb-4"
-                                            >
-                                              <div className="level-label-anchor d-flex align-items-center gap-2 mb-3">
-                                                <Badge
-                                                  bg="primary"
-                                                  className="px-3 py-2 shadow-sm"
-                                                  style={{
-                                                    fontSize: "0.7rem",
-                                                    letterSpacing: "1px",
-                                                  }}
-                                                >
-                                                  LEVEL_0{lv}
-                                                </Badge>
-                                                <div
-                                                  className="h-line flex-grow-1"
-                                                  style={{
-                                                    height: "1px",
-                                                    background:
-                                                      "rgba(0,0,0,0.05)",
-                                                  }}
-                                                ></div>
-                                              </div>
-
-                                              <Row className="g-3 flex-nowrap overflow-auto pb-3 custom-scrollbar">
-                                                {levelsMap[lv].map((slot) => (
-                                                  <Col xs="auto" key={slot.id}>
-                                                    <div
-                                                      className={`slot-box-premium ${slot.status !== "EMPTY" ? "active" : ""}`}
-                                                      style={{ width: "130px" }}
-                                                    >
-                                                      <div className="slot-meta">
-                                                        <span className="idx">
-                                                          S
-                                                          {slot.slot_code.match(
-                                                            /-S(\d+)$/,
-                                                          )?.[1] || "0"}
-                                                        </span>
-                                                        <div className="pulse-dot"></div>
-                                                      </div>
-                                                      {slot.status !==
-                                                      "EMPTY" ? (
-                                                        <div className="cargo-info">
-                                                          <FontAwesomeIcon
-                                                            icon={faBoxOpen}
-                                                            className="icon"
-                                                          />
-                                                          <div className="sku">
-                                                            SKU-TRACE
-                                                          </div>
-                                                        </div>
-                                                      ) : (
-                                                        <div className="vacant-text d-flex align-items-center justify-content-center flex-grow-1 w-100">
-                                                          EMPTY
-                                                        </div>
-                                                      )}
-                                                    </div>
-                                                  </Col>
-                                                ))}
-                                                <Col xs="auto">
-                                                  <div
-                                                    className="slot-box-premium add-trigger"
-                                                    style={{ width: "60px" }}
-                                                  >
-                                                    <FontAwesomeIcon
-                                                      icon={faPlus}
-                                                    />
-                                                  </div>
-                                                </Col>
-                                              </Row>
-                                            </div>
-                                          ));
-                                        })()}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </Col>
-                              ))
-                            ) : (
-                              <Col xs={12}>
-                                <div className="empty-zone-placeholder text-center py-5 border-dashed">
-                                  <p className="mb-0 text-muted">
-                                    Hệ thống Meta Node chưa ghi nhận Dãy kệ
-                                    (Rack) tại Zone này.
-                                  </p>
-                                </div>
-                              </Col>
-                            )}
-                          </>
-                        )}
-                      </Row>
-                    </div>
-                  </div>
-                ))
+    <div className="wms-dashboard">
+      {/* TOOLBAR */}
+      <div className="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded shadow-sm border">
+        <div className="d-flex align-items-center gap-3">
+          <h4 className="m-0 fw-bold d-flex align-items-center gap-2">
+            <FontAwesomeIcon icon={faWarehouse} className="text-primary" />
+            Meta Warehouse
+          </h4>
+          <div
+            className={`badge ${isSyncing ? "bg-warning text-dark" : "bg-success"} rounded-pill d-flex align-items-center px-3 py-2 shadow-sm`}
+          >
+            {isSyncing ? (
+              <FontAwesomeIcon icon={faSync} spin className="me-2" />
             ) : (
-              <Button
-                onClick={() => openModal("createzone", warehouse)}
-                variant="outline-primary"
-                className="add-btn-dashed w-100 py-3"
-              >
-                <FontAwesomeIcon icon={faPlus} className="me-2" /> TRỐNG - THÊM
-                KHU VỰC (ZONE) CHO KHO NÀY
-              </Button>
+              <div
+                style={{
+                  width: "8px",
+                  height: "8px",
+                  borderRadius: "50%",
+                  background: "#fff",
+                  marginRight: "8px",
+                  animation: "pulse 2s infinite",
+                }}
+              ></div>
             )}
-
-            <Button
-              onClick={() => {
-                openModal("createzone", warehouse);
-              }}
-              variant="outline-primary"
-              className="add-btn-dashed w-100 py-3 mt-3"
-            >
-              <FontAwesomeIcon icon={faPlus} className="me-2" />
-              THÊM KHU VỰC (ZONE)
-            </Button>
-          </div>
-        ))
-      ) : (
-        <div className="empty-warehouse-placeholder mt-5">
-          <div className="illustration-wrapper">
-            <svg
-              width="180"
-              height="180"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M3 9L12 3L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z"
-                stroke="#0061ff"
-                strokeWidth="1"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                opacity="0.2"
-              />
-              <path
-                d="M9 22V12H15V22"
-                stroke="#ff9900"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <circle
-                cx="12"
-                cy="12"
-                r="3"
-                stroke="#0061ff"
-                strokeWidth="1.5"
-                strokeDasharray="2 2"
-              />
-            </svg>
-          </div>
-
-          <div className="content-wrapper">
-            <h2 className="text-navy">Sẵn sàng khởi tạo Meta Node?</h2>
-            <p>
-              Hệ thống TraceChain hiện chưa ghi nhận cấu trúc kho hàng của bạn.
-              Hãy bắt đầu xây dựng các Zone, Rack và Slot để quản lý quy trình
-              quản lý tồn kho ngay bây giờ.
-            </p>
-
-            <div className="d-flex justify-content-center gap-3">
-              <Button
-                onClick={() => openModal("createwarehouse")}
-                className="btn-initialize"
-              >
-                <FontAwesomeIcon icon={faPlus} className="me-2" /> Khởi tạo Kho
-                hàng ngay
-              </Button>
-              <Button
-                onClick={() => openModal("totural")}
-                variant="outline-secondary"
-                style={{ borderRadius: "12px" }}
-              >
-                Xem hướng dẫn cấu trúc
-              </Button>
-            </div>
-          </div>
-
-          <div className="position-absolute bottom-0 end-0 p-3 text-muted opacity-25 font-mono small">
-            TRACECHAIN_PROTO_V2.0 // WAREHOUSE_NULL
+            {isSyncing ? "Đang đồng bộ..." : "Live Data"}
           </div>
         </div>
+        <div>
+          <Button
+            variant="primary"
+            className="fw-bold px-4 shadow-sm"
+            onClick={() => openModal("createwarehouse")}
+          >
+            <FontAwesomeIcon icon={faPlus} className="me-2" /> Thêm khu vực
+          </Button>
+        </div>
+      </div>
+
+      {isLoading ? (
+        <div
+          className="d-flex flex-column justify-content-center align-items-center"
+          style={{ height: "50vh" }}
+        >
+          <Spinner
+            animation="border"
+            variant="primary"
+            style={{ width: "3rem", height: "3rem" }}
+          />
+          <p className="mt-3 text-muted fw-bold">
+            Đang tải cấu trúc Không gian Kho...
+          </p>
+        </div>
+      ) : warehouses.length === 0 ? (
+        <div className="text-center py-5">
+          <FontAwesomeIcon
+            icon={faServer}
+            className="text-muted opacity-25 mb-3"
+            style={{ fontSize: "4rem" }}
+          />
+          <h4 className="fw-bold">Hệ thống kho đang trống</h4>
+          <p className="text-muted">
+            Bạn chưa khởi tạo dữ liệu kho nào trên hệ thống.
+          </p>
+        </div>
+      ) : (
+        warehouses.map((wh) => (
+          <div key={wh.id} className="wh-card">
+            <div className="wh-header bg-primary text-white d-flex justify-content-between align-items-start p-3 rounded-top">
+              <div>
+                <h5 className="m-0 fw-bold text-white">{wh.warehouse_name}</h5>
+                <small className="opacity-75 d-flex align-items-center mt-1">
+                  <FontAwesomeIcon icon={faMapMarkerAlt} className="me-2" />{" "}
+                  {wh.location}
+                </small>
+              </div>
+              <Badge bg="light" text="dark" className="px-3 py-2 fw-bold">
+                {wh.warehouse_type}
+              </Badge>
+            </div>
+
+            {wh.zones &&
+              wh.zones.map((zone) => (
+                <div key={zone.id} className="zone-section">
+                  <div
+                    className="zone-title"
+                    onClick={() => toggleZone(zone.id)}
+                    style={{ cursor: "pointer", userSelect: "none" }}
+                  >
+                    <FontAwesomeIcon
+                      icon={faLayerGroup}
+                      className="text-primary"
+                    />
+                    {zone.zone_name}
+                    <span className="text-muted fw-normal fs-6">
+                      ({zone.storage_method})
+                    </span>
+
+                    <div className="ms-auto d-flex align-items-center gap-3">
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openModal("createrack");
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faPlus} className="me-1" /> Thêm
+                        Kệ
+                      </Button>
+                      <FontAwesomeIcon
+                        icon={
+                          expandedZones[zone.id] ? faChevronDown : faChevronUp
+                        }
+                        className="text-muted"
+                      />
+                    </div>
+                  </div>
+
+                  {!expandedZones[zone.id] && (
+                    <div className="row mt-3 align-items-start">
+                      {zone.Racks &&
+                        zone.Racks.map((rack) => (
+                          <div key={rack.id} className="col-12 col-xl-6 mb-3">
+                          
+                            <div className="rack-container">
+                              <div
+                                className="rack-header d-flex justify-content-between align-items-center"
+                                onClick={() => toggleRack(rack.id)}
+                                style={{
+                                  cursor: "pointer",
+                                  userSelect: "none",
+                                  marginBottom: expandedRacks[rack.id]
+                                    ? "0"
+                                    : "1rem",
+                                }}
+                              >
+                                <span>
+                                  <FontAwesomeIcon
+                                    icon={faServer}
+                                    className="me-2 text-secondary"
+                                  />
+                                  {rack.rack_code || "Kệ chưa đặt tên"}
+                                </span>
+                                <div>
+                                  <Badge bg="secondary" className="me-3">
+                                    {rack.slots?.length || 0} Ô chứa
+                                  </Badge>
+                                  <FontAwesomeIcon
+                                    icon={
+                                      expandedRacks[rack.id]
+                                        ? faChevronDown
+                                        : faChevronUp
+                                    }
+                                    className="text-muted"
+                                  />
+                                </div>
+                              </div>
+
+                              {!expandedRacks[rack.id] && (
+                                <div className="mt-3">
+                                  {Object.entries(
+                                    groupSlotsByLevel(rack.slots),
+                                  ).map(([levelName, slotsInLevel]) => (
+                                    <div key={levelName} className="level-row">
+                                      <div className="level-indicator">
+                                        {levelName}
+                                      </div>
+                                      <div className="slots-wrapper">
+                                        {slotsInLevel.map((slot) =>
+                                          renderSlot(slot),
+                                        )}
+                                      </div>
+                                    </div>
+                                  ))}
+
+                                  {(!rack.slots || rack.slots.length === 0) && (
+                                    <div className="text-center text-muted small p-3 font-monospace">
+                                      -- Kệ này chưa thiết lập Ô chứa --
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+          </div>
+        ))
       )}
+
+      {/* RENDER MODAL AN TOÀN - LUÔN GẮN TRONG DOM ĐỂ HIỆU ỨNG BOOTSTRAP CHẠY ĐÚNG */}
+      <StructureGuideModal
+        show={modalstate.totural}
+        onHide={() => closeModal("totural")}
+      />
+      <CreateWarehouseModal
+        show={modalstate.createwarehouse}
+        handleClose={() => closeModal("createwarehouse")}
+        LoadData={fetchData}
+      />
+      <CreateZoneModal
+        show={modalstate.createzone}
+        handleClose={() => closeModal("createzone")}
+        LoadData={fetchData}
+      />
+      <CreateRackModal
+        show={modalstate.createrack}
+        handleClose={() => closeModal("createrack")}
+        LoadData={fetchData}
+        data={warehouses}
+      />
     </div>
   );
 };

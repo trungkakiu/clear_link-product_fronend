@@ -50,9 +50,10 @@ const DepartmentVisualizer = () => {
     return runDate <= today;
   };
 
-  const getMockDepartments = async () => {
+  const getMockDepartments = async (isFirstLoad = false) => {
     try {
-      setIsLoad(true);
+      if (isFirstLoad) setIsLoad(true);
+
       const res = await api_request.get_departments(User);
       if (res.RC === 200) {
         setMockDepartments(res.RD);
@@ -60,12 +61,21 @@ const DepartmentVisualizer = () => {
     } catch (error) {
       console.error("Failed to fetch departments:", error);
     } finally {
-      setTimeout(() => {
-        setIsLoad(false);
-      }, 1000);
+      if (isFirstLoad) {
+        setTimeout(() => setIsLoad(false), 1000);
+      }
     }
   };
 
+  useEffect(() => {
+    getMockDepartments(true);
+
+    const interval = setInterval(() => {
+      getMockDepartments(false);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
   const productBatchState = async (batch, status) => {
     try {
       if (!batch || !status) {
@@ -76,7 +86,7 @@ const DepartmentVisualizer = () => {
       }
       const res = await api_request.set_batch_state(User, batch.id, status);
       if (res.RC === 200) {
-        getMockDepartments();
+        getMockDepartments(false);
       } else {
         toast.error(
           `Cập nhật trạng thái lô hàng ${batch.batch_name} thất bại!`,
@@ -97,10 +107,6 @@ const DepartmentVisualizer = () => {
       );
     }
   };
-
-  useEffect(() => {
-    getMockDepartments();
-  }, []);
 
   const updateBatchQuantity = async (batchId, newQtt) => {
     try {

@@ -1,0 +1,123 @@
+// ==========================================
+// RETAILER CATALOG - LIGHT & CLEAN THEME
+// ==========================================
+
+$bg-light-body: #f4f5f7;
+$card-white: #ffffff;
+$primary-color: #0d6efd;
+$text-dark: #2c3e50;
+$text-muted: #8392a5;
+$border-color: #eaedf2;
+
+.physical-stock-page-light {
+  background-color: $bg-light-body;
+  min-height: 100vh;
+  color: $text-dark;
+
+  // Custom Grid: Ép 1 hàng hiển thị 5 thẻ trên màn hình lớn (100% / 5 = 20%)
+  @media (min-width: 1400px) {
+    .col-5-custom {
+      flex: 0 0 auto;
+      width: 20%;
+    }
+  }
+
+  // Card Sáng sủa, gọn nhẹ
+  .pos-stock-card {
+    background: $card-white;
+    border-radius: 8px;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+    height: 100%;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .card-image-wrapper {
+      position: relative;
+      height: 140px; // Chiều cao ảnh nhỏ lại cho gọn
+      background-color: #f8f9fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid $border-color;
+      border-radius: 8px 8px 0 0;
+      overflow: hidden;
+      padding: 10px;
+
+      .product-img {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+      }
+
+      .version-badge {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        font-size: 0.7rem;
+      }
+      .version-badge-left {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        font-size: 0.7rem;
+      }
+    }
+
+    .product-title {
+      font-weight: 600;
+      color: $text-dark;
+      font-size: 0.95rem;
+    }
+
+    // Khối Giá bán
+    .pricing-block {
+      background: #f8f9fa;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid $border-color;
+
+      .fs-6 {
+        font-size: 1.1rem !important; // Giá to vừa phải
+      }
+
+      .edit-btn {
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        background: white;
+
+        &:hover {
+          background: #e9ecef;
+        }
+      }
+
+      .edit-price-group {
+        .form-control {
+          font-weight: bold;
+          text-align: right;
+          padding: 4px 8px;
+        }
+      }
+    }
+
+    // Nút xuất hàng
+    .btn-primary {
+      background-color: $primary-color;
+      border: none;
+
+      &:hover {
+        background-color: darken($primary-color, 10%);
+      }
+    }
+
+    .btn-secondary {
+      background-color: #e9ecef;
+      color: $text-muted;
+      border: none;
+    }
+  }
+}

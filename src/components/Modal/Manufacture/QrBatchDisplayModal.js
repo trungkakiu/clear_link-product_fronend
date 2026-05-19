@@ -6,9 +6,10 @@ import {
   Col,
   Card,
   Spinner,
+  Pagination,
 } from "@themesberg/react-bootstrap";
 import { QRCodeSVG } from "qrcode.react";
-import ReactToPrint from "react-to-print";
+import { useReactToPrint } from "react-to-print"; // Chú ý: Dùng hook này thay vì thẻ <ReactToPrint>
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPrint,
@@ -22,6 +23,9 @@ import { toast } from "react-toastify";
 import api_request from "../../../apicontroller/api_request";
 import { UserContext } from "../../../Context/UserContext";
 
+// ==========================================
+// 1. COMPONENT IN ẤN (COMPONENT TO PRINT)
+// ==========================================
 const ComponentToPrint = React.forwardRef((props, ref) => {
   const { qrCodes, targetId } = props;
 
@@ -88,17 +92,17 @@ const ComponentToPrint = React.forwardRef((props, ref) => {
                 </div>
                 <div
                   style={{
-                    fontSize: "11px", // Giảm nhẹ size cho thanh thoát
+                    fontSize: "11px",
                     fontWeight: "bold",
                     background: "#f4f4f4",
                     border: "1px solid #ddd",
                     marginTop: "5px",
-                    padding: "2px 5px", // Thêm tí đệm cho chữ khỏi dính biên
-                    whiteSpace: "nowrap", // KHÔNG cho xuống dòng
-                    overflow: "hidden", // ẨN phần thừa
-                    textOverflow: "ellipsis", // HIỆN dấu ba chấm (...)
+                    padding: "2px 5px",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
                   }}
-                  title={qr.blockchain_proof} // Di chuột vào hiện full mã
+                  title={qr.blockchain_proof}
                 >
                   {qr.blockchain_proof || "Chưa có Proof"}
                 </div>
@@ -111,6 +115,9 @@ const ComponentToPrint = React.forwardRef((props, ref) => {
   );
 });
 
+// ==========================================
+// 2. MODAL HIỂN THỊ CHÍNH
+// ==========================================
 const QrBatchDisplayModal = ({
   show,
   onHide,
@@ -121,8 +128,35 @@ const QrBatchDisplayModal = ({
 }) => {
   const componentRef = useRef();
   const [modalShow, setModalShow] = useState(false);
+  const [isPreparingPrint, setIsPreparingPrint] = useState(false); // Cờ kiểm soát việc render thẻ in
   const { User } = useContext(UserContext);
 
+  // --- LOGIC PHÂN TRANG ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12; // Hiển thị 12 mã / 1 trang
+
+  const totalItems = qrCodes?.length || 0;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const currentQRCodes =
+    qrCodes?.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage,
+    ) || [];
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  // Trở về trang 1 nếu đổi lô hàng
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [qrCodes]);
+  // -------------------------
+
+  // --- LOGIC IN ẤN TỐI ƯU HIỆU NĂNG ---
   const handleConfirmPrinted = async () => {
     if (!qrCodes || qrCodes.length === 0) return;
     const isConfirmed = window.confirm(
@@ -149,6 +183,26 @@ const QrBatchDisplayModal = ({
     }
   };
 
+  const triggerPrint = useReactToPrint({
+    content: () => componentRef.current,
+    onAfterPrint: () => {
+      setIsPreparingPrint(false); // In xong thì HỦY DOM IN để giải phóng RAM
+      handleConfirmPrinted();
+    },
+    removeAfterPrint: true,
+  });
+
+  const handlePrintClick = () => {
+    setIsPreparingPrint(true); // Bật cờ cho React render hàng nghìn SVG ra DOM ẩn
+
+    // Đợi 1.5 giây để React có thời gian vẽ DOM xong, rồi mới gọi lệnh In của Windows
+    setTimeout(() => {
+      triggerPrint();
+    }, 1500);
+  };
+  // ------------------------------------
+
+  // --- LOGIC TẠO QR MỚI ---
   const onCreateQr = async (challenge_code) => {
     try {
       const res = await api_request.create_qr_batch(
@@ -156,22 +210,16 @@ const QrBatchDisplayModal = ({
         targetId,
         challenge_code,
       );
-      if (res) {
-        if (res.RC === 200) {
-          toast.success("Tạo mã QR mới thành công!");
-          setModalShow(false);
-          closeReload();
-        } else {
-          toast.error(res.RM || "Lỗi khi tạo mã QR mới!");
-        }
+      if (res && res.RC === 200) {
+        toast.success("Tạo mã QR mới thành công!");
+        setModalShow(false);
+        closeReload();
+      } else {
+        toast.error(res?.RM || "Lỗi khi tạo mã QR mới!");
       }
     } catch (error) {
       console.error("Lỗi khi tạo QR mới:", error);
       toast.error("Lỗi khi tạo QR mới! Vui lòng thử lại sau.");
-      return {
-        RM: "Lỗi kết nối máy chủ tạo QR mới!",
-        RC: 500,
-      };
     }
   };
 
@@ -197,10 +245,7 @@ const QrBatchDisplayModal = ({
           style={{ background: "#1a237e", color: "#fff" }}
         >
           <Modal.Title className="h6">
-            <FontAwesomeIcon
-              icon={faQrcode}
-              className="me-2 text-warning text-white"
-            />
+            <FontAwesomeIcon icon={faQrcode} className="me-2 text-warning" />
             QUẢN LÝ ĐỊNH DANH QR - LÔ HÀNG:{" "}
             <span className="text-warning">{targetId}</span>
           </Modal.Title>
@@ -217,18 +262,17 @@ const QrBatchDisplayModal = ({
           <div className="mb-4 d-flex justify-content-between align-items-center">
             <h6 className="text-navy fw-bold mb-0">
               <FontAwesomeIcon icon={faBoxOpen} className="me-2" />
-              Danh sách {qrCodes?.length || 0} thùng hàng (Boxes)
+              Danh sách thùng hàng ({totalItems} tem)
             </h6>
           </div>
 
           <Row className="g-3">
-            {qrCodes && qrCodes.length > 0 ? (
-              qrCodes.map((qr) => (
+            {totalItems > 0 ? (
+              currentQRCodes.map((qr) => (
                 <Col key={qr.id} xs={12} sm={6} md={4} lg={3}>
                   <Card className="text-center shadow-sm border-0 qr-hover-card">
                     <Card.Body className="p-3">
-                      <div className="scanner-frame p-2 rounded border mb-2 bg-white">
-                        <div className="scan-line"></div>
+                      <div className="p-2 rounded border mb-2 bg-white d-inline-block">
                         <QRCodeSVG
                           value={`${qr.id}|${qr.secure_token}`}
                           size={130}
@@ -241,7 +285,9 @@ const QrBatchDisplayModal = ({
                             icon={faShieldAlt}
                             className="text-success me-1"
                           />
-                          XÁC THỰC
+                          <span className="small fw-bold text-success">
+                            XÁC THỰC
+                          </span>
                         </div>
                       ) : (
                         <div className="mb-2">
@@ -249,7 +295,9 @@ const QrBatchDisplayModal = ({
                             icon={faShieldAlt}
                             className="text-danger me-1"
                           />
-                          CHƯA XÁC THỰC
+                          <span className="small fw-bold text-danger">
+                            CHƯA XÁC THỰC
+                          </span>
                         </div>
                       )}
                       <div
@@ -275,12 +323,8 @@ const QrBatchDisplayModal = ({
                     setModalShow(false);
                     closeReload();
                   }}
-                  message={
-                    "Vui lòng xác thực OTP để kích hoạt ClearLink Protocol và tạo mã QR mới cho lô hàng này"
-                  }
-                  onSuccess={(challenge_code) => {
-                    return onCreateQr(challenge_code);
-                  }}
+                  message="Vui lòng xác thực OTP để kích hoạt ClearLink Protocol và tạo mã QR mới cho lô hàng này"
+                  onSuccess={(challenge_code) => onCreateQr(challenge_code)}
                 />
                 <div
                   className="empty-qr-container p-5 rounded-3 shadow-sm border"
@@ -290,7 +334,6 @@ const QrBatchDisplayModal = ({
                     margin: "0 auto",
                   }}
                 >
-                  {/* 1. Icon làm điểm nhấn - Nhìn cực kỳ uy tín */}
                   <div className="mb-4">
                     <div
                       className="icon-circle bg-dark d-inline-flex align-items-center justify-content-center shadow"
@@ -309,7 +352,6 @@ const QrBatchDisplayModal = ({
                     </div>
                   </div>
 
-                  {/* 2. Phần text thông báo */}
                   <h5 className="fw-bold text-dark mb-2">DANH SÁCH QR TRỐNG</h5>
                   <p
                     className="text-muted mb-4 small"
@@ -321,7 +363,6 @@ const QrBatchDisplayModal = ({
                     mới.
                   </p>
 
-                  {/* 3. Nút bấm "Vít ga" */}
                   <Button
                     variant="dark"
                     className="px-4 py-2 shadow-sm fw-bold btn-vignette"
@@ -329,9 +370,7 @@ const QrBatchDisplayModal = ({
                       borderLeft: "4px solid #ff6f00",
                       letterSpacing: "1px",
                     }}
-                    onClick={() => {
-                      setModalShow(true);
-                    }}
+                    onClick={() => setModalShow(true)}
                   >
                     <FontAwesomeIcon
                       icon={faSync}
@@ -344,32 +383,104 @@ const QrBatchDisplayModal = ({
             )}
           </Row>
 
-          <ComponentToPrint
-            ref={componentRef}
-            qrCodes={qrCodes}
-            targetId={targetId}
-          />
+          {/* HIỂN THỊ ĐIỀU HƯỚNG PHÂN TRANG */}
+          {totalPages > 1 && (
+            <div className="d-flex justify-content-center mt-4 pt-3 border-top">
+              <Pagination>
+                <Pagination.First
+                  onClick={() => handlePageChange(1)}
+                  disabled={currentPage === 1}
+                />
+                <Pagination.Prev
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                />
+
+                {[...Array(totalPages)].map((_, i) => {
+                  const page = i + 1;
+                  if (
+                    page === 1 ||
+                    page === totalPages ||
+                    (page >= currentPage - 2 && page <= currentPage + 2)
+                  ) {
+                    return (
+                      <Pagination.Item
+                        key={page}
+                        active={page === currentPage}
+                        onClick={() => handlePageChange(page)}
+                      >
+                        {page}
+                      </Pagination.Item>
+                    );
+                  } else if (
+                    page === currentPage - 3 ||
+                    page === currentPage + 3
+                  ) {
+                    return <Pagination.Ellipsis key={page} disabled />;
+                  }
+                  return null;
+                })}
+
+                <Pagination.Next
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                />
+                <Pagination.Last
+                  onClick={() => handlePageChange(totalPages)}
+                  disabled={currentPage === totalPages}
+                />
+              </Pagination>
+            </div>
+          )}
+
+          {/* 👉 CƠ CHẾ RENDER IN: CHỈ VẼ KHI isPreparingPrint BẰNG TRUE */}
+          {isPreparingPrint && (
+            <div style={{ display: "none" }}>
+              <ComponentToPrint
+                ref={componentRef}
+                qrCodes={qrCodes} // Vẫn đẩy vào đủ 100% dữ liệu để in
+                targetId={targetId}
+              />
+            </div>
+          )}
         </Modal.Body>
 
         <Modal.Footer className="bg-white">
-          <Button variant="link" className="text-gray" onClick={onHide}>
+          <Button
+            variant="link"
+            className="text-gray"
+            onClick={onHide}
+            disabled={isPreparingPrint}
+          >
             Đóng cửa sổ
           </Button>
-          {qrCodes && qrCodes.length > 0 && (
-            <ReactToPrint
-              trigger={() => (
-                <Button
-                  variant="dark"
-                  className="px-4 shadow-sm"
-                  style={{ borderLeft: "4px solid #ff6f00" }}
-                >
-                  <FontAwesomeIcon icon={faPrint} className="me-2" /> XUẤT LỆNH
-                  IN TEM NHIỆT
-                </Button>
+          {totalItems > 0 && (
+            <Button
+              variant="dark"
+              className="px-4 shadow-sm"
+              style={{ borderLeft: "4px solid #ff6f00" }}
+              onClick={handlePrintClick}
+              disabled={isPreparingPrint} // Khóa nút khi đang load in
+            >
+              {isPreparingPrint ? (
+                <>
+                  <Spinner
+                    size="sm"
+                    animation="border"
+                    className="me-2 text-warning"
+                  />
+                  ĐANG CHUẨN BỊ TRANG IN...
+                </>
+              ) : (
+                <>
+                  <FontAwesomeIcon
+                    icon={faPrint}
+                    className="me-2 text-warning"
+                  />
+                  XUẤT LỆNH IN TEM NHIỆT ({totalItems})
+                </>
               )}
-              content={() => componentRef.current}
-              onAfterPrint={handleConfirmPrinted}
-            />
+            </Button>
           )}
         </Modal.Footer>
       </Modal>
@@ -381,18 +492,8 @@ const QrBatchDisplayModal = ({
             display: flex; align-items: center; justify-content: center;
             border-radius: 0.5rem;
         }
-        .scanner-frame { position: relative; overflow: hidden; }
-        .scan-line {
-            position: absolute; width: 100%; height: 2px; background: #ff6f00;
-            top: 0; left: 0; box-shadow: 0 0 10px #ff6f00;
-            animation: scan-move 2s infinite linear; z-index: 1;
-        }
-        @keyframes scan-move {
-            0% { top: 0; }
-            50% { top: 100%; }
-            100% { top: 0; }
-        }
-        .qr-hover-card:hover { transform: translateY(-5px); transition: 0.3s; }
+        .qr-hover-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .qr-hover-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
         .text-navy { color: #1a237e; }
       `}</style>
     </>

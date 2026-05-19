@@ -1,6 +1,7 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
 import SimpleBar from "simplebar-react";
-import { useLocation } from "react-router-dom";
+// 🚀 ĐÃ CẬP NHẬT: Thêm useHistory để ép lệnh điều hướng hệ thống
+import { useLocation, useHistory, Link } from "react-router-dom";
 
 import { CSSTransition } from "react-transition-group";
 import Manufacturer_sliderbar from "./Manufacture/Manufactor_sliderbar";
@@ -41,16 +42,11 @@ import {
   Badge,
   Image,
   Button,
-  Dropdown,
   Accordion,
   Navbar,
 } from "@themesberg/react-bootstrap";
-import { Link } from "react-router-dom";
 
 import { Routes } from "../routes";
-import ThemesbergLogo from "../assets/img/themesberg.svg";
-import ReactHero from "../assets/img/technologies/react-hero-logo.svg";
-import ProfilePicture from "../assets/img/team/profile-picture-3.jpg";
 import { UserContext } from "../Context/UserContext";
 import Transporter_sidebar from "./Transporter/transporter_sidebar";
 import Retailer_sideber from "./Retailer/Retailer_sideber";
@@ -58,6 +54,7 @@ import Distributor_sidebar from "./Distributor/distributor_sidebar";
 
 export default (props = {}) => {
   const location = useLocation();
+  const history = useHistory();
   const { User } = useContext(UserContext);
 
   const [show, setShow] = useState(false);
@@ -65,6 +62,17 @@ export default (props = {}) => {
   const { pathname } = location;
 
   const onCollapse = () => setShow(!show);
+
+  useLayoutEffect(() => {
+    const activeElement = document.querySelector(".sidebar-inner .active");
+
+    if (activeElement) {
+      activeElement.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [location.pathname]);
 
   const CollapsableNavItem = (props) => {
     const { eventKey, title, icon, children = null } = props;
@@ -109,20 +117,33 @@ export default (props = {}) => {
       badgeBg = "secondary",
       badgeColor = "primary",
     } = props;
+
     const classNames = badgeText
       ? "d-flex justify-content-start align-items-center justify-content-between"
       : "";
-    const navItemClassName = link === pathname ? "active" : "";
-    const linkProps = external ? { href: link } : { as: Link, to: link };
+
+    const isRouteActive =
+      link === "/" ? pathname === link : pathname.startsWith(link);
+    const navItemClassName = isRouteActive ? "active" : "";
+
+    const handleNavigate = (e) => {
+      if (external) return;
+
+      e.preventDefault();
+      setShow(false);
+
+      if (link) {
+        history.push(link);
+      }
+    };
+
+    const linkProps = external
+      ? { href: link, target: target || "_blank" }
+      : { href: link, onClick: handleNavigate };
 
     return (
-      <Nav.Item className={navItemClassName} onClick={() => setShow(false)}>
-        <Nav.Link
-          {...linkProps}
-          to={"#"}
-          target={target}
-          className={classNames}
-        >
+      <Nav.Item className={navItemClassName}>
+        <Nav.Link {...linkProps} className={classNames}>
           <span>
             {icon ? (
               <span className="sidebar-icon">
@@ -134,7 +155,7 @@ export default (props = {}) => {
                 src={image}
                 width={20}
                 height={20}
-                className="sidebar-icon svg-icon"
+                className="sidebar-icon"
               />
             ) : null}
 
@@ -154,6 +175,16 @@ export default (props = {}) => {
       </Nav.Item>
     );
   };
+
+  const currentRole = User?.data?.role || User?.role;
+  const roleFolder = [
+    "manufacturer",
+    "distributor",
+    "retailer",
+    "transporter",
+  ].includes(String(currentRole).toLowerCase())
+    ? String(currentRole).toLowerCase()
+    : "classic";
 
   const UserLevelBox = ({ level }) => {
     const levelNum = level?.split("_")[1] || "0";
@@ -205,6 +236,7 @@ export default (props = {}) => {
       </div>
     );
   };
+
   return (
     <>
       <Navbar
@@ -218,7 +250,10 @@ export default (props = {}) => {
           as={Link}
           to={Routes.DashboardOverview.path}
         >
-          <Image src={ReactHero} className="navbar-brand-light" />
+          <Image
+            src={`${process.env.PUBLIC_URL}/logo/${roleFolder}/favicon-128x128.png`}
+            className="navbar-brand-light"
+          />
         </Navbar.Brand>
         <Navbar.Toggle
           as={Button}
@@ -234,44 +269,17 @@ export default (props = {}) => {
           className={`collapse ${showClass} sidebar d-md-block bg-primary text-white`}
         >
           <div className="sidebar-inner px-4 pt-3">
-            <div className="user-card d-flex d-md-none align-items-center justify-content-between justify-content-md-center pb-4">
-              <div className="d-flex align-items-center">
-                <div className="user-avatar lg-avatar me-4">
-                  <Image
-                    src={ProfilePicture}
-                    className="card-img-top rounded-circle border-white"
-                  />
-                </div>
-                <div className="d-block">
-                  <h6>Hi, Jane</h6>
-                  <Button
-                    as={Link}
-                    variant="secondary"
-                    size="xs"
-                    to={Routes.Signin.path}
-                    className="text-dark"
-                  >
-                    <FontAwesomeIcon icon={faSignOutAlt} className="me-2" />{" "}
-                    Sign Out
-                  </Button>
-                </div>
-              </div>
-              <Nav.Link
-                className="collapse-close d-md-none"
-                onClick={onCollapse}
-              >
-                <FontAwesomeIcon icon={faTimes} />
-              </Nav.Link>
-            </div>
-
             <Nav className="flex-column pt-3 pt-md-0">
-              <NavItem title="Clearlink Controll" image={ReactHero} />
+              {/* SỬ DỤNG LOGO ĐƯỜNG DẪN PUBLIC CHUẨN ĐÉT KHÔNG BỊ IMPORT LỖI */}
+              <NavItem
+                title="Clearlink Controll"
+                image={`${process.env.PUBLIC_URL}/logo/${roleFolder}/favicon-32x32.png`}
+              />
+
               <UserLevelBox level={User?.data?.level} />
+
               <NavItem
                 title="Overview"
-                onClick={() => {
-                  console.log("Navigating to Dashboard Overview");
-                }}
                 link={Routes.DashboardOverview.path}
                 icon={faChartPie}
               />
@@ -305,11 +313,9 @@ export default (props = {}) => {
               )}
 
               <NavItem
-                external
-                title="Themesberg"
-                target="_blank"
-                link={"#"}
-                image={ThemesbergLogo}
+                title="ClearLink Overview"
+                link="/dashboard/overview"
+                image={`${process.env.PUBLIC_URL}/logo/${roleFolder}/favicon-32x32.png`}
               />
             </Nav>
           </div>

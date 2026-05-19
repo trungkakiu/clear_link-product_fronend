@@ -86,6 +86,9 @@ export const Routes = {
   //=========Transposter Sidebar===============//
 
   //=========Distributor Sidebar==============//
+  Distributor_current_inventory: {
+    path: "/warehouse/management/current-inventory",
+  },
   Distributor_inventory: { path: "/warehouse/management/transaction_control" },
   Distributor_import: { path: "/warehouse/management/Distributor_import" },
   Distributor_export: { path: "/warehouse/management/Distributor_export" },

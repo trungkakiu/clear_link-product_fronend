@@ -154,7 +154,6 @@ const Retailer_register = () => {
                     </InputGroup>
                   </Form.Group>
 
-                  {/* Store Address */}
                   <Row className="mb-4">
                     <Col md={12}>
                       <MapLocationPicker

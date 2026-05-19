@@ -61,7 +61,6 @@ const BatchDetailModal = ({ show, onHide, data, API_URL }) => {
     if (show) getBatchData();
   }, [show, data?.Product_batch, User]);
 
-  // --- LOGIC KIỂM TRA THANH TOÁN ---
   const handleCheckpayment = async () => {
     try {
       setflextload(true);
@@ -120,7 +119,6 @@ const BatchDetailModal = ({ show, onHide, data, API_URL }) => {
           <OrderSidebar data={data} API_URL={API_URL} />
 
           <Col lg={8} className="p-4">
-
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h6 className="fw-800 text-main m-0 d-flex align-items-center">
                 <FontAwesomeIcon
@@ -142,7 +140,6 @@ const BatchDetailModal = ({ show, onHide, data, API_URL }) => {
                 {isBankWait ? "Awaiting Payment" : "Real-time Data"}
               </Badge>
             </div>
-
 
             {isBankWait ? (
               <PaymentSection

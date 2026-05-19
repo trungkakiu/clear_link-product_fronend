@@ -149,12 +149,12 @@ const Transporter_sidebar = ({ level, onCollapse }) => {
           minLevel: 4,
         },
         {
-          title: "Yêu cầu hợp tác",
+          title: "Hồ sơ hợp tác",
           link: Routes.Manufacturer_contact_request.path,
           minLevel: 4,
         },
         {
-          title: "Hợp đồng",
+          title: "Hợp đồng mẫu",
           link: Routes.Manufacturer_contractfile.path,
           minLevel: 4,
         },

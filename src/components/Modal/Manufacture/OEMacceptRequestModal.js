@@ -6,6 +6,7 @@ import {
   Row,
   Col,
   Badge,
+  Image,
 } from "@themesberg/react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -14,6 +15,8 @@ import {
   faUserCircle,
   faCalendarAlt,
   faHashtag,
+  faRulerCombined,
+  faWeightHanging,
 } from "@fortawesome/free-solid-svg-icons";
 import Select from "react-select";
 import moment from "moment";
@@ -24,6 +27,7 @@ import Otp_verify_dynamic from "../Otp_verify_dynamic";
 
 const OEMacceptRequestModal = ({ show, close, closeRefresh, data }) => {
   const [department, setdepartment] = useState([]);
+  const [box, setbox] = useState([]);
   const { User } = useContext(UserContext);
   const [isload, setisload] = useState(false);
   const [apiWait, setapiWait] = useState(false);
@@ -31,6 +35,7 @@ const OEMacceptRequestModal = ({ show, close, closeRefresh, data }) => {
   const [batchData, setBatchData] = useState({
     batch_name: "",
     Department_id: "",
+    Box_id: "",
     description: "",
     manufacture_date: "",
     expiry_date: "",
@@ -68,7 +73,8 @@ const OEMacceptRequestModal = ({ show, close, closeRefresh, data }) => {
       setisload(true);
       const res = await api_request.departMentOEM(User);
       if (res && res.RC === 200) {
-        setdepartment(res.RD);
+        setdepartment(res.RD.departments || []);
+        setbox(res.RD.productbox || []);
       }
     } catch (error) {
       toast.error("Lỗi tải danh sách bộ phận!");
@@ -116,6 +122,16 @@ const OEMacceptRequestModal = ({ show, close, closeRefresh, data }) => {
     part: d.part,
   }));
 
+  const boxOptions = box.map((box) => ({
+    value: box.id,
+    label: box.pack_code, // Mã thùng: CT01
+    image: box.image_printer,
+    material: box.material,
+    dimensions: `${parseFloat(box.length)}x${parseFloat(box.width)}x${parseFloat(box.height)} cm`,
+    capacity: box.max_weight_capacity,
+    volume: box.volume,
+  }));
+
   const formatOptionLabel = ({ label, leader, part }) => (
     <div className="d-flex justify-content-between align-items-center">
       <div>
@@ -128,6 +144,60 @@ const OEMacceptRequestModal = ({ show, close, closeRefresh, data }) => {
       <Badge bg="soft-primary" className="text-primary x-small">
         {part}
       </Badge>
+    </div>
+  );
+
+  const formatBoxOptionLabel = ({
+    label,
+    image,
+    material,
+    dimensions,
+    capacity,
+  }) => (
+    <div
+      className="d-flex align-items-center py-1"
+      style={{ minWidth: "300px" }}
+    >
+      <div
+        className="me-3"
+        style={{ width: "45px", height: "45px", flexShrink: 0 }}
+      >
+        <Image
+          src={
+            image
+              ? `${process.env.REACT_APP_API_IMAGE_URL}box-card/${image}`
+              : "https://via.placeholder.com/50?text=Box"
+          }
+          className="img-fluid rounded border"
+          style={{ objectFit: "cover", width: "100%", height: "100%" }}
+        />
+      </div>
+
+      {/* 2. Thông số kỹ thuật */}
+      <div className="flex-grow-1">
+        <div className="d-flex align-items-center">
+          <span className="fw-bold text-dark me-2">{label}</span>
+          <span className="badge bg-light text-muted border x-small">
+            {material}
+          </span>
+        </div>
+        <div className="text-muted" style={{ fontSize: "11px" }}>
+          <FontAwesomeIcon icon={faRulerCombined} className="me-1" />
+          {dimensions}
+        </div>
+      </div>
+
+      {/* 3. Tải trọng tối đa */}
+      <div className="text-end ms-2">
+        <Badge
+          bg="soft-success"
+          className="text-success p-1 px-2"
+          style={{ fontSize: "10px" }}
+        >
+          <FontAwesomeIcon icon={faWeightHanging} className="me-1" />
+          Max: {parseFloat(capacity)}kg
+        </Badge>
+      </div>
     </div>
   );
 
@@ -212,6 +282,22 @@ const OEMacceptRequestModal = ({ show, close, closeRefresh, data }) => {
                     placeholder="Chọn bộ phận..."
                     onChange={(opt) =>
                       setBatchData({ ...batchData, Department_id: opt.value })
+                    }
+                    isLoading={isload}
+                  />
+                </Col>
+
+                <Col md={12} className="mb-3">
+                  <Form.Label className="fw-bold small">
+                    <FontAwesomeIcon icon={faLayerGroup} className="me-1" />
+                    Thùng chứa (Box)
+                  </Form.Label>
+                  <Select
+                    options={boxOptions}
+                    formatOptionLabel={formatBoxOptionLabel}
+                    placeholder="Chọn thùng chứa..."
+                    onChange={(opt) =>
+                      setBatchData({ ...batchData, Box_id: opt.value })
                     }
                     isLoading={isload}
                   />

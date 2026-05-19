@@ -211,6 +211,7 @@ const CreateBatchForm = () => {
                     <Form.Label className="fw-bold">Tên lô hàng</Form.Label>
                     <Form.Control
                       type="text"
+                      required
                       name="batch_name"
                       placeholder="VD: Lô sản phẩm tháng 3"
                       value={formData.batch_name}
@@ -228,7 +229,7 @@ const CreateBatchForm = () => {
                       Sản phẩm <span className="text-danger">*</span>
                     </Form.Label>
 
-                    <Dropdown className="w-100">
+                    <Dropdown required className="w-100">
                       <Dropdown.Toggle
                         as={Button}
                         variant="outline-gray-300"
@@ -349,7 +350,7 @@ const CreateBatchForm = () => {
                       <span className="text-danger">*</span>
                     </Form.Label>
 
-                    <Dropdown className="w-100">
+                    <Dropdown required className="w-100">
                       <Dropdown.Toggle
                         as={Button}
                         variant="outline-gray-300"
@@ -518,7 +519,7 @@ const CreateBatchForm = () => {
                       <span className="text-danger">*</span>
                     </Form.Label>
 
-                    <Dropdown className="w-100">
+                    <Dropdown required className="w-100">
                       <Dropdown.Toggle
                         as={Button}
                         variant="outline-gray-300"

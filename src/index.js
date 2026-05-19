@@ -13,6 +13,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import App from "./App";
 import { SocketProvider } from "./Context/SocketProvider";
+import { ChatProvider } from "./Context/ChatContext";
 
 Aos.init({
   duration: 800,
@@ -23,7 +24,9 @@ ReactDOM.render(
   <BrowserRouter>
     <UserProvider>
       <SocketProvider>
-        <App />
+        <ChatProvider>
+          <App />
+        </ChatProvider>
       </SocketProvider>
     </UserProvider>
   </BrowserRouter>,

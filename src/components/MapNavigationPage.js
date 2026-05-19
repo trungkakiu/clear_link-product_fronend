@@ -31,6 +31,7 @@ const MapNavigationModal = ({
     () => [Number(startPoint[0]), Number(startPoint[1])],
     [startPoint],
   );
+
   const safeDest = useMemo(
     () => [Number(destination[0]), Number(destination[1])],
     [destination],
@@ -310,7 +311,6 @@ const MapNavigationModal = ({
           </button>
         </div>
 
-        {/* Fleet Panel Container */}
         <div
           className="fleet-panel-container"
           style={{
@@ -469,6 +469,7 @@ const MapNavigationModal = ({
                     </div>
                   </div>
                 ))}
+
                 {processedFleet.noSignal?.map((v) => (
                   <div
                     key={v.vehicle_id}
@@ -513,7 +514,6 @@ const MapNavigationModal = ({
             )}
           </div>
         </div>
-
         <div ref={mapContainer} style={{ width: "100%", height: "100%" }} />
       </div>
       <style>{`

@@ -18,6 +18,7 @@ import {
   faCheckCircle,
   faEye,
   faSignature,
+  faInbox,
 } from "@fortawesome/free-solid-svg-icons";
 import { UserContext } from "../../Context/UserContext";
 import api_request from "../../apicontroller/api_request";
@@ -87,9 +88,10 @@ const ShipOrderProcess = () => {
     }
   }, [highlineId, isModalNeeded, orderdata, isload]);
 
-  const fetchShipOrder = async () => {
+  const fetchShipOrder = async (isFirstLoad = false) => {
     try {
-      setisload(true);
+      if (isFirstLoad) setisload(true);
+
       const res = await api_request.fetchShipOrderAPI(User);
       if (res?.RC === 200) {
         setorderdata({
@@ -98,16 +100,48 @@ const ShipOrderProcess = () => {
         });
       }
     } catch (error) {
-      toast.error("Lỗi kết nối máy chủ!");
+      console.error(">>> Ship Order Polling Error:", error);
+      if (isFirstLoad) toast.error("Lỗi kết nối máy chủ!");
     } finally {
-      setisload(false);
+      if (isFirstLoad) setisload(false);
     }
   };
 
   useEffect(() => {
-    fetchShipOrder();
-  }, []);
+    fetchShipOrder(true);
+    let interval;
 
+    const startPolling = () => {
+      if (!interval) {
+        interval = setInterval(() => fetchShipOrder(false), 60000);
+      }
+    };
+
+    const stopPolling = () => {
+      if (interval) {
+        clearInterval(interval);
+        interval = null;
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopPolling();
+      } else {
+        fetchShipOrder(false);
+        startPolling();
+      }
+    };
+
+    startPolling();
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      stopPolling();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+  
   const handleShowDetail = (order) => {
     setmodaldata(order);
     setmodastate({ detail: true });
@@ -138,7 +172,7 @@ const ShipOrderProcess = () => {
           onHide={() => setmodastate({ detail: false })}
           closeReload={() => {
             setmodastate({ detail: false });
-            fetchShipOrder();
+            fetchShipOrder(false);
           }}
           order={modaldata}
         />
@@ -152,22 +186,32 @@ const ShipOrderProcess = () => {
       </div>
 
       <Tab.Container activeKey={activeTab} onSelect={(k) => setActiveTab(k)}>
-        <div className="aws-tabs-wrapper mb-4">
+        <div className="aws-tabs-container mb-4">
           <Nav
             variant="pills"
-            className="aws-tabs flex-nowrap overflow-auto py-2"
+            className="aws-modern-tabs flex-nowrap overflow-auto py-1 scrollbar-hidden"
           >
             <Nav.Item>
-              <Nav.Link eventKey="process" className="px-3 px-md-4 text-nowrap">
-                Đơn hàng đã gửi ({orderdata.Shipping_process.length})
+              <Nav.Link eventKey="process" className="aws-tab-link">
+                <div className="tab-inner">
+                  <i className="fas fa-paper-plane me-2"></i>
+                  <span>Đơn hàng đã gửi</span>
+                  <Badge className="ms-2 tab-badge">
+                    {orderdata.Shipping_process.length}
+                  </Badge>
+                </div>
               </Nav.Link>
             </Nav.Item>
-            <Nav.Item className="ms-2">
-              <Nav.Link
-                eventKey="receiver"
-                className="px-3 px-md-4 text-nowrap"
-              >
-                Đơn hàng đến ({orderdata.Shipping_receiver.length})
+
+            <Nav.Item>
+              <Nav.Link eventKey="receiver" className="aws-tab-link">
+                <div className="tab-inner">
+                  <i className="fas fa-inbox me-2"></i>
+                  <span>Đơn hàng đến</span>
+                  <Badge className="ms-2 tab-badge">
+                    {orderdata.Shipping_receiver.length}
+                  </Badge>
+                </div>
               </Nav.Link>
             </Nav.Item>
           </Nav>
@@ -213,6 +257,18 @@ const OrderCard = ({ order, onShowDetail, query }) => {
     order.sender_confirm === "confirmed" &&
     order.receiver_confirm === "accepted" &&
     order.transporter_confirm === "accepted";
+
+  const isStatus = isReady
+    ? "Đồng thuận hoàn tất"
+    : order.payment_status === "unpaid" && order.payment_method !== "cod"
+      ? "Chưa thanh toán phí vận chuyển!"
+      : order.payment_status === "unpaid" && order.payment_method === "cod"
+        ? "Van đơn COD - Chờ thanh toán"
+        : order.payment_status === "pending"
+          ? "Chờ thành toán phí vận chuyển"
+          : order.payment_status === "partially_paid"
+            ? "Thanh toán chưa đủ phí vận chuyển"
+            : "Hoàn trả đơn";
 
   return (
     <Card
@@ -286,7 +342,13 @@ const OrderCard = ({ order, onShowDetail, query }) => {
           <Col xs={7} lg={3} className="text-center px-lg-4">
             <div className="d-flex justify-content-center gap-1 mb-2">
               <StatusIcon
-                confirm={order.sender_confirm}
+                confirm={
+                  (order.sender_confirm &&
+                    order.payment_status === "complated") ||
+                  order.payment_method === "cod"
+                    ? "confirmed"
+                    : "pending"
+                }
                 label="S"
                 title="Sender"
               />
@@ -305,7 +367,7 @@ const OrderCard = ({ order, onShowDetail, query }) => {
               bg={isReady ? "success" : "warning"}
               className="w-100 py-1 extra-small uppercase ls-1"
             >
-              {isReady ? "Đồng thuận hoàn tất" : "Chờ đồng thuận"}
+              {isStatus}
             </Badge>
           </Col>
 
@@ -341,11 +403,49 @@ const StatusIcon = ({ confirm, label, title }) => {
   );
 };
 
-const EmptyState = ({ message }) => (
-  <div className="text-center py-5 bg-white rounded shadow-sm mx-2">
-    <FontAwesomeIcon icon={faBox} size="3x" className="text-gray-200 mb-3" />
-    <p className="text-muted fw-bold">{message}</p>
-  </div>
-);
+const EmptyState = ({
+  message = "Khoảng trống này đang đợi dữ liệu...",
+  subMessage = "Chưa có thông tin được cập nhật tại mục này.",
+}) => {
+  return (
+    <div className="aws-empty-state-container p-5 text-center bg-white rounded-24 shadow-soft mx-2 my-4 border">
+      <div className="empty-state-content position-relative">
+        <div className="wave-bg position-absolute top-50 start-50 translate-middle">
+          <div className="wave-circle ring-1"></div>
+          <div className="wave-circle ring-2"></div>
+          <div className="wave-circle ring-3"></div>
+        </div>
+
+        <div className="illustration-wrapper mb-4 position-relative z-2">
+          <div className="icon-3d-box shadow-lg rounded-circle">
+            <FontAwesomeIcon
+              icon={faInbox}
+              size="4x"
+              className="text-aws-orange"
+            />
+          </div>
+          <div className="tech-dot dot-1 bg-aws-blue"></div>
+          <div className="tech-dot dot-2 bg-aws-orange"></div>
+        </div>
+
+        <div className="text-content position-relative z-2 mt-4">
+          <h5 className=" text-aws-navy mb-2 letter-spacing-tight">
+            Oops! Khoảng Trống Yên Bình
+          </h5>
+          <p
+            className="text-muted small fw-bold mb-0 mx-auto"
+            style={{ maxWidth: "280px", lineHeight: "1.4" }}
+          >
+            {message}
+            <br />
+            <span className="fw-normal text-gray-400 extra-small">
+              {subMessage}
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default ShipOrderProcess;

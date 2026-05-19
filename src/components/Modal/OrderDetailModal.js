@@ -37,6 +37,9 @@ import {
   faCalculator,
   faMapMarkerAlt,
   faExclamationTriangle,
+  faQrcode,
+  faBoxOpen,
+  faCircleNotch,
 } from "@fortawesome/free-solid-svg-icons";
 import "../../scss/volt/pages/OrderDetailModal.scss";
 import QRCode from "react-qr-code";
@@ -49,10 +52,14 @@ import MapNavigationPage from "../MapNavigationPage";
 import MapNavigationModal from "../MapNavigationPage";
 import AdvancedInspectionModal from "./Distributor/AdvancedInspectionModal";
 import ShipperInspectionModal from "./Transporter/ShipperInspectionModal";
+import QRScreenModal from "./Manufacture/QRScreenModal";
+import PutawayModal from "./PutawayModal";
+import QRScreenModals from "./Manufacture/QRScreenModals";
 
 const OrderDetailModal = ({ show, onHide, order, closeReload }) => {
   const imageBaseUrl = process.env.REACT_APP_API_IMAGE_URL;
   const { User } = useContext(UserContext);
+  const [paymentmodal, setpaymentModal] = useState(false);
   const [fleetLiveStatus, setFleetLiveStatus] = useState({
     locations: order?.fleet_current_locations || {},
     histories: order?.fleet_route_histories || {},
@@ -67,6 +74,27 @@ const OrderDetailModal = ({ show, onHide, order, closeReload }) => {
       setInspectionData(order);
     }
   }, [order?.id]);
+
+  useEffect(() => {
+    if (!order || !show || User?.data?.role.toUpperCase() !== "MANUFACTURER")
+      return;
+
+    const isPaid =
+      order.payment_status === "complated" ||
+      order.payment_status === "paid" ||
+      order.payment_method === "cod";
+
+    let timer;
+    if (!isPaid) {
+      timer = setTimeout(() => {
+        setpaymentModal(true);
+        console.log(">>> [AUTO-PAY] Đơn hàng chưa thanh toán đủ, hiển thị QR.");
+      }, 800);
+    }
+
+    return () => clearTimeout(timer);
+  }, [show, order?.payment_status, order?.id]);
+
   const [modalstate, setmodalstate] = useState({
     addvehicle: false,
     shipingAccept: false,
@@ -79,12 +107,15 @@ const OrderDetailModal = ({ show, onHide, order, closeReload }) => {
     tracking_order: false,
     inspection: false,
     inspectionShiper: false,
+    put_away: false,
   });
   const [isOffline, setIsOffline] = useState(false);
   const [inspectionData, setInspectionData] = useState(order);
   const [inspectionType, setInspectionType] = useState("confirm");
   const [currentShipperLocation, setCurrentShipperLocation] = useState([]);
-
+  const [putawayLoad, setputawayLoad] = useState(false);
+  const [putawaymodal, setputawaymodal] = useState(false);
+  const [putawaydata, setputawaydata] = useState({});
   const fetchShipperLocation = async () => {
     if (!modalstate.tracking_order || !order?.id) return;
 
@@ -235,19 +266,28 @@ const OrderDetailModal = ({ show, onHide, order, closeReload }) => {
 
       if (res) {
         return {
-          RM: res.RM,
+          RM: res.RM || "Thao tác thành công!",
           RC: res.RC,
         };
       } else {
         return {
-          RM: "Lỗi hệ thống!",
+          RM: "Không nhận được phản hồi hợp lệ từ hệ thống!",
           RC: 500,
         };
       }
     } catch (error) {
+      console.error("Lỗi thực thi lệnh ký số:", error);
+
+      // 🚀 ĐOẠN SỬA QUAN TRỌNG: Lấy chính xác RM và RC từ Server bóc tách qua Axios
+      const serverMessage =
+        error.response?.data?.RM ||
+        error.message ||
+        "Lỗi hệ thống khi thực thi vận đơn!";
+      const serverCode = error.response?.data?.RC || 500;
+
       return {
-        RM: "Lỗi hệ thống!",
-        RC: 500,
+        RM: serverMessage,
+        RC: serverCode,
       };
     }
   };
@@ -262,6 +302,113 @@ const OrderDetailModal = ({ show, onHide, order, closeReload }) => {
     (sum, b) => sum + (parseFloat(b.total_weight) || 0),
     0,
   );
+
+  const getBadgeConfig = (order) => {
+    const { status, onchain_status, payment_status, shipping_payment_status } =
+      order;
+
+    if (onchain_status === "pairing") {
+      return {
+        text: "ĐANG XỬ LÝ ON-CHAIN",
+        bg: "warning",
+        icon: faCircleNotch,
+        spin: true,
+      };
+    }
+
+    if (
+      status === "failed" ||
+      onchain_status === "failed" ||
+      status === "cancelled"
+    ) {
+      return {
+        text: "GIAO DỊCH THẤT BẠI/HỦY",
+        bg: "danger",
+        icon: faTimesCircle,
+      };
+    }
+
+    if (status === "completed" || onchain_status === "completed") {
+      return { text: "HOÀN TẤT TOÀN DIỆN", bg: "success", icon: faCheckDouble };
+    }
+
+    if (["delivered", "pending_putaway", "outTruck"].includes(status)) {
+      const isPaidProduct = payment_status === "complated";
+      const isPaidShip = shipping_payment_status === "complated";
+
+      if (!isPaidProduct && !isPaidShip) {
+        return {
+          text: "ĐÃ GIAO - CHỜ THANH TOÁN (HÀNG & CƯỚC)",
+          bg: "danger",
+          icon: faQrcode,
+        };
+      }
+      if (!isPaidProduct) {
+        return {
+          text: "ĐÃ GIAO - CHỜ THANH TOÁN TIỀN HÀNG",
+          bg: "danger",
+          icon: faQrcode,
+        };
+      }
+      if (!isPaidShip) {
+        return {
+          text: "ĐÃ GIAO - CHỜ THANH TOÁN CƯỚC XE",
+          bg: "danger",
+          icon: faQrcode,
+        };
+      }
+
+      if (status === "pending_putaway") {
+        return {
+          text: "ĐÃ THANH TOÁN - CHỜ XÁC NHẬN NHẬP KHO",
+          bg: "info",
+          icon: faBox,
+        };
+      }
+
+      return {
+        text: "ĐƠN HÀNG ĐÃ GIAO THÀNH CÔNG",
+        bg: "success",
+        icon: faCheckCircle,
+      };
+    }
+
+    if (onchain_status === "pickup_verified" || status === "shipping") {
+      return { text: "ĐANG VẬN CHUYỂN", bg: "primary", icon: faTruck };
+    }
+    if (onchain_status === "agreement_hashed") {
+      if (status === "in_truck")
+        return {
+          text: "ĐÃ KÝ GIAO DỊCH - CHỜ VẬN CHUYỂN",
+          bg: "info",
+          icon: faClock,
+        };
+      if (status === "ready_to_pick")
+        return {
+          text: "ĐÃ KÝ GIAO DỊCH - CHỜ XUẤT KHO",
+          bg: "info",
+          icon: faBoxOpen,
+        };
+      if (status === "proposed")
+        return {
+          text: "ĐÃ KÝ GIAO DỊCH - ĐANG CHUẨN BỊ HÀNG",
+          bg: "secondary",
+          icon: faSignature,
+        };
+    }
+
+    if (onchain_status === "agreement_pending") {
+      return {
+        text: "CHỜ KÝ SỐ GIAO DỊCH",
+        bg: "secondary",
+        icon: faFileSignature,
+      };
+    }
+
+    return { text: "CHỜ ĐỒNG THUẬN", bg: "secondary", icon: faClock };
+  };
+
+  const badgeConfig = getBadgeConfig(order);
 
   const PartnerInfo = ({ title, data, confirmStatus, icon }) => (
     <div
@@ -321,6 +468,38 @@ const OrderDetailModal = ({ show, onHide, order, closeReload }) => {
       size="xl"
       className="aws-modal-v2"
     >
+      {User?.data?.role?.toUpperCase() === "MANUFACTURER" && (
+        <QRScreenModal
+          key={order?.Ship_pay_bill?.id || "none"}
+          onClose={() => setpaymentModal(false)}
+          data={order?.Ship_pay_bill}
+          show={paymentmodal}
+          min_to_start={order?.minimum_payment_to_start}
+        />
+      )}
+
+      {User?.data?.role?.toUpperCase() === "DISTRIBUTOR" && (
+        <QRScreenModals
+          order={order}
+          key={order?.id || "none"}
+          onClose={() => setpaymentModal(false)}
+          show={paymentmodal}
+        />
+      )}
+      {putawaydata && (
+        <PutawayModal
+          show={putawaymodal}
+          apiData={putawaydata}
+          onConfirmSave={() => {}}
+          openQrpayment={() => setpaymentModal(true)}
+          isPayment={order?.payment_status === "complated" ? true : false}
+          onHide={() => setputawaymodal(false)}
+          ship_id={order?.id}
+          closeReload={() => closeReload()}
+          load={putawayLoad}
+        />
+      )}
+
       <ShipperInspectionModal
         closeReload={closeReload}
         data={inspectionData}
@@ -330,6 +509,7 @@ const OrderDetailModal = ({ show, onHide, order, closeReload }) => {
           setmodalstate((prev) => ({ ...prev, inspectionShiper: false }))
         }
       />
+      
       <AdvancedInspectionModal
         data={inspectionData}
         onHide={() => setmodalstate((prev) => ({ ...prev, inspection: false }))}
@@ -355,26 +535,48 @@ const OrderDetailModal = ({ show, onHide, order, closeReload }) => {
       />
 
       <Otp_verify_dynamic
-        close={() => closeModal(apistate)}
-        closeReload={() => {
-          closeModal(apistate);
-          closeReload();
-        }}
-        message={modalMessage.message}
-        onSuccess={(challenge_code) => {
-          return AcceptShippingOrder(challenge_code);
-        }}
         show={
           modalstate.shipingAccept ||
           modalstate.inTruck ||
           modalstate.intruck_confirm ||
-          modalstate.shipingAccept ||
           modalstate.distAccept ||
           modalstate.delivered ||
           modalstate.order_ready ||
-          modalstate.outTruck
+          modalstate.outTruck ||
+          modalstate.put_away
         }
         title={modalMessage.title}
+        message={modalMessage.message}
+        close={() => closeModal(apistate)}
+        onSuccess={async (challenge_code) => {
+          if (modalstate.put_away) {
+            try {
+              const res = await api_request.put_away(
+                User,
+                order?.id,
+                challenge_code,
+              );
+
+              if (res.RC === 200) {
+                setputawaydata(res.RD);
+              }
+              return res;
+            } catch (error) {
+              return { RC: 500, RM: "Lỗi tạo kế hoạch cất hàng!" };
+            }
+          }
+
+          return AcceptShippingOrder(challenge_code);
+        }}
+        closeReload={() => {
+          closeModal(apistate);
+
+          if (modalstate.put_away) {
+            setputawaymodal(true);
+          } else {
+            closeReload();
+          }
+        }}
       />
 
       <Modal.Header className="bg-aws-navy text-white border-0 py-3">
@@ -625,34 +827,15 @@ const OrderDetailModal = ({ show, onHide, order, closeReload }) => {
 
                 <div className="blockchain-status-box mt-4">
                   <Badge
-                    bg={
-                      order.onchain_status === "delivery_signed"
-                        ? "success"
-                        : "secondary"
-                    }
-                    className="w-100 py-2 mb-3 shadow-none"
+                    bg={badgeConfig.bg}
+                    className="w-100 py-2 mb-3 shadow-none text-uppercase"
                   >
-                    <FontAwesomeIcon icon={faCheckCircle} className="me-2" />
-                    {order.onchain_status === "agreement_pending"
-                      ? "CHỜ KÝ SỐ GIAO DỊCH"
-                      : order.onchain_status === "agreement_hashed" &&
-                          order.status === "proposed"
-                        ? "ĐÃ KÝ GIAO DỊCH - ĐANG CHUẨN BỊ HÀNG"
-                        : order.onchain_status === "agreement_hashed" &&
-                            order.status === "ready_to_pick"
-                          ? "ĐÃ KÝ GIAO DỊCH - CHỜ XUẤT KHO"
-                          : order.onchain_status === "agreement_hashed" &&
-                              order.status === "in_truck"
-                            ? "ĐÃ KÝ GIAO DỊCH - CHỜ VẬN CHUYỂN"
-                            : order.onchain_status === "pickup_verified"
-                              ? "ĐANG VẬN CHUYỂN"
-                              : order.onchain_status === "delivery_signed"
-                                ? "ĐƠN HÀNG ĐÃ GIAO THÀNH CÔNG"
-                                : order.onchain_status === "failed"
-                                  ? "GIAO DỊCH THẤT BẠI"
-                                  : order.onchain_status === "pairing"
-                                    ? "ĐANG XỬ LÝ ON-CHAIN"
-                                    : "CHỜ ĐỒNG THUẬN"}
+                    <FontAwesomeIcon
+                      icon={badgeConfig.icon}
+                      className="me-2"
+                      spin={badgeConfig.spin}
+                    />
+                    {badgeConfig.text}
                   </Badge>
 
                   <div className="text-start">
@@ -666,7 +849,7 @@ const OrderDetailModal = ({ show, onHide, order, closeReload }) => {
                         borderRadius: "4px",
                       }}
                     >
-                      {order.blockchain_tx || "Giao dịch đang chờ khởi tạo..."}
+                      {order.hash_completed || "Giao dịch đang chờ khởi tạo..."}
                     </div>
                   </div>
                 </div>
@@ -1145,8 +1328,8 @@ const OrderDetailModal = ({ show, onHide, order, closeReload }) => {
         <SenderActions
           order={order}
           User={User}
-          modalstate={modalstate}
           openModal={openModal}
+          setpaymentModal={setpaymentModal}
         />
         <TransporterActions
           order={order}
@@ -1161,24 +1344,52 @@ const OrderDetailModal = ({ show, onHide, order, closeReload }) => {
           User={User}
           setmodalstate={setmodalstate}
           openModal={openModal}
+          setputawaymodal={setputawaymodal}
+          setputawayLoad={setputawayLoad}
           setInspectionData={setInspectionData}
           setInspectionType={setInspectionType}
-          modalstate={modalstate}
+          setpaymentModal={setpaymentModal}
         />
       </Modal.Footer>
     </Modal>
   );
 };
 
-const SenderActions = ({ order, User, modalstate, openModal }) => {
+const SenderActions = ({ order, User, openModal, setpaymentModal }) => {
   if (User?.data?.company_id !== order?.sender_id) return null;
 
+  const isSenderPayingShipping =
+    order?.Ship_pay_bill?.payer_id === User?.data?.company_id;
+  const isShippingPaid = ["paid", "completed", "complated"].includes(
+    order?.Ship_pay_bill?.status,
+  );
+
+  if (
+    (order?.status === "delivered" ||
+      order?.status === "outTruck" ||
+      order?.status === "completed" ||
+      order?.status === "pending_putaway") &&
+    isSenderPayingShipping &&
+    !isShippingPaid
+  ) {
+    return (
+      <Button
+        variant="danger"
+        className="px-4 shadow"
+        onClick={() => setpaymentModal(true)}
+      >
+        <FontAwesomeIcon icon={faQrcode} className="me-2" /> Thanh toán cước vận
+        chuyển
+      </Button>
+    );
+  }
+
   return (
-    <>
+    <div className="ms-2 d-flex gap-2">
       {order?.transporter_confirm === "accepted" &&
       order?.receiver_confirm === "accepted" ? (
-        <div className="ms-2">
-          {order?.status === "ready_to_pick" ? (
+        <>
+          {order?.status === "ready_to_pick" && (
             <Button
               variant="aws-orange"
               className="aws-btn-primary px-4"
@@ -1192,52 +1403,62 @@ const SenderActions = ({ order, User, modalstate, openModal }) => {
             >
               <FontAwesomeIcon icon={faSignature} className="me-2" /> Xuất xưởng
             </Button>
-          ) : order?.status === "in_truck" ? (
+          )}
+          {order?.status === "in_truck" && (
             <Button
               variant="aws-orange"
               className="aws-btn-primary px-4"
               disabled
             >
-              <FontAwesomeIcon icon={faSignature} className="me-2" /> Đợi đối
-              tác xác nhận vận chuyển
+              <FontAwesomeIcon icon={faClock} className="me-2" /> Đợi tài xế xác
+              nhận lấy hàng
             </Button>
-          ) : order?.status === "proposed" ? (
+          )}
+          {order?.status === "proposed" && (
             <Button
               onClick={() =>
                 openModal(
                   "order_ready",
                   "XÁC NHẬN HÀNG HÓA",
-                  "Nhập mã PIN để xác nhận hàng hóa đã sẵn sàng để vận chuyển!",
+                  "Nhập mã PIN để xác nhận hàng hóa đã sẵn sàng!",
                 )
               }
               variant="aws-orange"
               className="aws-btn-primary px-4"
             >
-              <FontAwesomeIcon icon={faSignature} className="me-2" /> Sẵn sàng
+              <FontAwesomeIcon icon={faCheckCircle} className="me-2" /> Sẵn sàng
               vận chuyển
             </Button>
-          ) : (
-            order?.status === "shipping" && (
-              <Button
-                onClick={() => openModal("tracking_order")}
-                variant="aws-orange"
-                className="aws-btn-primary px-4"
-              >
-                <FontAwesomeIcon icon={faSignature} className="me-2" /> Theo dõi
-                đơn hàng
-              </Button>
-            )
           )}
-        </div>
+          {(order?.status === "shipping" || order?.status === "outTruck") && (
+            <Button
+              onClick={() => openModal("tracking_order")}
+              variant="aws-orange"
+              className="aws-btn-primary px-4"
+            >
+              <FontAwesomeIcon icon={faMapMarkedAlt} className="me-2" /> Theo
+              dõi đơn hàng
+            </Button>
+          )}
+          {(order?.status === "delivered" ||
+            order?.status === "pending_putaway" ||
+            order?.status === "completed") && (
+            <Button variant="success" className="px-4" disabled>
+              <FontAwesomeIcon icon={faCheckDouble} className="me-2" /> Đơn hàng
+              đã giao xong
+            </Button>
+          )}
+        </>
       ) : (
         <Button variant="aws-orange" className="aws-btn-primary px-4" disabled>
-          <FontAwesomeIcon icon={faSignature} className="me-2" /> Đợi đối tác
-          phản hồi
+          <FontAwesomeIcon icon={faClock} className="me-2" /> Đợi đối tác phản
+          hồi
         </Button>
       )}
-    </>
+    </div>
   );
 };
+
 
 const TransporterActions = ({
   order,
@@ -1249,31 +1470,27 @@ const TransporterActions = ({
 }) => {
   const isButtonDisabled = React.useMemo(() => {
     const hasNoVehicles = !selectedVehicles || selectedVehicles.length === 0;
-    const isAlreadyOnChain = order?.onchain_status === "agreement_hashed";
-
-    return isAlreadyOnChain || hasNoVehicles || !isWeightAble;
+    return (
+      order?.onchain_status === "agreement_hashed" ||
+      hasNoVehicles ||
+      !isWeightAble
+    );
   }, [order?.onchain_status, selectedVehicles, isWeightAble]);
+
   if (User?.data?.role !== "transporter") return null;
 
   return (
-    <div className="ms-2 d-flex">
+    <div className="ms-2 d-flex gap-2">
       {order.transporter_confirm !== "accepted" ? (
         <Button
           variant="aws-orange"
           className="aws-btn-primary px-4"
           disabled={isButtonDisabled}
-          title={
-            order.onchain_status === "agreement_hashed"
-              ? "Giao dịch đã On-chain thành công"
-              : !selectedVehicles || selectedVehicles.length === 0
-                ? "Vui lòng chọn ít nhất 1 xe để ký số"
-                : "Nhấn để xác nhận ký số"
-          }
           onClick={() =>
             openModal(
               "shipingAccept",
               "KÝ SỐ VẬN ĐƠN",
-              "Xác nhận điều động xe và nhận vận chuyển đơn hàng này.",
+              "Xác nhận điều động xe.",
             )
           }
         >
@@ -1291,7 +1508,7 @@ const TransporterActions = ({
                 variant="aws-orange"
                 className="px-4 ms-2"
               >
-                <FontAwesomeIcon icon={faSignature} className="me-2" />
+                <FontAwesomeIcon icon={faMapMarkedAlt} className="me-2" />{" "}
                 Tracking đơn hàng
               </Button>
               {order.status === "in_truck" && (
@@ -1306,8 +1523,8 @@ const TransporterActions = ({
                     )
                   }
                 >
-                  <FontAwesomeIcon icon={faSignature} className="me-2" /> Xác
-                  nhận lấy hàng
+                  <FontAwesomeIcon icon={faTruck} className="me-2" /> Xác nhận
+                  lấy hàng
                 </Button>
               )}
             </>
@@ -1320,22 +1537,22 @@ const TransporterActions = ({
                   variant="aws-orange"
                   className="px-4 ms-2"
                 >
-                  <FontAwesomeIcon icon={faSignature} className="me-2" />
-                  Tracking đơn hàng
+                  <FontAwesomeIcon icon={faMapMarkedAlt} className="me-2" />{" "}
+                  Tracking
                 </Button>
                 <Button
                   onClick={() =>
                     openModal(
                       "outTruck",
-                      "XÁC NHẬN GIAO HÀNG",
+                      "XÁC NHẬN ĐÃ GIAO",
                       "Xác nhận hàng thực đã được giao tới kho của khách hàng.",
                     )
                   }
                   variant="aws-orange"
                   className="px-4 ms-2"
                 >
-                  <FontAwesomeIcon icon={faSignature} className="me-2" />
-                  Xác nhận đã giao
+                  <FontAwesomeIcon icon={faBoxOpen} className="me-2" /> Xác nhận
+                  đã giao (Đến nơi)
                 </Button>
                 <Button
                   onClick={() => setmodalstate("inspection")}
@@ -1346,17 +1563,16 @@ const TransporterActions = ({
                 </Button>
               </>
             )}
-
-          {order.onchain_status !== "agreement_hashed" &&
-            order.status !== "shipping" && (
-              <Button
-                variant="aws-orange"
-                className="aws-btn-primary px-4"
-                disabled
-              >
-                <FontAwesomeIcon icon={faClock} className="me-2" /> Chờ phản hồi
-              </Button>
-            )}
+          {order.status === "outTruck" && (
+            <Button
+              variant="aws-orange"
+              className="aws-btn-primary px-4 ms-2"
+              disabled
+            >
+              <FontAwesomeIcon icon={faClock} className="me-2" /> Đang chờ Khách
+              hàng xác nhận nhận hàng
+            </Button>
+          )}
         </>
       )}
     </div>
@@ -1368,23 +1584,104 @@ const CustomerActions = ({
   User,
   openModal,
   setInspectionData,
+  setputawayLoad,
+  setputawaymodal,
   setInspectionType,
   setmodalstate,
-  modalstate,
+  setpaymentModal,
 }) => {
   if (User?.data?.company_id !== order?.customer_id) return null;
 
+  if (order?.status === "outTruck") {
+    return (
+      <div className="d-flex gap-3 ms-2">
+        <Button
+          variant="aws-orange"
+          className="aws-btn-primary px-4 shadow"
+          onClick={() => {
+            setmodalstate((prev) => ({ ...prev, inspectionShiper: true }));
+            setInspectionType("success");
+            setInspectionData(order);
+          }}
+        >
+          <FontAwesomeIcon icon={faHandshake} className="me-2" /> Xác nhận đã
+          nhận đủ hàng
+        </Button>
+        <Button
+          variant="outline-danger"
+          className="px-4"
+          onClick={() => {
+            setmodalstate((prev) => ({ ...prev, inspectionShiper: true }));
+            setInspectionType("failed");
+            setInspectionData(order);
+          }}
+        >
+          <FontAwesomeIcon icon={faUndo} className="me-2" /> Trả hàng (Hàng lỗi)
+        </Button>
+      </div>
+    );
+  }
+
+  // Các trường hợp bình thường
   return (
-    <div className="ms-2">
+    <div className="ms-2 d-flex gap-2">
       {order.onchain_status === "delivery_signed" ? (
         <>
-          <Button variant="warning" className="px-4 me-2">
-            <FontAwesomeIcon icon={faCheckDouble} className="me-2" /> Nhập kho
-          </Button>
-          <Button variant="success" className="px-4" disabled>
-            <FontAwesomeIcon icon={faCheckDouble} className="me-2" /> Đơn hoàn
-            thành
-          </Button>
+          {order.status === "delivered" && (
+            <>
+              <Button
+                variant="danger"
+                className="px-4 shadow"
+                onClick={() => setpaymentModal(true)}
+              >
+                <FontAwesomeIcon icon={faQrcode} className="me-2" /> Thanh toán
+              </Button>
+              <Button
+                onClick={() =>
+                  openModal(
+                    "put_away",
+                    "PIN VERIFY",
+                    "Nhập mã PIN để xác nhận tạo bản ghi nhập kho!",
+                  )
+                }
+                variant="warning"
+                className="px-4"
+              >
+                <FontAwesomeIcon icon={faCheckDouble} className="me-2" />
+                Tạo bản ghi nhập kho
+              </Button>
+            </>
+          )}
+
+          {order.status === "pending_putaway" && (
+            <>
+              <Button
+                variant="danger"
+                className="px-4 shadow"
+                onClick={() => setpaymentModal(true)}
+              >
+                <FontAwesomeIcon icon={faQrcode} className="me-2" /> Thanh toán
+              </Button>
+              <Button
+                onClick={() => {
+                  setputawaymodal(true);
+                  setputawayLoad(true);
+                }}
+                variant="warning"
+                className="px-4"
+              >
+                <FontAwesomeIcon icon={faCheckDouble} className="me-2" /> Xếp
+                hàng lên kệ (Putaway)
+              </Button>
+            </>
+          )}
+
+          {order.status === "completed" && (
+            <Button variant="success" className="px-4" disabled>
+              <FontAwesomeIcon icon={faCheckDouble} className="me-2" /> Đơn hoàn
+              thành
+            </Button>
+          )}
         </>
       ) : (
         <>
@@ -1396,78 +1693,34 @@ const CustomerActions = ({
                 openModal(
                   "distAccept",
                   "PIN VERIFY",
-                  "Nhập mã PIN để xác nhận đơn vẩn chuyển này!",
+                  "Nhập mã PIN để xác nhận đơn vận chuyển này!",
                 )
               }
             >
-              <FontAwesomeIcon icon={faFileSignature} className="me-2" /> Xác
-              nhận nhập hàng
+              <FontAwesomeIcon icon={faFileSignature} className="me-2" /> Phê
+              duyệt đơn
             </Button>
           ) : (
-            <div className="d-flex align-items-center">
-              {!order.Delivery_completed ||
-              order.onchain_status !== "pickup_verified" ? (
-                <Button variant="outline-primary" className="px-4" disabled>
-                  <FontAwesomeIcon icon={faBox} className="me-2" /> Chờ Shipper
-                  lấy hàng...
+            <>
+              {(!order.Delivery_completed ||
+                order.onchain_status !== "pickup_verified") &&
+                order.status !== "shipping" && (
+                  <Button variant="outline-primary" className="px-4" disabled>
+                    <FontAwesomeIcon icon={faBox} className="me-2" /> Đang chờ
+                    Shipper...
+                  </Button>
+                )}
+              {order?.status === "shipping" && (
+                <Button
+                  variant="aws-orange"
+                  className="aws-btn-primary px-4"
+                  onClick={() => openModal("tracking_order")}
+                >
+                  <FontAwesomeIcon icon={faMapMarkedAlt} className="me-2" />{" "}
+                  Theo dõi đơn hàng
                 </Button>
-              ) : (
-                <>
-                  {order?.status === "outTruck" ? (
-                    <div className="d-flex gap-3 mt-3">
-                      <Button
-                        variant="aws-orange"
-                        className="aws-btn-primary px-4 py-2 flex-grow-1"
-                        onClick={() => {
-                          setmodalstate((prev) => ({
-                            ...prev,
-                            inspectionShiper: true,
-                          }));
-                          setInspectionType("success");
-                          setInspectionData(order);
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faHandshake} className="me-2" />
-                        Xác nhận đã nhận hàng
-                      </Button>
-
-                      <Button
-                        variant="outline-danger"
-                        className="px-4 py-2 flex-grow-1"
-                        onClick={() => {
-                          setmodalstate((prev) => ({
-                            ...prev,
-                            inspectionShiper: true,
-                          }));
-                          setInspectionType("failed");
-                          setInspectionData(order);
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faUndo} className="me-2" /> Trả
-                        hàng
-                      </Button>
-                    </div>
-                  ) : order?.status === "delivered" ? (
-                    <Button
-                      variant="aws-orange"
-                      className="aws-btn-primary px-4"
-                    >
-                      <FontAwesomeIcon icon={faHandshake} className="me-2" />{" "}
-                      Đơn hàng hoàn thành
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="aws-orange"
-                      className="aws-btn-primary px-4"
-                      onClick={() => openModal("tracking_order")}
-                    >
-                      <FontAwesomeIcon icon={faHandshake} className="me-2" />{" "}
-                      Theo dõi đơn hàng
-                    </Button>
-                  )}
-                </>
               )}
-            </div>
+            </>
           )}
         </>
       )}

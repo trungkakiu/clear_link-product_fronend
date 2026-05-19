@@ -16,6 +16,7 @@ import {
 } from "@themesberg/react-bootstrap";
 
 import Product_detail from "../Modal/Manufacture/Product_detail";
+import { toast } from "react-toastify";
 
 const Product_list = () => {
   const API_URL = process.env.REACT_APP_API_IMAGE_URL;
@@ -23,6 +24,8 @@ const Product_list = () => {
   const [isLoad, setIsLoad] = useState(true);
   const history = useHistory();
   const { User } = useContext(UserContext);
+  const [secondsActive, setSecondsActive] = useState(0);
+  const [isIdle, setIsIdle] = useState(false);
   const [tab, setTab] = useState("active");
   const [page, setPage] = useState(1);
 
@@ -60,11 +63,24 @@ const Product_list = () => {
     setPage(1);
   }, [tab]);
 
-  /* ================= API ================= */
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSecondsActive((prev) => {
+        if (prev > 1800) {
+          setIsIdle(true);
+          return prev;
+        }
+        return prev + 1;
+      });
+    }, 1000);
 
-  const getProduct = async () => {
-    setIsLoad(true);
+    return () => clearInterval(timer);
+  }, []);
+
+  const getProduct = async (isFirstLoad = false) => {
     try {
+      if (isIdle) return;
+      if (isFirstLoad) setIsLoad(true);
       const res = await api_request.getProduct(User);
       if (res?.RC === 200) {
         setPending(res.RD.filter((x) => x.chain_status === "pending"));
@@ -74,18 +90,22 @@ const Product_list = () => {
         setWaitEdit(res.RD.filter((x) => x.chain_status === "wait-edit"));
         setDrop(res.RD.filter((x) => x.chain_status === "down"));
       }
+    } catch (error) {
+      console.error("Lỗi khi tải dữ liệu sản phẩm:", error);
+      if (isFirstLoad) toast.error("Không thể tải dữ liệu sản phẩm");
     } finally {
-      setTimeout(() => {
-        setIsLoad(false);
-      }, 1000);
+      if (isFirstLoad) setIsLoad(false);
     }
   };
 
   useEffect(() => {
-    getProduct();
-  }, []);
+    getProduct(true);
+    const interval = setInterval(() => {
+      getProduct(false);
+    }, 5000);
 
-  /* ================= ACTION ================= */
+    return () => clearInterval(interval);
+  }, []);
 
   const handleViewDetail = (id) => {
     const product = [
@@ -101,8 +121,6 @@ const Product_list = () => {
     setData_state(product);
     setIsOpen(true);
   };
-
-  /* ================= UI ================= */
 
   const Pager = ({ page, total, onChange }) => {
     if (total <= 1) return null;

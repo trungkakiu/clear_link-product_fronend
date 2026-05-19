@@ -18,6 +18,12 @@ export const setAuthToken_v2 = (User) => {
   }
 };
 
+const getStoredLocation = () => {
+  const lat = localStorage.getItem("last_lat");
+  const lon = localStorage.getItem("last_lon");
+  return { lat, lon };
+};
+
 const api = axios.create({
   baseURL: API_URL,
   timeout: 15000,
@@ -28,12 +34,26 @@ const api = axios.create({
   },
 });
 
+
 api.interceptors.request.use((config) => {
+
   if (authToken) {
     config.headers.Authorization = `Bearer ${authToken}`;
   }
+
+  const { lat, lon } = getStoredLocation();
+  if (lat && lon) {
+    config.headers["x-tracechain-lat"] = lat;
+    config.headers["x-tracechain-lon"] = lon;
+  }
+
+  if (config.resourceId) {
+    config.headers["x-resource-id"] = config.resourceId;
+  }
+
   return config;
 });
+
 
 api.interceptors.response.use(
   (response) => response,
@@ -43,6 +63,8 @@ api.interceptors.response.use(
     const status = error?.response?.status;
 
     const errorMsg = responseData?.RM || error.message || "Lỗi hệ thống";
+    
+
     if (status === 401 || status === 403) {
       if (!isRedirecting) {
         isRedirecting = true;
@@ -64,6 +86,7 @@ api.interceptors.response.use(
       console.warn("[FAILOVER] Đang thử lại với Server phụ...");
 
       try {
+       
         return await api({
           ...config,
           baseURL: API_URL_2,

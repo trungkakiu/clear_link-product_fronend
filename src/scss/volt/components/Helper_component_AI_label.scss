@@ -1,0 +1,271 @@
+/* TraceChain Profile Card Styling */
+.card-profile {
+  --primary-glow: #3b82f6;
+  --accent-glow: #10b981;
+
+  background: rgba(17, 25, 40, 0.75); // Nền tối trong suốt
+  backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.125);
+  border-radius: 20px;
+  padding: 24px;
+  margin: 15px 0;
+  max-width: 480px;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+
+  // Animation xuất hiện mượt mà
+  animation: slideUpFade 0.6s cubic-bezier(0.23, 1, 0.32, 1) both;
+
+  // Hiệu ứng ánh kim chạy ngang Card (Shimmer)
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(255, 255, 255, 0.05),
+      transparent
+    );
+    transform: skewX(-25deg);
+    animation: shimmer 4s infinite;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 12px;
+
+    h4 {
+      margin: 0;
+      font-size: 1.25rem;
+      background: linear-gradient(90deg, #fff, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge {
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+
+      &.active,
+      &.Active {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+        border: 1px solid #10b981;
+        animation: pulseGreen 2s infinite;
+      }
+    }
+  }
+
+  .profile-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+
+      strong {
+        font-size: 0.7rem;
+        color: #9ca3af;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+        letter-spacing: 0.5px;
+      }
+
+      span {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: #e5e7eb;
+      }
+
+      &.full-width {
+        grid-column: span 2;
+      }
+    }
+
+    .blockchain-info {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px dashed rgba(59, 130, 246, 0.5);
+      margin-top: 8px;
+
+      code {
+        font-family: "Fira Code", monospace;
+        color: #60a5fa;
+        font-size: 0.85rem;
+        word-break: break-all;
+        cursor: help;
+      }
+    }
+  }
+}
+
+/* --- Animations --- */
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    left: 200%;
+  }
+}
+
+@keyframes pulseGreen {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.shipment-card-dark {
+  background: #1e293b; // Nền tối dịu mắt
+  border: 1px solid #334155;
+  border-radius: 10px; // Bo góc nhỏ hơn xíu cho hợp form ngắn
+  padding: 12px 14px; // Ép lề nhỏ lại
+  margin-bottom: 10px;
+  color: #f8fafc;
+  font-family: "Inter", system-ui, sans-serif;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: #3b82f6; // Viền sáng lên khi hover
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .id-block {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+
+      .icon-box {
+        color: #60a5fa; // Xanh neon nhẹ cho icon hộp hàng
+      }
+      .id-text {
+        letter-spacing: 0.5px;
+      }
+    }
+  }
+
+  .card-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #94a3b8;
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .dest {
+      max-width: 65%; // Giới hạn tên để không bị tràn bục
+    }
+    .date {
+      flex-shrink: 0; // Giữ nguyên không bị bóp méo
+    }
+  }
+
+  .blockchain-indicator {
+    font-size: 0.7rem;
+    color: #10b981; // Xanh ngọc lục bảo
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 2px;
+    padding-top: 8px;
+    width: 100%;
+    border-top: 1px dashed #334155;
+    font-weight: 600;
+  }
+
+  .card-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 4px;
+    padding-top: 10px;
+
+    .status-badge {
+      font-size: 0.65rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+
+      &.success {
+        background: rgba(16, 185, 129, 0.15);
+        color: #34d399;
+      }
+      &.warning {
+        background: rgba(245, 158, 11, 0.15);
+        color: #fbbf24;
+      }
+      &.default {
+        background: rgba(100, 116, 139, 0.2);
+        color: #cbd5e1;
+      }
+    }
+
+    .blockchain-indicator {
+      font-size: 0.7rem;
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+    }
+  }
+}

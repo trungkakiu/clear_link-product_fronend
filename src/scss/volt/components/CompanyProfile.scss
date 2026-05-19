@@ -123,3 +123,210 @@ $text-main: #232f3e;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
   }
 }
+
+/* --- GIỮ NGUYÊN CODE SCSS CŨ CỦA ANH Ở TRÊN --- */
+
+/* ==============================================================
+   THÊM MỚI: TÙY CHỈNH TABS VÀ WALLET CHO COMPANY PROFILE
+   ============================================================== */
+
+/* 1. AWS Tab Navigation */
+.aws-tabs-nav {
+  display: flex;
+  gap: 2rem;
+  border-bottom: 2px solid #eaeded;
+
+  .aws-tab-item {
+    padding: 0.75rem 0.5rem;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #545b64;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: $text-main;
+    }
+
+    &.active {
+      color: $aws-orange;
+
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: -2px; /* Đè lên viền của border-bottom */
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background-color: $aws-orange;
+        border-radius: 3px 3px 0 0;
+      }
+    }
+  }
+}
+
+/* Hiệu ứng chuyển Tab mượt mà */
+.fade-in-tab {
+  animation: tabFadeIn 0.3s ease-in-out;
+}
+
+@keyframes tabFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 2. Wallet Card Custom UI */
+.aws-wallet-card.balance-card {
+  background: linear-gradient(
+    135deg,
+    #232f3e 0%,
+    #151b23 100%
+  ); // Màu AWS Navy xịn
+
+  .balance-amount {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #ffffff;
+    line-height: 1.2;
+    letter-spacing: -1px;
+  }
+
+  .frozen-box {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    .icon-box {
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 153, 0, 0.1); // soft orange
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+  }
+
+  .aws-progress {
+    background-color: rgba(255, 255, 255, 0.1);
+    .progress-bar {
+      background-color: $aws-orange;
+    }
+  }
+}
+
+.aws-bank-card {
+  .bank-ticket {
+    background-color: #f8f9fa;
+    border: 1px dashed #d5dbdb;
+    background-image: radial-gradient(#d5dbdb 1px, transparent 0);
+    background-size: 10px 10px;
+
+    .letter-spacing-2 {
+      letter-spacing: 2px;
+    }
+  }
+}
+
+.aws-wallet-setup {
+  background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+  border: 1px solid #eaeded !important;
+}
+
+/* 🚀 BỘ HOẠT ẢNH ANIMATION CAO CẤP CHO WALLET CLEARLINK */
+.aws-wallet-wrapper {
+  perspective: 1000px;
+}
+
+.hover-bounce {
+  transition:
+    transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    box-shadow 0.3s ease;
+}
+.hover-bounce:hover {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Glassmorphic effect cho thẻ số dư */
+.balance-card {
+  background: linear-gradient(135deg, #1a365d 0%, #2a4365 100%) !important;
+}
+
+/* Thẻ ngân hàng mô phỏng Credit Card dập nổi */
+.credit-card-glow {
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Hiệu ứng xung nhịp đèn nháy cho trạng thái Active */
+.animate-pulse-green {
+  animation: pulse-green 2s infinite;
+}
+@keyframes pulse-green {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.letter-spacing-3 {
+  letter-spacing: 3px;
+}
+.fw-900 {
+  font-weight: 900;
+}
+.fw-black {
+  font-weight: 950;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+.animate-zoom-in {
+  animation: zoomIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.animate-slide-up {
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes zoomIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

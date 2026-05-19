@@ -32,18 +32,23 @@ import RocketLoad from "../../Utils/RocketLoad";
 import Otp_verify_dynamic from "../Modal/Otp_verify_dynamic";
 import MapDirectionView from "../MapDirectionView";
 import MapDirectionPreview from "../MapDirectionPreview";
+import QRScreenModal from "../Modal/Manufacture/QRScreenModal";
 
 const NewShipingOrder = () => {
   const { User } = useContext(UserContext);
   const [modalstate, setmodalstate] = useState(false);
+  const [paymentmodal, setpaymentmodal] = useState(false);
   const [isload, setisload] = useState(false);
   const [realDistance, setRealDistance] = useState(0);
   const [selectedBatches, setSelectedBatches] = useState([]);
+  const [paymentdata, setpaymentdata] = useState({});
   const [shipinginfo, setshipinginfo] = useState({
     shipping: [],
     MyCompany: {},
     collaboration: [],
     complate_batched: [],
+    payment_method: "cod",
+    pay_earl_percent: 100,
   });
 
   const [selectedTransporter, setSelectedTransporter] = useState(null);
@@ -112,7 +117,7 @@ const NewShipingOrder = () => {
       vatFee: 0,
       finalTotal: 0,
       activeDistance: 0,
-      unitPrice: 0, // THÊM TRƯỜNG NÀY ĐỂ UI KHÔNG LỖI
+      unitPrice: 0,
       hasRoadTax: false,
       isBulky: false,
     };
@@ -160,8 +165,6 @@ const NewShipingOrder = () => {
         const commodityRate =
           parseFloat(priceConfig[`${shippingConfig.commodityType}_fee`]) || 0;
         commodityFee = weightInTons * activeDistance * commodityRate;
-
-        // Tính unitPrice để hiển thị UI (Phí sàn + Phí hàng)
         unitPrice =
           baseVehiclePrice +
           commodityRate * (weightInTons / activeDistance || 1);
@@ -195,7 +198,7 @@ const NewShipingOrder = () => {
         vatFee,
         finalTotal,
         activeDistance,
-        unitPrice, // TRẢ VỀ CHO UI
+        unitPrice,
         hasRoadTax: totalWeight > 10000,
         isBulky: dimensionalWeight > totalWeight,
       };
@@ -204,6 +207,40 @@ const NewShipingOrder = () => {
       return defaultValues;
     }
   }, [selectedBatches, selectedTransporter, shippingConfig, realDistance]);
+
+  const handlesubmit = async (code) => {
+    try {
+      const res = await api_request.sendShipingREquestAPI(
+        User,
+        code,
+        calculation.unitPrice,
+        calculation.finalTotal,
+        shippingConfig.commodityType,
+        shippingConfig.vehicleType,
+        realDistance,
+        getPartnerData(selectedTransporter)?.id,
+        getPartnerData(selectedReceiver)?.id,
+        selectedBatches,
+        shipinginfo.payment_method,
+        shipinginfo.pay_earl_percent,
+      );
+      if (res) {
+        if (res.RC === 200) {
+          setpaymentdata(res.RD.pay);
+        }
+        return {
+          RM: res.RM,
+          RC: res.RC,
+        };
+      }
+    } catch (error) {
+      console.error(error);
+      return {
+        RM: "Lỗi hệ thống!",
+        RC: 500,
+      };
+    }
+  };
 
   if (isload)
     return (
@@ -216,27 +253,30 @@ const NewShipingOrder = () => {
     <Container fluid className="aws-shipping-wrapper p-3 pb-5">
       <Otp_verify_dynamic
         show={modalstate}
-        close={() => setmodalstate(false)}
+        close={() => {
+          setmodalstate(false);
+        }}
         title={"XÁC THỰC VẬN ĐƠN"}
         message={
           "Ký số phê duyệt lệnh vận chuyển và ghi đè dữ liệu lên Blockchain?"
         }
-        onSuccess={(code) =>
-          api_request.sendShipingREquestAPI(
-            User,
-            code,
-            calculation.unitPrice,
-            calculation.finalTotal,
-            shippingConfig.commodityType,
-            shippingConfig.vehicleType,
-            realDistance,
-            getPartnerData(selectedTransporter)?.id,
-            getPartnerData(selectedReceiver)?.id,
-            selectedBatches,
-          )
-        }
+        onSuccess={(code) => {
+          return handlesubmit(code);
+        }}
+        closeReload={() => {
+          if (shipinginfo.payment_method !== "cod") {
+            setpaymentmodal(true);
+          } else {
+            toast.success("Vận đơn đã được tạo thành công!");
+          }
+        }}
       />
 
+      <QRScreenModal
+        onClose={() => setpaymentmodal(false)}
+        data={paymentdata}
+        show={paymentmodal}
+      />
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h4 className="fw-bold text-aws-navy mb-1 text-uppercase">
@@ -266,6 +306,7 @@ const NewShipingOrder = () => {
                   CHỌN NHÀ VẬN TẢI
                 </Form.Label>
                 <Dropdown
+                  required
                   onSelect={(id) =>
                     setSelectedTransporter(
                       shipinginfo.shipping.find((p) => p.id === id),
@@ -305,6 +346,7 @@ const NewShipingOrder = () => {
                     />
                   </Dropdown.Toggle>
                   <Dropdown.Menu
+                    required
                     className="w-100 shadow-lg border-0 py-0 overflow-auto"
                     style={{ maxHeight: "300px" }}
                   >
@@ -331,6 +373,7 @@ const NewShipingOrder = () => {
                   CHỌN ĐIỂM ĐẾN (RECEIVER)
                 </Form.Label>
                 <Dropdown
+                  required
                   onSelect={(id) =>
                     setSelectedReceiver(
                       shipinginfo.collaboration.find((p) => p.id === id),
@@ -370,6 +413,7 @@ const NewShipingOrder = () => {
                     />
                   </Dropdown.Toggle>
                   <Dropdown.Menu
+                    required
                     className="w-100 shadow-lg border-0 py-0 overflow-auto"
                     style={{ maxHeight: "300px" }}
                   >
@@ -404,6 +448,7 @@ const NewShipingOrder = () => {
                     <Form.Control
                       type="date"
                       className="form-control-sm border-aws-orange shadow-none"
+                      required
                       value={shippingConfig.loadingDate}
                       onChange={(e) =>
                         setShippingConfig({
@@ -419,6 +464,7 @@ const NewShipingOrder = () => {
                     </Form.Label>
                     <Form.Control
                       type="date"
+                      required
                       className="form-control-sm border-aws-orange shadow-none"
                       value={shippingConfig.deliveryDate}
                       onChange={(e) =>
@@ -445,6 +491,7 @@ const NewShipingOrder = () => {
                       </Form.Label>
                       <Form.Select
                         size="sm"
+                        required
                         className="aws-select-custom py-1"
                         value={shippingConfig.vehicleType}
                         onChange={(e) =>
@@ -466,6 +513,7 @@ const NewShipingOrder = () => {
                       </Form.Label>
                       <Form.Select
                         size="sm"
+                        required
                         className="aws-select-custom py-1"
                         value={shippingConfig.commodityType}
                         onChange={(e) =>
@@ -605,6 +653,58 @@ const NewShipingOrder = () => {
             </div>
           </Card>
         </Col>
+        <Col md={12}>
+          <Card className="payment-card-aws shadow-sm">
+            <Card.Body className="p-3">
+              <label className="form-label-aws mb-3">
+                HÌNH THỨC THANH TOÁN
+              </label>
+              <Row className="g-2">
+                {" "}
+                <Col xs={4} md={2}>
+                  <div
+                    className={`payment-item-v3 ${shipinginfo.payment_method === "cod" ? "active" : ""}`}
+                    onClick={() =>
+                      setshipinginfo((prev) => ({
+                        ...prev,
+                        payment_method: "cod",
+                        pay_earl_percent: 0,
+                      }))
+                    }
+                  >
+                    <div className="icon-box">
+                      <i className="fas fa-hand-holding-usd"></i>
+                    </div>
+                    <div className="text-content">
+                      <span className="title">COD</span>
+                      <small>Khi nhận</small>
+                    </div>
+                  </div>
+                </Col>
+                {[100, 90, 70, 60, 50].map((percent) => (
+                  <Col xs={4} md={2} key={percent}>
+                    <div
+                      className={`payment-item-v3 ${shipinginfo.payment_method !== "cod" && shipinginfo.pay_earl_percent === percent ? "active" : ""}`}
+                      onClick={() =>
+                        setshipinginfo((prev) => ({
+                          ...prev,
+                          payment_method: "prepaid",
+                          pay_earl_percent: percent,
+                        }))
+                      }
+                    >
+                      <div className="percent-circle">{percent}%</div>
+                      <div className="text-content">
+                        <span className="title">CỌC</span>
+                        <small>{percent}% đơn</small>
+                      </div>
+                    </div>
+                  </Col>
+                ))}
+              </Row>
+            </Card.Body>
+          </Card>
+        </Col>
       </Row>
 
       {selectedReceiver &&
@@ -666,7 +766,6 @@ const NewShipingOrder = () => {
                   </div>
                 </div>
 
-                {/* Mới: Bổ sung số lượng Pallet */}
                 <div className="summary-item d-none d-sm-block">
                   <span className="label small opacity-50 text-uppercase">
                     Quy cách
@@ -703,7 +802,6 @@ const NewShipingOrder = () => {
                   </div>
                 </div>
 
-                {/* Divider nhẹ để ngăn cách với phần tiền */}
                 <div
                   className="summary-divider d-none d-lg-block"
                   style={{

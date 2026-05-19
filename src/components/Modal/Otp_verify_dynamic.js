@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Modal, Button, Row, Col, Spinner } from "@themesberg/react-bootstrap";
+import { Modal, Button, Row, Col } from "@themesberg/react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faShieldAlt,
@@ -25,7 +25,8 @@ const Otp_verify_dynamic = ({
   const [digits, setDigits] = useState(["", "", "", "", "", ""]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pageState, setPageState] = useState({
-    status: 203, // Trạng thái chờ nhập
+    status: "editing", // "editing" | "success" | "error"
+    errorCode: 200,
     message: message,
   });
 
@@ -36,19 +37,21 @@ const Otp_verify_dynamic = ({
     if (show) {
       setDigits(["", "", "", "", "", ""]);
       setIsSubmitting(false);
-      setPageState({ status: 203, message: message });
+      setPageState({ status: "editing", errorCode: 200, message: message });
 
       setTimeout(() => {
         if (inputsRef.current[0]) inputsRef.current[0].focus();
       }, 200);
     }
   }, [show, message]);
-  // ---------------------------------
 
   const handleRetry = () => {
     setDigits(["", "", "", "", "", ""]);
-    setPageState({ status: 203, message: message });
+    setPageState({ status: "editing", errorCode: 200, message: message });
     setIsSubmitting(false);
+    setTimeout(() => {
+      if (inputsRef.current[0]) inputsRef.current[0].focus();
+    }, 100);
   };
 
   const handleChange = (index, value) => {
@@ -78,13 +81,17 @@ const Otp_verify_dynamic = ({
     try {
       setIsSubmitting(true);
       const resOtp = await api_request.vetify_user_otp(User, otp);
+
       if (resOtp && resOtp.RC === 200) {
+        // Gọi hàm xử lý nghiệp vụ (AcceptShippingOrder)
         const finalRes = await onSuccess(resOtp.RD);
+        setIsSubmitting(false);
+
         if (finalRes && finalRes.RC === 200) {
-          setIsSubmitting(false);
           setPageState({
-            status: 200,
-            message: finalRes.RM || "Action completed successfully!",
+            status: "success",
+            errorCode: 200,
+            message: finalRes.RM || "Hành động đã hoàn thành thành công!",
           });
 
           setTimeout(() => {
@@ -92,99 +99,113 @@ const Otp_verify_dynamic = ({
             if (closeReload) closeReload();
           }, 1500);
         } else {
-          setIsSubmitting(false);
+          // Bắt mọi mã lỗi động từ Backend (400, 404, 500, số âm, v.v...)
           setPageState({
-            status: 400,
-            message: finalRes?.RM || "Hành động thất bại!",
+            status: "error",
+            errorCode: finalRes?.RC || 400,
+            message: finalRes?.RM || "Yêu cầu xử lý thất bại!",
           });
         }
       } else {
         setIsSubmitting(false);
         setDigits(["", "", "", "", "", ""]);
-        if (inputsRef.current[0]) {
-          inputsRef.current[0].focus();
-        }
-        toast.error(resOtp?.RM || "Mã PIN không chính xác!");
+        if (inputsRef.current[0]) inputsRef.current[0].focus();
+        toast.error(resOtp?.RM || "Mã PIN xác thực không chính xác!");
       }
     } catch (error) {
       setIsSubmitting(false);
-      setPageState({ status: 500, message: "Lỗi kết nối máy chủ xác thực!" });
+      // Trích xuất mã lỗi và tin nhắn thô từ phản hồi mạng của Axios nếu có sập kết nối
+      const serverErrorMsg =
+        error.response?.data?.RM ||
+        error.message ||
+        "Lỗi kết nối máy chủ xác thực!";
+      const serverErrorCode = error.response?.data?.RC || 500;
+
+      setPageState({
+        status: "error",
+        errorCode: serverErrorCode,
+        message: serverErrorMsg,
+      });
     }
   };
 
   const renderContent = () => {
-    switch (pageState.status) {
-      case 200:
-        return (
-          <div className="aws-page-status success-view">
-            <div className="icon-wrapper bg-soft-success">
-              <FontAwesomeIcon
-                icon={faCheckCircle}
-                className="text-success"
-                size="3x"
-              />
-            </div>
-            <h5 className="mt-3 fw-bold text-dark">Thành công!</h5>
-            <p className="text-muted">{pageState.message}</p>
+    if (pageState.status === "success") {
+      return (
+        <div className="aws-page-status success-view">
+          <div className="icon-wrapper bg-soft-success">
+            <FontAwesomeIcon
+              icon={faCheckCircle}
+              className="text-success"
+              size="3x"
+            />
           </div>
-        );
-      case 400:
-      case 500:
-        return (
-          <div className="aws-page-status error-view">
-            <div className="icon-wrapper bg-soft-danger">
-              <FontAwesomeIcon
-                icon={
-                  pageState.status === 500
-                    ? faExclamationTriangle
-                    : faTimesCircle
-                }
-                className="text-danger"
-                size="3x"
-              />
-            </div>
-            <h5 className="mt-3 fw-bold text-dark">
-              {pageState.status === 500 ? "Lỗi Hệ Thống" : "Thất bại"}
-            </h5>
-            <p className="text-muted">{pageState.message}</p>
-            <Button
-              variant="outline-primary"
-              className="mt-2"
-              onClick={() => {
-                handleSubmit();
-                setPageState({ status: 203, message: message });
-              }}
-            >
-              Thử lại
-            </Button>
-          </div>
-        );
-      default:
-        return (
-          <>
-            <div className="aws-lock-visual mb-3">
-              <FontAwesomeIcon icon={faLock} className="text-warning" />
-            </div>
-            <p className="aws-otp-message px-3">{pageState.message}</p>
-            <Row className="g-2 justify-content-center mt-4">
-              {digits.map((digit, index) => (
-                <Col xs={2} key={index} style={{ maxWidth: "50px" }}>
-                  <input
-                    type="password"
-                    inputMode="numeric"
-                    className="aws-otp-input"
-                    value={digit}
-                    onChange={(e) => handleChange(index, e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(index, e)}
-                    ref={(el) => (inputsRef.current[index] = el)}
-                    disabled={isSubmitting}
-                  />
-                </Col>
-              ))}
-            </Row>
-          </>
-        );
+          <h5 className="mt-3 fw-bold text-dark">Thành công!</h5>
+          <p className="text-muted">{pageState.message}</p>
+        </div>
+      );
     }
+
+    if (pageState.status === "error") {
+      return (
+        <div className="aws-page-status error-view">
+          <div className="icon-wrapper bg-soft-danger">
+            <FontAwesomeIcon
+              icon={
+                pageState.errorCode === 500
+                  ? faExclamationTriangle
+                  : faTimesCircle
+              }
+              className="text-danger"
+              size="3x"
+            />
+          </div>
+          <h5 className="mt-3 fw-bold text-dark">
+            {pageState.errorCode === 500
+              ? "Lỗi Hệ Thống"
+              : "Hành động thất bại"}
+          </h5>
+          {/* Hiển thị chuẩn xác mã Code lỗi để anh em dev dễ gỡ Bug */}
+          <div className="badge bg-light text-danger border mb-2 small fw-bold">
+            Error Code: {pageState.errorCode}
+          </div>
+          <p className="text-muted px-2">{pageState.message}</p>
+          <Button
+            variant="outline-primary"
+            className="mt-2"
+            onClick={handleRetry}
+          >
+            Thử lại
+          </Button>
+        </div>
+      );
+    }
+
+    // Trạng thái mặc định: Chờ nhập mã PIN số hóa
+    return (
+      <>
+        <div className="aws-lock-visual mb-3">
+          <FontAwesomeIcon icon={faLock} className="text-warning" />
+        </div>
+        <p className="aws-otp-message px-3">{pageState.message}</p>
+        <Row className="g-2 justify-content-center mt-4">
+          {digits.map((digit, index) => (
+            <Col xs={2} key={index} style={{ maxWidth: "50px" }}>
+              <input
+                type="password"
+                inputMode="numeric"
+                className="aws-otp-input"
+                value={digit}
+                onChange={(e) => handleChange(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                ref={(el) => (inputsRef.current[index] = el)}
+                disabled={isSubmitting}
+              />
+            </Col>
+          ))}
+        </Row>
+      </>
+    );
   };
 
   return (
@@ -195,7 +216,7 @@ const Otp_verify_dynamic = ({
       className="aws-otp-modal"
       backdrop="static"
     >
-      {isSubmitting && pageState.status === 203 && (
+      {isSubmitting && pageState.status === "editing" && (
         <div className="aws-processing-overlay">
           <div className="text-center">
             <FontAwesomeIcon
@@ -204,20 +225,20 @@ const Otp_verify_dynamic = ({
               className="text-primary mb-2"
               size="3x"
             />
-            <h6 className="fw-bold text-dark">Processing...</h6>
+            <h6 className="fw-bold text-dark">Đang xác thực giao dịch...</h6>
           </div>
         </div>
       )}
 
       <Modal.Header
         className="border-0 pb-0"
-        closeButton={pageState.status !== 200 && !isSubmitting}
+        closeButton={pageState.status !== "success" && !isSubmitting}
       >
         <Modal.Title className="aws-otp-title d-flex align-items-center">
           <div className="aws-otp-icon me-2">
             <FontAwesomeIcon icon={faShieldAlt} />
           </div>
-          {pageState.status === 203 ? title : "Kết quả xác thực"}
+          {pageState.status === "editing" ? title : "Kết quả xử lý"}
         </Modal.Title>
       </Modal.Header>
 
@@ -225,7 +246,7 @@ const Otp_verify_dynamic = ({
         {renderContent()}
       </Modal.Body>
 
-      {pageState.status === 203 && (
+      {pageState.status === "editing" && (
         <Modal.Footer className="border-0 pt-0 px-4 pb-4 justify-content-center gap-3">
           <Button
             variant="link"

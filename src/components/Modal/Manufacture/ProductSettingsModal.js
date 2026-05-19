@@ -148,7 +148,7 @@ const ProductSettingsModal = ({ show, handleClose, product, closeRefresh }) => {
                 </h6>
 
                 <Row>
-                  <Col md={6} className="mb-3">
+                  <Col md={12} className="mb-3">
                     <Form.Label className="small fw-bold text-muted">
                       Trọng lượng (Đơn vị)
                     </Form.Label>
@@ -168,33 +168,8 @@ const ProductSettingsModal = ({ show, handleClose, product, closeRefresh }) => {
                         }
                       />
                       <InputGroup.Text className="bg-white small">
-                        {product?.weight_type === "kilogam" ? "kg" : "g"}
+                        kg
                       </InputGroup.Text>
-                    </InputGroup>
-                  </Col>
-
-                  <Col md={6} className="mb-3">
-                    <Form.Label className="small fw-bold text-muted">
-                      Số lượng/Thùng (Box)
-                    </Form.Label>
-                    <InputGroup className="aws-input-group">
-                      <InputGroup.Text className="bg-light">
-                        <FontAwesomeIcon
-                          icon={faBoxes}
-                          className="text-aws-orange"
-                        />
-                      </InputGroup.Text>
-                      <Form.Control
-                        type="number"
-                        value={formData.items_per_box}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            items_per_box: e.target.value,
-                          })
-                        }
-                        min="1"
-                      />
                     </InputGroup>
                   </Col>
 

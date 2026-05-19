@@ -30,6 +30,7 @@ import api_request from "../../../apicontroller/api_request";
 import { UserContext } from "../../../Context/UserContext";
 import Otp_verify_dynamic from "../Otp_verify_dynamic";
 import QrBatchDisplayModal from "./QrBatchDisplayModal";
+import QRCode from "react-qr-code";
 
 const BatchViewDetailModal = ({ show, onHide, batch, closeReload }) => {
   const formatDate = (date) => new Date(date).toLocaleString("vi-VN");
@@ -314,7 +315,18 @@ const BatchViewDetailModal = ({ show, onHide, batch, closeReload }) => {
                   )}
                 </div>
               </div>
-
+              <div className="qr-container-main mb-2">
+                <h6 className="section-title-sm mb-3">
+                  <FontAwesomeIcon icon={faQrcode} className="me-2" />
+                  Mã truy xuất
+                </h6>
+                <QRCode
+                  value={`https://app.clearlink.io.vn/production/trace-line?batchId=${batch.id}`}
+                  size={140}
+                  fgColor="#232f3e"
+                />
+                <div className="qr-label mt-2">ID: {batch.id}</div>
+              </div>
               <div className="info-group">
                 <h6 className="section-title-sm mb-3">
                   <FontAwesomeIcon icon={faLink} className="me-2" />

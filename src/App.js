@@ -22,6 +22,7 @@ import { Toaster } from "react-hot-toast";
 import { SocketContext } from "./Context/SocketProvider";
 import { messaging, requestForToken } from "./firebase";
 import { onMessage } from "firebase/messaging";
+import ProductionTraceLine from "./components/production_traceline";
 
 const AuthRoleRoute = ({ component: Component, ...rest }) => {
   const { User } = useContext(UserContext);
@@ -107,6 +108,28 @@ const LoginProtected = ({ component: Component, ...rest }) => {
   );
 };
 
+const useGeolocationTracker = (intervalMinutes = 5) => {
+  useEffect(() => {
+    const fetchLocation = () => {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            localStorage.setItem("last_lat", pos.coords.latitude);
+            localStorage.setItem("last_lon", pos.coords.longitude);
+          },
+          (err) => console.warn("GPS Error:", err.message),
+          { enableHighAccuracy: true, timeout: 10000 },
+        );
+      }
+    };
+
+    fetchLocation();
+
+    const interval = setInterval(fetchLocation, intervalMinutes * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, [intervalMinutes]);
+};
 const App = () => {
   const { refresh_me } = useContext(UserContext);
   const { User, setOtp } = useContext(UserContext);
@@ -126,6 +149,58 @@ const App = () => {
     }
   };
 
+  useEffect(() => {
+    // 1. Trích xuất vai trò thực tế của User đăng nhập
+    const currentRole = User?.data?.role || User?.role;
+
+    let roleFolder = "classic"; // Folder ảnh gốc mặc định
+    let titleText = "CLEARLINK - Đăng Nhập Hệ Thống";
+
+    if (currentRole) {
+      // Bản đồ ánh xạ: Khớp phân quyền sang đúng tên thư mục con anh vừa tạo ở bước 1
+      const roleConfigMap = {
+        manufacturer: {
+          folder: "manufacturer",
+          title: "CLEARLINK - Hệ Thống Nhà Sản Xuất",
+        },
+        distributor: {
+          folder: "distributor",
+          title: "CLEARLINK - Hệ Thống Nhà Phân Phối",
+        },
+        retailer: {
+          folder: "retailer",
+          title: "CLEARLINK - Hệ Thống Đại Lý Bán Lẻ",
+        },
+        transporter: {
+          folder: "transporter",
+          title: "CLEARLINK - Cổng Quản Lý Vận Tải",
+        },
+      };
+
+      const normalizeRole = String(currentRole).toLowerCase();
+
+      if (roleConfigMap[normalizeRole]) {
+        roleFolder = roleConfigMap[normalizeRole].folder;
+        titleText = roleConfigMap[normalizeRole].title;
+      } else {
+        titleText = "CLEARLINK - Bảng Điều Khiển";
+        roleFolder = "classic";
+      }
+    }
+    document.title = titleText;
+
+    const fav16Element = document.getElementById("favicon-16");
+    const fav32Element = document.getElementById("favicon-32");
+    const appleTouchElement = document.getElementById("apple-touch");
+
+    const basePath = `${process.env.PUBLIC_URL}/logo/${roleFolder}`;
+
+    if (fav16Element) fav16Element.href = `${basePath}/favicon-32x32.png`;
+    if (fav32Element) fav32Element.href = `${basePath}/favicon-32x32.png`;
+    if (appleTouchElement)
+      appleTouchElement.href = `${basePath}/apple-touch-icon.png`;
+  }, [User, User?.data?.role]);
+
   const forcedOtpRoutes = [];
 
   const isForced = forcedOtpRoutes.includes(location.pathname);
@@ -135,6 +210,7 @@ const App = () => {
     Routes.Signup.path,
     "/user/active_role",
     "/user/pending-submit",
+    "/production/trace-line",
   ];
 
   const openResultOtp = async (data) => {
@@ -150,9 +226,7 @@ const App = () => {
       if (res) {
         if (res.RC === 200) {
           const notifications = res.RD || [];
-          [...notifications].reverse().forEach(
-            (n) => addNotification(n), 
-          );
+          [...notifications].reverse().forEach((n) => addNotification(n));
         }
       }
     } catch (error) {
@@ -236,9 +310,12 @@ const App = () => {
     };
   }, [User.Authen]);
 
+  useGeolocationTracker(5);
+
   return (
     <>
       <ToastContainer limit={3} stacked />
+
       <Toaster position="top-right" reverseOrder={false} />
       <Otp_show
         show={isResult}
@@ -254,12 +331,19 @@ const App = () => {
 
       <ScrollToTop />
       <Switch>
+        <Route
+          exact
+          path="/production/trace-line"
+          component={ProductionTraceLine}
+        />
         <Route exact path="/oauth" component={OAuthHandler} />
+
         <LoginProtected
           exact
           path={Routes.ForgotPassword.path}
           component={HomePage}
         />
+
         <LoginProtected path={Routes.Signin.path} component={HomePage} />
         <LoginProtected path={Routes.Signup.path} component={HomePage} />
 

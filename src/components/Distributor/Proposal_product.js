@@ -47,8 +47,8 @@ const Proposal_product = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCompany, setFilterCompany] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
-
   const [showOrderModal, setShowOrderModal] = useState(false);
+  
   const getProposalproduct = async () => {
     try {
       setisload(true);

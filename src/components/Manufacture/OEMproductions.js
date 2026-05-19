@@ -59,9 +59,11 @@ const OEMproductions = () => {
   });
   const [rawPartner, setrawPartner] = useState([]);
   const [Productions, setProductions] = useState([]);
-  const fetchOEMs = async () => {
+
+  const fetchOEMs = async (isFirstLoad = false) => {
     try {
-      setisload(true);
+      if (isFirstLoad) setisload(true);
+
       const res = await api_request.fecthORMs(User);
       if (res && res.RC === 200) {
         setOEMs(res.RD.OEMs);
@@ -69,12 +71,50 @@ const OEMproductions = () => {
         setrawPartner(res.RD.rawPartners);
       }
     } catch (error) {
-      console.error(error);
-      toast.error("Lỗi hệ thống!");
+      console.error(">>> OEM Polling Error:", error);
+      if (isFirstLoad) toast.error("Lỗi hệ thống khi tải danh sách đối tác!");
     } finally {
-      setisload(false);
+      if (isFirstLoad) setisload(false);
     }
   };
+
+  useEffect(() => {
+    fetchOEMs(true);
+
+    let interval;
+
+    const startPolling = () => {
+      if (!interval) {
+        interval = setInterval(() => fetchOEMs(false), 10000);
+      }
+    };
+
+    const stopPolling = () => {
+      if (interval) {
+        clearInterval(interval);
+        interval = null;
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopPolling();
+        console.log(">>> [SYSTEM] Tab ẩn: Dừng Polling OEMs.");
+      } else {
+        fetchOEMs(false);
+        startPolling();
+        console.log(">>> [SYSTEM] Tab hiện: Tiếp tục Polling OEMs.");
+      }
+    };
+
+    startPolling();
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      stopPolling();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
   const [modalstate, setmodalstate] = useState({
     OEMacp: false,
     detail: false,
@@ -84,9 +124,6 @@ const OEMproductions = () => {
     detail: null,
   });
   const [apiwait, setapiwait] = useState(false);
-  useEffect(() => {
-    fetchOEMs();
-  }, []);
 
   const openModal = (key, data) => {
     setmodalstate((prev) => ({
@@ -112,7 +149,7 @@ const OEMproductions = () => {
       [key]: null,
     }));
     if (isrefresh) {
-      fetchOEMs();
+      fetchOEMs(false);
     }
   };
 
@@ -273,7 +310,7 @@ const OEMproductions = () => {
           Start_date: moment().format("YYYY-MM-DD"),
           End_date: moment().add(7, "days").format("YYYY-MM-DD"),
         });
-        fetchOEMs();
+        fetchOEMs(false);
       } else {
         toast.error(res?.RM || "Lỗi khi gửi yêu cầu");
       }

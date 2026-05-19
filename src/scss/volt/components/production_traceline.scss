@@ -1,0 +1,558 @@
+// ==========================================
+// AWS ENTERPRISE THEME & ANIMATIONS
+// ==========================================
+
+// AWS Color Palette
+$aws-bg-light: #f2f3f3;
+$aws-card-bg: #ffffff;
+$aws-ink: #232f3e; // Dark navy
+$aws-blue: #0073bb;
+$aws-blue-hover: #005f99;
+$aws-green: #1ea362;
+$aws-text-muted: #545b64;
+$aws-border: #eaeded;
+
+$aws-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+$aws-radius: 2px;
+
+.trace-page-container {
+  min-height: 100vh;
+  background-color: $aws-bg-light;
+  font-family: "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif;
+  color: $aws-ink;
+  padding: 30px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  .loading-screen {
+    margin-top: 15vh;
+    background: $aws-card-bg;
+    padding: 50px;
+    border-radius: $aws-radius;
+    box-shadow: $aws-shadow;
+    border-top: 4px solid $aws-blue;
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        transparent,
+        rgba($aws-blue, 0.05),
+        transparent
+      );
+      transform: rotate(45deg);
+      animation: scanShimmer 3s infinite;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba($aws-blue, 0.1);
+      border-top-color: $aws-blue;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 25px;
+    }
+
+    .loading-msg {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: $aws-ink;
+      margin-bottom: 20px;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 6px;
+      background: $aws-border;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 10px;
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, $aws-blue, $aws-green);
+        background-size: 200% 100%;
+        animation: gradientFlow 2s linear infinite;
+        transition: width 0.3s ease;
+      }
+    }
+
+    .perc {
+      font-size: 12px;
+      color: $aws-text-muted;
+      font-family: monospace;
+    }
+  }
+
+  .result-screen {
+    width: 100%;
+    max-width: 1200px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 25px;
+    animation: fadeInPage 0.8s ease-out;
+
+    @media (min-width: 992px) {
+      grid-template-columns: 380px 1fr;
+    }
+  }
+
+  // Cột trái: Kỹ thuật & Nhãn QR
+  .info-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+
+    .info-card {
+      background: $aws-card-bg;
+      padding: 25px;
+      border-radius: $aws-radius;
+      box-shadow: $aws-shadow;
+      border: 1px solid $aws-border;
+      transition: box-shadow 0.3s ease;
+
+      &:hover {
+        box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
+      }
+
+      &.primary {
+        border-top: 3px solid $aws-blue;
+      }
+
+      h3 {
+        margin: 0 0 20px 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: $aws-ink;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid $aws-border;
+
+        svg {
+          color: $aws-blue;
+        }
+      }
+
+      .tech-details {
+        font-family: monospace;
+        background: $aws-bg-light;
+        padding: 15px;
+        border-radius: 4px;
+        border: 1px solid $aws-border;
+        font-size: 13px;
+        color: $aws-text-muted;
+        margin-bottom: 20px;
+
+        .line {
+          display: flex;
+          gap: 8px;
+          margin-bottom: 6px;
+          &:last-child {
+            margin-bottom: 0;
+          }
+          .key {
+            color: $aws-ink;
+            font-weight: bold;
+          }
+        }
+      }
+
+      .info-row {
+        margin-bottom: 15px;
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        span.label {
+          display: block;
+          font-size: 13px;
+          color: $aws-text-muted;
+          font-weight: 500;
+          margin-bottom: 5px;
+        }
+
+        span.value {
+          display: block;
+          font-size: 1rem;
+          color: $aws-ink;
+          font-weight: 600;
+        }
+      }
+
+      // Nhãn QR Uy tín
+      .qr-certificate {
+        background: $aws-bg-light;
+        border: 2px dashed $aws-border;
+        padding: 20px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        border-radius: 8px;
+
+        &::before {
+          content: "LEDGER VERIFIED";
+          position: absolute;
+          top: 15px;
+          right: -25px;
+          background: rgba($aws-green, 0.1);
+          color: $aws-green;
+          font-size: 10px;
+          font-weight: bold;
+          padding: 3px 30px;
+          transform: rotate(45deg);
+        }
+
+        .qr-wrapper {
+          background: #fff;
+          padding: 10px;
+          display: inline-block;
+          border: 1px solid $aws-border;
+          border-radius: 4px;
+          box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+          transition: transform 0.3s ease;
+          &:hover {
+            transform: scale(1.05);
+          }
+        }
+
+        .batch-label {
+          margin-top: 15px;
+          font-family: monospace;
+          font-size: 13px;
+          font-weight: bold;
+          color: $aws-blue;
+          background: rgba($aws-blue, 0.05);
+          padding: 5px 10px;
+          border-radius: 4px;
+          display: inline-block;
+        }
+      }
+    }
+  }
+
+  // Cột phải: Timeline Hành trình sống động
+  .timeline-panel {
+    background: $aws-card-bg;
+    padding: 35px;
+    border-radius: $aws-radius;
+    box-shadow: $aws-shadow;
+    border: 1px solid $aws-border;
+
+    .header-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 35px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid $aws-bg-light;
+
+      h2 {
+        margin: 0;
+        color: $aws-ink;
+        font-size: 1.6rem;
+        font-weight: 800;
+      }
+
+      .status-pill {
+        background: rgba($aws-green, 0.1);
+        color: $aws-green;
+        padding: 6px 15px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        border: 1px solid rgba($aws-green, 0.3);
+
+        .pulse-dot {
+          width: 8px;
+          height: 8px;
+          background: $aws-green;
+          border-radius: 50%;
+          animation: pulseGreen 2s infinite;
+        }
+      }
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: 5px;
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: 10px;
+        left: 24px; // 👈 Đổi từ 19px thành 24px (Tâm 25px - 1px nửa độ dày line)
+        height: calc(100% - 20px);
+        width: 2px;
+        background: $aws-border;
+      }
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-left: 60px;
+      margin-bottom: 35px;
+      opacity: 0;
+      animation: itemDropIn 0.5s ease-out forwards;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      // Staggered Animation Delay cho từng bước
+      @for $i from 1 through 10 {
+        &:nth-child(#{$i}) {
+          animation-delay: #{$i * 0.15}s;
+        }
+      }
+
+      .timeline-dot {
+        position: absolute;
+        left: 10px; // 👈 Giữ nguyên
+        top: 0;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: $aws-card-bg;
+        border: 2px solid $aws-border;
+        z-index: 2;
+        transition: all 0.3s ease;
+
+        &::after {
+          // 🎁 BONUS FIX: Sửa lại hiệu ứng Pulse Ripple cho bung đều từ tâm
+          // (Code cũ của anh để -2px, rộng 20px sẽ bị méo hiệu ứng)
+          content: "";
+          position: absolute;
+          top: -6px; // Mở rộng ra ngoài biên
+          left: -6px; // Mở rộng ra ngoài biên
+          width: 28px; // Bao phủ toàn bộ dot 20x20
+          height: 28px; // Bao phủ toàn bộ dot 20x20
+          border-radius: 50%;
+          background: transparent;
+        }
+
+        &.verified {
+          background: $aws-green;
+          border-color: $aws-green;
+          box-shadow: 0 0 0 4px rgba($aws-green, 0.15);
+
+          &::after {
+            animation: pulseRipple 1.5s infinite;
+          }
+
+          svg {
+            color: #fff;
+            width: 12px;
+            height: 12px;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+          }
+        }
+      }
+
+      .timeline-card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid $aws-border;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        transition: all 0.3s ease;
+        position: relative;
+
+        &:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+          border-color: rgba($aws-blue, 0.2);
+        }
+
+        &::before {
+          // Tam giác chỉ vào chấm tròn
+          content: "";
+          position: absolute;
+          left: -7px;
+          top: 15px;
+          width: 12px;
+          height: 12px;
+          background: #fff;
+          border-left: 1px solid $aws-border;
+          border-bottom: 1px solid $aws-border;
+          transform: rotate(45deg);
+        }
+
+        .step-info {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 12px;
+
+          h4 {
+            margin: 0;
+            color: $aws-ink;
+            font-size: 1.15rem;
+            font-weight: 700;
+          }
+          .date {
+            font-family: monospace;
+            font-size: 12px;
+            color: $aws-text-muted;
+          }
+        }
+
+        p.detail {
+          margin: 0 0 15px 0;
+          color: $aws-ink;
+          font-size: 14px;
+          line-height: 1.6;
+          background: $aws-bg-light;
+          padding: 10px;
+          border-radius: 4px;
+        }
+
+        .actor-line {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-top: 15px;
+          border-top: 1px dashed $aws-border;
+          font-size: 13px;
+
+          .actor {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: $aws-text-muted;
+            strong {
+              color: $aws-ink;
+            }
+            .aws-icon {
+              width: 24px;
+              height: 24px;
+              background: rgba($aws-blue, 0.1);
+              border-radius: 4px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              svg {
+                color: $aws-blue;
+              }
+            }
+          }
+
+          .onchain-badge {
+            color: $aws-green;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            background: rgba($aws-green, 0.05);
+            padding: 3px 8px;
+            border-radius: 4px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// ==== AWS UI ICONS & GLOW ====
+.aws-icon-container {
+  width: 28px;
+  height: 28px;
+  background: $aws-ink;
+  color: #fff;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+// ==== KEYFRAMES ANIMATIONS ====
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@keyframes scanShimmer {
+  0% {
+    top: -150%;
+    left: -150%;
+  }
+  100% {
+    top: 150%;
+    left: 150%;
+  }
+}
+
+@keyframes fadeInPage {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes itemDropIn {
+  from {
+    opacity: 0;
+    transform: translateY(25px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pulseGreen {
+  0% {
+    box-shadow: 0 0 0 0 rgba($aws-green, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba($aws-green, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba($aws-green, 0);
+  }
+}
+
+@keyframes pulseRipple {
+  0% {
+    box-shadow: 0 0 0 0 rgba($aws-green, 0.5);
+    opacity: 1;
+  }
+  100% {
+    box-shadow: 0 0 0 15px rgba($aws-green, 0);
+    opacity: 0;
+  }
+}

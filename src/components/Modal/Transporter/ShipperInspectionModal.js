@@ -34,19 +34,26 @@ import { UserContext } from "../../../Context/UserContext";
 const ShipperInspectionModal = ({ show, onHide, mode, data, closeReload }) => {
   const [formData, setFormData] = useState({
     inspection_type:
-      mode === "success" ? "confirm_delivery" : "delivery_failed",
+      mode === "success" ? "confirm_delivery" : "return_shipment",
     actual_quantities: {},
     condition_summary: "",
     images: [],
     video: null,
   });
-
   const { User } = useContext(UserContext);
   const [modalState, setModalState] = useState(false);
   const [showImageManager, setShowImageManager] = useState(false);
   const imageInputRef = useRef(null);
   const videoInputRef = useRef(null);
   const isFailedMode = mode === "failed";
+
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      inspection_type:
+        mode === "success" ? "confirm_delivery" : formData.inspection_type,
+    }));
+  }, [mode]);
 
   useEffect(() => {
     if (data?.batches) {
@@ -73,7 +80,6 @@ const ShipperInspectionModal = ({ show, onHide, mode, data, closeReload }) => {
 
   const validate = () => {
     if (isFailedMode) {
-    
       return (
         formData.images.length < 2 ||
         !formData.video ||
@@ -155,7 +161,6 @@ const ShipperInspectionModal = ({ show, onHide, mode, data, closeReload }) => {
 
       <Modal.Body className="bg-light p-0">
         <Row className="g-0">
-          
           <Col lg={12} className="p-3">
             <Card className="border-0 shadow-sm mb-3">
               <Card.Body className="p-3">

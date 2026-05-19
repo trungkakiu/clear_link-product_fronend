@@ -41,7 +41,6 @@ const ProductDetailModal = ({ show, onHide, product, API_URL }) => {
 
   if (!product) return null;
 
-  // Hiệu ứng Parallax nhẹ cho ảnh chính khi hover
   const handleMouseMove = (e) => {
     if (!mainImageRef.current) return;
     const { left, top, width, height } =
@@ -67,7 +66,6 @@ const ProductDetailModal = ({ show, onHide, product, API_URL }) => {
       >
         <Modal.Body className="p-0">
           <Row className="g-0 h-100">
-            {/* CỘT TRÁI: THE IMMERSIVE GALLERY (Nền tối để nổi ảnh) */}
             <Col
               lg={7}
               className="gallery-section position-relative bg-dark-aws p-5"
@@ -114,7 +112,6 @@ const ProductDetailModal = ({ show, onHide, product, API_URL }) => {
                     src={`${API_URL}main-card/${product.main_cardimage}`}
                   />
                 </div>
-                {/* Thumb cho sub-images */}
                 {product.sub_images?.map((img) => (
                   <div
                     className={`thumb-aws ${activeImage.includes(img.image_name) ? "active" : ""}`}
@@ -129,7 +126,6 @@ const ProductDetailModal = ({ show, onHide, product, API_URL }) => {
               </div>
             </Col>
 
-            {/* CỘT PHẢI: THE INFORMATION DASHBOARD (Sạch sẽ, độ tương phản cao) */}
             <Col
               lg={5}
               className="info-section p-5 bg-white d-flex flex-column justify-content-between"
@@ -144,7 +140,11 @@ const ProductDetailModal = ({ show, onHide, product, API_URL }) => {
                   </Badge>
                 </div>
 
-                <h1 className="product-title-wow fw-900 text-aws-navy mb-2">
+                <h1
+                  className="product-title-wow text-aws-navy mb-2 text-truncate w-100"
+                  title={product.name}
+                  style={{ display: "block" }}
+                >
                   {product.name}
                 </h1>
 

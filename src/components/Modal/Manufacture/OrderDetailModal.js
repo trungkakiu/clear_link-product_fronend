@@ -39,6 +39,30 @@ const OrderDetailModal = ({ show, onHide, data, onAccept }) => {
         color: "text-success",
         icon: faCheckCircle,
       },
+      BANK_partially_payment: {
+        text: "Thanh toán chưa hoàn tất",
+        bg: "bg-soft-warning",
+        color: "text-warning",
+        icon: faClock,
+      },
+      deposit: {
+        text: "Cọc giá trị",
+        bg: "bg-soft-success",
+        color: "text-success",
+        icon: faCheckCircle,
+      },
+      COD_wait: {
+        text: "COD",
+        bg: "bg-soft-success",
+        color: "text-success",
+        icon: faCheckCircle,
+      },
+      complated: {
+        text: "Đã thanh toán",
+        bg: "bg-soft-success",
+        color: "text-success",
+        icon: faCheckCircle,
+      },
     };
     const cfg = configs[status] || configs.BANK_awaiting_payment;
     return (
@@ -88,7 +112,7 @@ const OrderDetailModal = ({ show, onHide, data, onAccept }) => {
               </label>
               <div className="d-flex mt-2">
                 <Image
-                  src={`http://192.168.1.6:5099/main-card/${data.product_pinner?.main_cardimage}`}
+                  src={`${process.env.REACT_APP_API_IMAGE_URL}main-card/${data.product_pinner?.main_cardimage}`}
                   className="rounded-2 shadow-sm"
                   width={100}
                   height={100}
@@ -121,7 +145,7 @@ const OrderDetailModal = ({ show, onHide, data, onAccept }) => {
               </label>
               <div className="d-flex align-items-center mt-2">
                 <Image
-                  src={`http://192.168.1.6:5099/Company-logo/${data.partner_info?.logo}`}
+                  src={`${process.env.REACT_APP_API_IMAGE_URL}Company-logo/${data.partner_info?.logo}`}
                   roundedCircle
                   width={50}
                   height={50}
@@ -193,7 +217,7 @@ const OrderDetailModal = ({ show, onHide, data, onAccept }) => {
                   >
                     <div>
                       <Image
-                        src={`http://192.168.1.6:5099/User-avatar/${bill.payer?.avatar}`}
+                        src={`${process.env.REACT_APP_API_IMAGE_URL}User-avatar/${bill.payer?.avatar}`}
                         roundedCircle
                         width={50}
                         height={50}

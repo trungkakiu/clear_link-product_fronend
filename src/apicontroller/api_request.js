@@ -16,7 +16,14 @@ const login = async (loginData) => {
   } catch (error) {
     console.error("ERR:", error.response?.data || error.message);
     toast.error(error.response?.data?.RM || "Đăng nhập thất bại");
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
 
@@ -29,7 +36,14 @@ const logout = async (User) => {
     return res.data;
   } catch (error) {
     console.error("ERR:", error.response?.data || error.message);
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
 
@@ -71,9 +85,17 @@ const sensupportmail = async (payload) => {
     return res.data;
   } catch (error) {
     console.error(error);
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
+
 const refresh_me = async () => {
   try {
     const raw = sessionStorage.getItem("user") || localStorage.getItem("user");
@@ -88,7 +110,14 @@ const refresh_me = async () => {
     return res.data;
   } catch (error) {
     console.error("refresh_me error:", error);
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
 
@@ -317,9 +346,13 @@ const createTechnicalStaff = async (User, form) => {
 const changePartment = async (User, staffid, partmentid) => {
   try {
     setAuthToken_v2(User);
-    const res = await api_v2.put(`/user/change-staffdepartment/${staffid}`, {
-      partmentid,
-    });
+    const res = await api_v2.put(
+      `/user/change-staffdepartment/${staffid}`,
+      {
+        partmentid,
+      },
+      { resourceId: staffid },
+    );
     return res.data;
   } catch (error) {
     console.error(error);
@@ -338,6 +371,7 @@ const pushstaffAvatar = async (User, staffid, file) => {
       headers: {
         "Content-Type": "multipart/form-data",
       },
+      resourceId: staffid,
     });
 
     return res.data;
@@ -350,9 +384,13 @@ const pushstaffAvatar = async (User, staffid, file) => {
 const newLeaderDepartment = async (User, department_id, staff_id) => {
   try {
     setAuthToken_v2(User);
-    const res = await api_v2.put(`/user/leader-post-new/${department_id}`, {
-      staff_id,
-    });
+    const res = await api_v2.put(
+      `/user/leader-post-new/${department_id}`,
+      {
+        staff_id,
+      },
+      { resourceId: department_id },
+    );
     return res.data;
   } catch (error) {
     console.error(error);
@@ -558,6 +596,7 @@ const onCancelRequestApi = async (User, challen_code, proposal_id) => {
       {
         challenge_code: challen_code,
       },
+      { resourceId: proposal_id },
     );
     return res.data;
   } catch (error) {
@@ -574,6 +613,7 @@ const onRejectRequest = async (User, challen_code, proposal_id) => {
       {
         challenge_code: challen_code,
       },
+      { resourceId: proposal_id },
     );
     return res.data;
   } catch (error) {
@@ -726,9 +766,13 @@ const user_upload_avatar = async (User, formData) => {
 const user_update_info = async (User, formData) => {
   try {
     setAuthToken(User);
-    const res = await api.put(`/user/avatar_update/${User.data.id}`, {
-      formData,
-    });
+    const res = await api.put(
+      `/user/avatar_update/${User.data.id}`,
+      {
+        formData,
+      },
+      { resourceId: User.data.id },
+    );
     return res.data;
   } catch (error) {
     console.error(error);
@@ -750,15 +794,12 @@ const fecthORMs = async (User) => {
 const updateProductSettings = async (User, product_id, formData) => {
   try {
     setAuthToken(User);
-    const res = await api.post(
-      `/user/production/${product_id}/edit`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+    const res = await api.put(`/user/production/${product_id}/edit`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
       },
-    );
+      resourceId: product_id,
+    });
     return res.data;
   } catch (error) {
     console.error(error);
@@ -829,6 +870,7 @@ const updateProfile = async (User, challenge_code, formData) => {
         "Content-Type": "multipart/form-data",
         "x-challenge-code": challenge_code,
       },
+      resourceId: User.data.id,
     });
 
     return res.data;
@@ -843,6 +885,7 @@ const updateBatchQuantityApi = async (User, batch_id, quantity) => {
     setAuthToken(User);
     const res = await api.put(
       `/user/company/product-batches/update/${batch_id}/${quantity}`,
+      { resourceId: batch_id },
     );
     return res.data;
   } catch (error) {
@@ -1013,6 +1056,8 @@ const sendShipingREquestAPI = async (
   shipperId,
   partnerId,
   batchesMap,
+  payment_method,
+  pay_earl_percent,
 ) => {
   try {
     setAuthToken_v2(User);
@@ -1026,6 +1071,8 @@ const sendShipingREquestAPI = async (
       type_capatry,
       type_delivery,
       batchesMap,
+      payment_method,
+      pay_earl_percent,
     });
     return res.data;
   } catch (error) {
@@ -1038,6 +1085,17 @@ const fetchShipOrderAPI = async (User) => {
   try {
     setAuthToken_v2(User);
     const res = await api_v2.get(`/User/shiping/proccess`);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+const getPushTaskAPI = async (User, ship_id) => {
+  try {
+    setAuthToken_v2(User);
+    const res = await api_v2.get(`/User/shiping/proccess/pushtask/${ship_id}`);
     return res.data;
   } catch (error) {
     console.error(error);
@@ -1089,6 +1147,7 @@ const reupdateBatchAPI = async (User, challenge_code, batchId) => {
       {
         challenge_code,
       },
+      { resourceId: batchId },
     );
     return res.data;
   } catch (error) {
@@ -1236,7 +1295,14 @@ const intruckBatch = async (User, shipping_id, challenge_code) => {
     return res.data;
   } catch (error) {
     console.error(error);
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
 
@@ -1252,7 +1318,14 @@ const intruckConfirm = async (User, shipping_id, challenge_code) => {
     return res.data;
   } catch (error) {
     console.error(error);
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
 
@@ -1268,7 +1341,14 @@ const receivedBatch = async (User, shipping_id, challenge_code) => {
     return res.data;
   } catch (error) {
     console.error(error);
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
 
@@ -1279,7 +1359,14 @@ const getMyOrder = async (User) => {
     return res.data;
   } catch (error) {
     console.error(error);
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
 
@@ -1292,10 +1379,18 @@ const orderReadytoPick = async (User, shipping_id, challenge_code) => {
         challenge_code,
       },
     );
-    return res.data;
+    return res.data; // Trả về data khi thành công (thường chứa { RC: 200, RM: "..." })
   } catch (error) {
-    console.error(error);
-    return null;
+    console.error("Lỗi gọi API ready-to-pick:", error);
+
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
 
@@ -1311,7 +1406,14 @@ const shipingComplete = async (User, shipping_id, challenge_code) => {
     return res.data;
   } catch (error) {
     console.error(error);
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
 
@@ -1328,7 +1430,14 @@ const updateGpsLocation = async (User, lat, lng, order, vehicle_id) => {
     return res.data;
   } catch (error) {
     console.error(">>> [API GPS ERR]:", error.response?.data || error.message);
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
 
@@ -1339,7 +1448,14 @@ const fetchShipperLocationApi = async (User, order_id) => {
     return res.data;
   } catch (error) {
     console.error(">>> [API GPS ERR]:", error.response?.data || error.message);
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
 
@@ -1350,7 +1466,14 @@ const update_fcm_token = async (User, fcm_token) => {
     return res.data;
   } catch (error) {
     console.error(">>> [API GPS ERR]:", error.response?.data || error.message);
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
 
@@ -1378,7 +1501,14 @@ const AcceptAndSignOrder = async (
       ">>> [API AcceptAndSignOrder ERR]:",
       error.response?.data || error.message,
     );
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
 
@@ -1394,7 +1524,14 @@ const markNotificationAsRead = async (User, notification_id) => {
       ">>> [API markNotificationAsRead ERR]:",
       error.response?.data || error.message,
     );
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
 
@@ -1410,7 +1547,14 @@ const markAllNotificationsAsRead = async (User) => {
       ">>> [API markAllNotificationsAsRead ERR]:",
       error.response?.data || error.message,
     );
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
 
@@ -1424,7 +1568,14 @@ const getWareHouseApi = async (User) => {
       ">>> [API getWareHouseApi ERR]:",
       error.response?.data || error.message,
     );
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
 
@@ -1441,7 +1592,14 @@ const createWarehouseApi = async (User, challenge_code, formdata) => {
       ">>> [API createWarehouseApi ERR]:",
       error.response?.data || error.message,
     );
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
 
@@ -1457,7 +1615,14 @@ const createWareZoneApi = async (User, zoneData) => {
       ">>> [API createWarehouseApi ERR]:",
       error.response?.data || error.message,
     );
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
 
@@ -1473,7 +1638,14 @@ const createRackApi = async (User, rackData) => {
       ">>> [API createWarehouseApi ERR]:",
       error.response?.data || error.message,
     );
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
 
@@ -1487,7 +1659,14 @@ const getBox = async (User) => {
       ">>> [API getBox ERR]:",
       error.response?.data || error.message,
     );
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
 
@@ -1508,7 +1687,14 @@ const createBox = async (User, challenge_code, data) => {
       ">>> [API createBox ERR]:",
       error.response?.data || error.message,
     );
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
 
@@ -1525,7 +1711,14 @@ const confirmStartApi = async (User, order_id, vehicle_id) => {
       ">>> [API confirmStartApi ERR]:",
       error.response?.data || error.message,
     );
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
 
@@ -1544,7 +1737,14 @@ const VehicleArrived = async (User, lat, lng, order_id, vehicle_id) => {
       ">>> [API confirmStartApi ERR]:",
       error.response?.data || error.message,
     );
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
   }
 };
 
@@ -1563,12 +1763,366 @@ const VehicleArrivedArrviver = async (User, lat, lng, order_id, vehicle_id) => {
       ">>> [API confirmStartApi ERR]:",
       error.response?.data || error.message,
     );
-    return null;
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
+  }
+};
+
+const getDashbroadOverview = async (User) => {
+  try {
+    setAuthToken_v2(User);
+    const res = await api_v2.post(`/user/control/dashbroad/overview`);
+    return res.data;
+  } catch (error) {
+    console.error(
+      ">>> [API confirmStartApi ERR]:",
+      error.response?.data || error.message,
+    );
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
+  }
+};
+
+const getDailyLogs = async (User) => {
+  try {
+    setAuthToken_v2(User);
+    const res = await api_v2.get(`/user/control/get-daily-log`);
+    return res.data;
+  } catch (error) {
+    console.error(
+      ">>> [API confirmStartApi ERR]:",
+      error.response?.data || error.message,
+    );
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
+  }
+};
+
+const put_away = async (User, ship_id, challenge_code) => {
+  try {
+    setAuthToken_v2(User);
+    const res = await api_v2.post(
+      `/user/warehouse/putaway_task/${ship_id}`,
+      {
+        challenge_code,
+      },
+      { resourceId: ship_id },
+    );
+    return res.data;
+  } catch (error) {
+    console.error(
+      ">>> [API confirmStartApi ERR]:",
+      error.response?.data || error.message,
+    );
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
+  }
+};
+
+const confirm_put_away = async (User, ship_id, tasks, challenge_code) => {
+  try {
+    setAuthToken_v2(User);
+    const res = await api_v2.post(
+      `/user/company/warehouse/confirm-putaway/${ship_id}`,
+      {
+        challenge_code,
+        confirmed_tasks: tasks,
+      },
+      { resourceId: ship_id },
+    );
+    return res.data;
+  } catch (error) {
+    console.error(
+      ">>> [API confirmStartApi ERR]:",
+      error.response?.data || error.message,
+    );
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
+  }
+};
+
+const getCurrentInventory = async (User) => {
+  try {
+    setAuthToken_v2(User);
+    const res = await api_v2.get(`/user/distributor/storage/version/get`);
+    return res.data;
+  } catch (error) {
+    console.error(
+      ">>> [API confirmStartApi ERR]:",
+      error.response?.data || error.message,
+    );
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
+  }
+};
+
+const updateInventoryPrice = async (
+  User,
+  challenge_code,
+  productId,
+  item_id,
+  new_price,
+) => {
+  try {
+    setAuthToken_v2(User);
+    const res = await api_v2.put(
+      `/user/distributor/production/newprice`,
+      {
+        new_price,
+        item_id,
+        productId,
+        challenge_code,
+      },
+      { resourceId: item_id },
+    );
+    return res.data;
+  } catch (error) {
+    console.error(
+      ">>> [API confirmStartApi ERR]:",
+      error.response?.data || error.message,
+    );
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
+  }
+};
+
+const updateCatalogStatusAPI = async (User, productId, item_id, new_status) => {
+  try {
+    setAuthToken_v2(User);
+    const res = await api_v2.put(
+      `/user/distributor/production/newStatus`,
+      {
+        new_status,
+        item_id,
+        productId,
+      },
+      { resourceId: item_id },
+    );
+    return res.data;
+  } catch (error) {
+    console.error(
+      ">>> [API confirmStartApi ERR]:",
+      error.response?.data || error.message,
+    );
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
+  }
+};
+
+const detectBankName = async (User, bin, card_number) => {
+  try {
+    setAuthToken_v2(User);
+    const res = await api_v2.post(`user/company/bank-account/verify`, {
+      bin,
+      account_number: card_number,
+    });
+    return res.data;
+  } catch (error) {
+    console.error(
+      ">>> [API detectBankName ERR]:",
+      error.response?.data || error.message,
+    );
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
+  }
+};
+
+const getCompanyWallet = async (User) => {
+  try {
+    setAuthToken_v2(User);
+    const res = await api_v2.get(`/user/company/wallet/info`);
+    return res.data;
+  } catch (error) {
+    console.error(
+      ">>> [API getCompanyWallet ERR]:",
+      error.response?.data || error.message,
+    );
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
+  }
+};
+
+const createCompanyWallet = async (
+  User,
+  challenge_code,
+  bin,
+  account_number,
+  account_name,
+) => {
+  try {
+    setAuthToken_v2(User);
+    const res = await api_v2.post(`/user/company/wallet/create`, {
+      challenge_code,
+      bin,
+      account_number,
+      account_name,
+    });
+    return res.data;
+  } catch (error) {
+    console.error(
+      ">>> [API createCompanyWallet ERR]:",
+      error.response?.data || error.message,
+    );
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
+  }
+};
+
+const genQrcode = async (User, companyId, bankDataPayload) => {
+  try {
+    setAuthToken_v2(User);
+    const res = await api_v2.post(
+      `/user/wallet/create-bank-verify`,
+      bankDataPayload,
+    );
+    return res.data;
+  } catch (error) {
+    console.error(
+      ">>> [API genQrcode ERR]:",
+      error.response?.data || error.message,
+    );
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+    return {
+      RM: error.message || "Lỗi kết nối máy chủ API!",
+      RC: 500,
+    };
+  }
+};
+
+const uploadKycWallet = async (User, file) => {
+  try {
+    setAuthToken_v2(User);
+    const formData = new FormData();
+    formData.append("kyc_image", file);
+
+    const res = await api_v2.post(`/user/wallet/upload-kyc-proof`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error(
+      ">>> [API uploadKycWallet ERR]:",
+      error.response?.data || error.message,
+    );
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+    return {
+      RM: error.message || "Lỗi tải ảnh chứng từ lên Server!",
+      RC: 500,
+    };
+  }
+};
+
+const uploadCompanyQrCode = async (User, formData) => {
+  try {
+    setAuthToken_v2(User);
+
+    const res = await api_v2.post(`/user/wallet/upload-QRcode`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error(
+      ">>> [API uploadKycWallet ERR]:",
+      error.response?.data || error.message,
+    );
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+    return {
+      RM: error.message || "Lỗi tải ảnh chứng từ lên Server!",
+      RC: 500,
+    };
   }
 };
 
 export default {
+  uploadCompanyQrCode,
+  put_away,
+  genQrcode,
+  uploadKycWallet,
+  detectBankName,
+  updateCatalogStatusAPI,
+  updateInventoryPrice,
+  getCurrentInventory,
+  getCompanyWallet,
+  confirm_put_away,
+  getDailyLogs,
   VehicleArrived,
+  getDashbroadOverview,
   VehicleArrivedArrviver,
   update_fcm_token,
   confirmStartApi,
@@ -1676,4 +2230,6 @@ export default {
   refresh_me,
   getdashboard,
   post_otp,
+  getPushTaskAPI,
+  createCompanyWallet,
 };

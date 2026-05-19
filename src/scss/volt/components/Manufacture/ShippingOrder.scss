@@ -7,6 +7,85 @@ $aws-border: #d5dbdb;
   background-color: #fafafa;
   min-height: 100vh;
 
+  $aws-blue: #5e72e4;
+  $navy-dark: #1a1d23;
+
+  .payment-card-aws {
+    border-radius: 15px;
+    border: 1px solid rgba($navy-dark, 0.05);
+
+    .form-label-aws {
+      font-size: 10px;
+      font-weight: 800;
+      color: rgba($navy-dark, 0.5);
+      letter-spacing: 1px;
+      display: block;
+      text-transform: uppercase;
+    }
+  }
+
+  .payment-item-v3 {
+    background: #f8f9fe;
+    border: 1px solid #e9ecef;
+    border-radius: 5px;
+    padding: 10px 5px;
+    cursor: pointer;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    text-align: center;
+
+    &.active {
+      background: #fff;
+      border-color: $aws-blue;
+      box-shadow: 0 4px 12px rgba($aws-blue, 0.15);
+      .title {
+        color: $aws-blue;
+      }
+      .icon-box {
+        color: $aws-blue;
+        background: rgba($aws-blue, 0.1);
+      }
+      .percent-circle {
+        background: $aws-blue;
+        color: #fff;
+      }
+    }
+
+    .icon-box,
+    .percent-circle {
+      width: 38px;
+      padding: 10px;
+      height: 38px;
+      border-radius: 20%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 900;
+      background: #e9ecef;
+      margin-bottom: 6px;
+    }
+
+    .text-content {
+      .title {
+        display: block;
+        font-weight: 800;
+        font-size: 11px;
+        margin-bottom: 2px;
+      }
+      small {
+        display: block;
+        font-size: 8px;
+        color: #8898aa;
+        line-height: 1;
+      }
+    }
+  }
+
   .text-aws-navy {
     color: $aws-navy;
   }
